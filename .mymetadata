@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project-module
   type="WEB"
-  name="BrowserLCC"
+  name="WebLCC"
   id="myeclipse.1294965065718"
   context-root="/BrowserLCC"
   j2ee-spec="1.4"
-  archive="BrowserLCC.war">
+  archive="WebLCC.war">
   <attributes>
     <attribute name="webrootdir" value="WebRoot" />
   </attributes>
