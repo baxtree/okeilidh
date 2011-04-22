@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!-- Configuration for OpenfireClusterStressTest stress test -->
+<testcase>
+
+	<!-- Amount of users that will be used to stress -->
+    <amount>60000</amount>
+
+    <!-- Username prefix to use for creating accounts. Same value will be used for passwords. -->
+    <prefix>user</prefix>
+	
+	<!-- The first user (ej. tsung1) -->
+    <startUser>1</startUser>
+
+	<!-- The XMPP server to usem, i.e. the user domain -->
+    <server>test</server>
+
+	<!-- Nodes available in the cluster -->
+	<cluster>
+        <node>openfire1</node>
+		<node>openfire2</node>
+	</cluster>
+
+</testcase>

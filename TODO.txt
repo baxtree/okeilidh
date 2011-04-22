@@ -1,0 +1,55 @@
+It does not support the wildcard "_".
+It does not support the role recursion.
+It does not support the role changing.
+
+
+Factor Structure (foo("a", B, bar(C,"d"))):
+{
+	name : "f",
+	value : "un",
+	params : [
+		{
+			name : "a",
+			params : []
+		}
+		,
+		{
+			name : "B",
+			params : []
+		}
+		,
+		{
+			name : "bar",
+			params : [
+				{
+					name : "C",
+					params : []	
+				}
+				,
+				{
+					name : "d",
+					params : []
+				}
+			]
+		}
+	]
+}
+
+Header Structure:
+header(
+	[
+		{
+			jid : "alice@okbook.inf.ed.ac.uk",
+			role : "client",
+			roleType : "initial",
+			okcs : ["http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js"]
+		}
+		,
+		{
+			jid : "bob@okbook.inf.ed.ac.uk",
+			role : "shop",
+			roleType : "",
+			okcs : ["http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js"]
+		}
+	]
+).
