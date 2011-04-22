@@ -1,0 +1,64 @@
+function OKBuzzer () {
+    this.connection = null;
+}
+
+OKBuzzer.prototype.jid_to_id = function (jid) {
+    return Strophe.getBareJidFromJid(jid).replace(/@/g, "-").replace(/\./g, "-");
+};
+
+OKBuzzer.prototype.on_message = function (message) {
+    var full_jid = $(message).attr('from');
+    var body = $(message).find("html > body");
+    return true;
+};
+
+var okbuzzer = new OKBuzzer();
+		
+$(document).ready(function () {
+    $('#login_dialog').dialog({
+        autoOpen: true,
+        dragOKBuzzerle: false,
+        modal: true,
+        title: 'Connect to XMPP',
+        buttons: {
+            "Connect": function () {
+                $(document).trigger('connect', {
+                	server: $("#server").val(),
+                    jid: $('#jid').val(),
+                    password: $('#password').val()
+                });
+                
+                $('#password').val('');
+                $(this).dialog('close');
+            }
+        }
+    });
+    
+    $("disconnect").click(function(){
+		okbuzzer.connection.disconnect();
+		okbuzzer.connection = null;
+	});
+});
+    
+$(document).bind('connect', function (ev, data) {
+    var conn = new Strophe.Connection(data.server);
+
+    conn.connect(data.jid, data.password, function (status) {
+        if (status === Strophe.Status.CONNECTED) {
+            $(document).trigger('connected');
+        } else if (status === Strophe.Status.DISCONNECTED) {
+            $(document).trigger('disconnected');
+        }
+    });
+	
+    okbuzzer.connection = conn;
+});
+	
+$(document).bind('connected', function () {
+    okbuzzer.connection.addHandler(OKBuzzer.on_message, null, "message", "chat");
+});
+	
+$(document).bind('disconnected', function () {
+    okbuzzer.connection = null;
+    $('#login_dialog').dialog('open');
+});
