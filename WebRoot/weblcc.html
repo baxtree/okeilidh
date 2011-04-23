@@ -321,6 +321,7 @@
 	var clauses = new Array();
 	var role_heads = new Array();
 	var role_bodies = new Array();
+	var thens = new Array();
 	var init;
 	var currentMessageNode;
 	var currentRoleNode;
@@ -418,6 +419,7 @@
 		clauses = new Array();
 		role_heads = new Array();
 		role_bodies = new Array();
+		thens = new Array();
 	}
 	
 	function isIdenticalTerm(tnode1, tnode2){ //TODO need testing
@@ -466,7 +468,7 @@
 	function getRoleBodyByRoleHead(role_head){
 		var role_body = null;
 		for(var i = 0; i < role_heads.length; i++){
-			if(isIdenticalRole(role_read, role_heads[i])){
+			if(isIdenticalRole(role_head, role_heads[i])){
 				role_body = role_bodies[i];
 				break;
 			}
@@ -635,6 +637,7 @@
 						}
 						break;
 					case OP_ROLE_CHANGE:
+						alert("Role Change Now!");
 						if(node.children[0]){
 							execute(getRoleBodyByRoleHead(node.children[0]));						
 						}
@@ -720,7 +723,9 @@
 						emitter.removeAllListeners("nextThenDEF");
 //						alert("after remove we got : " + emitter.listeners("nextThenDEF"));
 						nextThenNode = node.children[1];
+//						thens.unshift(nextThenNode);
 						emitter.on("nextThenDEF", execute);
+						alert("the next then will be: " +JSON.stringify(nextThenNode));
 						execute(node.children[0]);
 						break;
 					case OP_OR:
@@ -858,24 +863,24 @@
 	
 	
 /~ associativity ~/
-<	"OR"							
+>	"OR"							
 	;
 
-<	"THEN"
+>	"THEN"
 	;
 
-<       "<="
+>       "<="
         "=>"
         ;
 
-<       "<-"
+>       "<-"
         "->"
         ;
 
-<	"\|\|"									/~ logical "OR" ~/
+>	"\|\|"									/~ logical "OR" ~/
 	;
 	
-<	"&&"									/~ logical "AND" ~/
+>	"&&"									/~ logical "AND" ~/
 	;	
 ##
 
@@ -905,7 +910,7 @@ Interaction:	Message '=>' Role                                 [* %% = createNod
 				| Message '<=' Role                               [* %% = createNode(NODE_OP, OP_RECEIVE, %1, %3); *]
 				| Constraint '<-' Message '<=' Role               [* %% = createNode(NODE_OP, OP_RECEIVE, %3, %5, %1); *]
 				| NULL '<-' Constraint                            [* %% = createNode(NODE_OP, OP_NO_MSG, %3); *]   /~ not in the original BNF declaration on the openk website ~/
-				| Role											  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1 ); *]
+				| Role											  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1 ); alert("create the change role node");*]
 /~      		| Role '<-' Constraint							  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1, %3) *] ~/				
 				;
 
@@ -1030,7 +1035,8 @@ header(
 
 a(client(PC), C)::
 	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
-	receipt(R) <= a(shop, S).
+	receipt(R) <= a(shop, S) then
+	a(client(PC), C).
 					</textarea>
 				</td>
 			</tr>
