@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="utf-8" ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>     
@@ -320,10 +319,9 @@
 	var v_names = new Array();
 	var v_values = new Array();
 	var okcs = new Array();
-	var clauses = new Array();
+//	var clauses = new Array();
 	var role_heads = new Array();
 	var role_bodies = new Array();
-//	var thens = new Array();
 	var init;
 	var currentMessageNode;
 	var currentRoleNode;
@@ -335,7 +333,7 @@
 	var NODE_VAR 		= 2;
 	var NODE_CONST		= 3;
 	
-	
+	var OP_ENTRY		= -2;
 	var OP_NONE 		= -1;
 	var OP_SEND 		= 0;
 	var OP_RECEIVE		= 1;
@@ -419,7 +417,6 @@
 		}
 	}
 	
-	
 	var peerActions = { 
 		"setValue" : setValue, 
 		"getValue" : getValue,
@@ -430,10 +427,9 @@
 		v_names = new Array();
 		v_values = new Array();
 		okcs = new Array();
-		clauses = new Array();
+//		clauses = new Array();
 		role_heads = new Array();
 		role_bodies = new Array();
-//		thens = new Array();
 	}
 	
 	function isIdenticalRole(tnode1, tnode2){ //TODO need testing
@@ -444,7 +440,8 @@
 			return false;
 		}
 		else{
-			if(tnode1.type.toString() == tnode2.type.toString() && tnode1.value.toString() == tnode2.value.toString()){
+			if((tnode1.type == 1 && tnode1.type.toString() == tnode2.type.toString() && tnode1.value.toString() == tnode2.value.toString())
+			|| (tnode1.type != 1 && tnode1.type.toString() == tnode2.type.toString())){
 				if(tnode1.children.length == 0 && tnode2.children.length == 0){
 					return true;
 				}
@@ -474,7 +471,12 @@
 	
 	function updateVariableValueAsRoleChange(src_role_head, dest_role_head){
 		if(typeof(src_role_head) == "string" && typeof(dest_role_head) == "string"){
-			setValue(dest_role_head, getValue(src_role_head));
+			if(getValue(src_role_head)){
+				setValue(dest_role_head, getValue(src_role_head));
+			}
+			else{
+				setValue(dest_role_head, src_role_head);
+			}
 		}
 		else{
 			for(var i = 0; i < src_role_head.children.length; i++){
@@ -485,10 +487,28 @@
 	
 	function getRoleBodyByRoleHead(role_head){
 		var role_body = null;
-		alert("number of clauses: " + role_heads.length);
 		for(var i = 0; i < role_heads.length; i++){
 			if(isIdenticalRole(role_head, role_heads[i])){
-				alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
+				role_body = role_bodies[i];
+				break;
+			}
+		}
+		if(role_body == null){
+			throw roleDefinitionNotFoundException(JSON.stringify(role_head));
+		}
+		else{
+			alert("find the role definition!");
+		}
+		return role_body;
+	}
+	
+	function getRoleBodyByRoleHeadAfterRoleChanging(role_head){
+		var role_body = null;
+		alert("number of pairs of heads and bodies: " + role_heads.length);
+		for(var i = 0; i < role_heads.length; i++){
+//			alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
+			if(isIdenticalRole(role_head, role_heads[i])){
+				alert("find identical roles");
 				updateVariableValueAsRoleChange(role_head, role_heads[i]);
 				role_body = role_bodies[i];
 				break;
@@ -640,9 +660,15 @@
 		switch(node.type){
 			case NODE_OP: 
 				switch(node.value){
+					case OP_ENTRY:
+						if(node.children[0]){
+//							alert(JSON.stringify(clauses));
+							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]));
+						}
+						break;
 					case OP_NONE:
 						if(node.children[0]){
-							clauses.push(node.children[0]);
+//							clauses.push(node.children[0]);
 							execute(node.children[0]);
 						}
 						if(node.children[1]){
@@ -652,17 +678,17 @@
 					case OP_CLAUSE:
 						if(node.children[0]){
 							role_heads.push(node.children[0]);
-							execute(node.children[0]);
+//							execute(node.children[0]);
 						}
 						if(node.children[1]){
 							role_bodies.push(node.children[1]);
-							execute(node.children[1]);
+//							execute(node.children[1]);
 						}
 						break;
 					case OP_ROLE_CHANGE:
 						alert("Role Change Now!");
 						if(node.children[0]){
-							execute(getRoleBodyByRoleHead(node.children[0]));						
+							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]));						
 						}
 //	//					if(node.children[1]){
 //	//						
@@ -886,7 +912,7 @@
 	'\|'                             ListBar
 	"NOT"									/~ logical "NOT" ~/
 	'([A-Z][A-Za-z0-9_]*)'	Variable
-	'([a-z][A-Za-z0-9_]*)|([0-9]+)'		Constant
+	'(([\'\"])?[a-z][A-Za-z0-9_]*([\'\"])?)|(([\'\"])?([0-9])+([\'\"])?)'		Constant
 	'\[(.)+\]'				JSON
 	;
 	
@@ -920,7 +946,8 @@ Clause_List:	Clause									[* %% = createNode(NODE_OP, OP_NONE, %1); *]
                 | Clause Clause_List					[* %% = createNode(NODE_OP, OP_NONE, %1, %2); *]
 	        ;
 
-Clause:	Role '::' Def '.'								[* %% = createNode(NODE_OP, OP_CLAUSE, %1, %3); *]				
+Clause:	Role '::' Def '.'								[* %% = createNode(NODE_OP, OP_CLAUSE, %1, %3); *]		
+		| Role '.'										[* %% = createNode(NODE_OP, OP_ENTRY, %1); *]		
 		;	
 
 Role:	A '(' Type ',' Id ')'                           [* %% = createNode(NODE_OP, OP_ROLE, %3, %5); *]
@@ -1062,10 +1089,16 @@ header(
 	]
 ).
 
-a(client(PC), C)::
+
+a(client(PC), D)::
 	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
-	receipt(R) <= a(shop, S) then
-	a(client(PC), C).
+	receipt(R) <= a(shop, S).
+	
+a(client(AA, BB), C)::
+	buy(AA, BB) => a(shop, S) <- payby(AA) then
+	a(client(AA), C).
+
+a(client(book, card), C).
 					</textarea>
 				</td>
 			</tr>
