@@ -274,8 +274,8 @@
 						-->
 						</script>
 					</div>
-					<div id="copyright">Copyright &copy; 2010-2011 by Xi Bai</div>
-					<div id="visit_us"><a href="http://www.openk.org">OpenKnowledge</a></div>
+					<div id="copyright">Copyright &copy; 2010-2011 Xi Bai</div>
+					<div id="visit_us">Powered by <a href="http://www.openk.org">OpenKnowledge</a></div>
 				</td>
 			</tr>
 			<tr>
@@ -423,8 +423,8 @@
 //					alert("here again");
 				}
 				else{
-					alert(JSON.stringify(factors[i]));
-					alert("detect factors " + factors[i].name + " " + factors[i].value);
+//					alert(JSON.stringify(factors[i]));
+//					alert("detect factors " + factors[i].name + " " + factors[i].value);
 					content += factors[i].name + " : " + factors[i].value + "\r\n";
 					
 				}
@@ -440,7 +440,7 @@
 		alert(serialiseValue(factors));
 	}
 	
-	var peerActions = { 
+	var peerHelper = { 
 		"setValue" : setValue, 
 		"getValue" : getValue,
 		"readValue" : readValue,
@@ -579,7 +579,7 @@
 	function initialize(jsonStr, node){
 //		alert("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
-		//alert("node " + JSON.stringify(node, null, "\t"));
+//		alert("node " + JSON.stringify(node, null, "\t"));
 		init = eval('(' + jsonStr + ')');
 //		alert(init[0].jid.toString());
 		for(var i = 0; i < init.length; i++){
@@ -642,40 +642,41 @@
 		}
 	}
 	
-	function receiveMSG(msgBody, msgJSONStr, roleNode, currentConstraintsNode){
-		msgJSON = eval("(" + msgJSONStr + ")");
-		updateVariableValueInJSON(msgBody, msgJSON);
-		alert("after update: " + JSON.stringify(msgBody) + "============" + JSON.stringify(msgJSON));
-		if(arguments[3]){
-			var solved = execute(currentConstraintsNode);
-			currentConstraintsNode = undefined;
-			if(solved){
-				if(emitter.listeners("nextThenDEF") != undefined && emitter.listeners("nextThenDEF").length != 0){
-					emitter.emit("nextThenDEF", nextThenNode, "nextThenDEF");
-					
-				}
-				else{
-					alert("Interaction finished successfully!");
-				}
-			}
-			else{
-				if(emitter.listeners("nextOrDEF") != undefined && emitter.listeners("nextOrDEF").length != 0){
-					emitter.emit("nextOrDEF", nextOrNode, "nextOrDEF");
-				}
-				else{
-					throw constraitsSolvingFailedException();
-				}
-			}
-		}
-		else{
+	function executeNextThenOrOrBranch(solved){
+		if(solved){
 			if(emitter.listeners("nextThenDEF") != undefined && emitter.listeners("nextThenDEF").length != 0){
+	//			alert("nextThenDEF is not empty! --- " + emitter.listeners("nextThenDEF").length);
 				emitter.emit("nextThenDEF", nextThenNode, "nextThenDEF");
 			}
 			else{
 				alert("Interaction finished successfully!");
 			}
 		}
+		else{
+			if(emitter.listeners("nextOrDEF") != undefined && emitter.listeners("nextOrDEF").length != 0){
+					emitter.emit("nextOrDEF", nextOrNode, "nextOrDEF");
+			}
+			else{
+				throw constraitsSolvingFailedException();
+			}
+		}
 	}
+	
+	function receiveMSG(msgBody, msgJSONStr, roleNode, currentConstraintsNode){
+		msgJSON = eval("(" + msgJSONStr + ")");
+		updateVariableValueInJSON(msgBody, msgJSON);
+//		alert("after update: " + JSON.stringify(msgBody) + "============" + JSON.stringify(msgJSON));
+		if(arguments[3]){
+			var solved = execute(currentConstraintsNode);
+			currentConstraintsNode = undefined;
+			executeNextThenOrOrBranch(solved);
+		}
+		else{
+			executeNextThenOrOrBranch(true);
+		}
+	}
+	
+	
 	
 	function execute(node, removeListeners){
 		if(arguments.length == 2){
@@ -768,7 +769,7 @@
 						var constraintName = node.children[0];
 //						alert(execute(node.children[1]));
 				//		alert(eval("JSON.parse(\"" + execute(node.children[1]) + "\");"));
-						ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'" + execute(node.children[1]) + "\' + \'])\'), peerActions);"); //according to "Conventions over configurations"
+						ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'" + execute(node.children[1]) + "\' + \'])\'), peerHelper);"); //according to "Conventions over configurations"
 						if(ret == null || ret == undefined)
 							throw invalidOKCException(funcName);
 						break;
@@ -836,31 +837,14 @@
 								var recepientJID = execute(roleNode);
 								sendMSG(message, recepientJID);
 								alert("Message sent!");
-								if(emitter.listeners("nextThenDEF") != undefined && emitter.listeners("nextThenDEF").length != 0){
-//									alert("nextThenDEF is not empty! --- " + emitter.listeners("nextThenDEF").length);
-									emitter.emit("nextThenDEF", nextThenNode, "nextThenDEF");
-								}
-								else{
-									alert("Interaction finished successfully!");
-								}
 							}
-							else{
-								if(emitter.listeners("nextOrDEF") != undefined && emitter.listeners("nextOrDEF").length != 0){
-										emitter.emit("nextOrDEF", nextOrNode, "nextOrDEF");
-								}
-								else{
-									throw constraitsSolvingFailedException();
-								}
-							}
+							executeNextThenOrOrBranch(solved);
 						}
 						else{
 							sendMSG(execute(msgNode), execute(roleNode));
 							alert("Message sent!");
 //							alert("next then DEF: " + emitter.listeners("nextThenDEF"));
-							if(emitter.listeners("nextThenDEF") != undefined && emitter.listeners("nextThenDEF").length != 0){
-								emitter.emit("nextThenDEF", nextThenNode, "nextThenDEF");
-//								alert("after remove we got : " + emitter.listeners("nextThenDEF"));
-							}
+							executeNextThenOrOrBranch(true);
 						}
 						break;
 					case OP_RECEIVE: 
@@ -883,13 +867,7 @@
 						break;
 					case OP_NO_MSG:
 						ret = execute(node.children[0]);
-						if(emitter.listeners("nextThenDEF") != undefined && emitter.listeners("nextThenDEF").length != 0){
-//							alert("nextThenDEF is not empty! --- " + emitter.listeners("nextThenDEF").length);
-							emitter.emit("nextThenDEF", nextThenNode, "nextThenDEF");
-						}
-						else{
-							alert("Interaction finished successfully!");
-						}
+						executeNextThenOrOrBranch(ret);
 						break;						
 				}
 				break;
