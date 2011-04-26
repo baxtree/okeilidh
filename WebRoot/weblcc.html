@@ -499,7 +499,7 @@
 		}
 	}
 	
-	function updateVariableValueAsRoleChange(src_role_head, dest_role_head){
+	function updateVariableValueInNode(src_role_head, dest_role_head){
 		if(typeof(src_role_head) == "string" && typeof(dest_role_head) == "string"){
 			if(getValue(src_role_head)){
 				setValue(dest_role_head, getValue(src_role_head));
@@ -510,7 +510,7 @@
 		}
 		else{
 			for(var i = 0; i < src_role_head.children.length; i++){
-				updateVariableValueAsRoleChange(src_role_head.children[i], dest_role_head.children[i]);
+				updateVariableValueInNode(src_role_head.children[i], dest_role_head.children[i]);
 			}
 		}
 	}
@@ -539,7 +539,7 @@
 //			alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
 			if(isIdenticalRole(role_head, role_heads[i])){
 //				alert("find identical roles");
-				updateVariableValueAsRoleChange(role_head, role_heads[i]);
+				updateVariableValueInNode(role_head, role_heads[i]);
 				role_body = role_bodies[i];
 				break;
 			}
@@ -612,20 +612,6 @@
 //		sendtext();
 		success = true;
 		return success;
-	}
-	
-	function updateLocalVariable(msgJSON){
-//		alert("msgJSON : " + msgJSON);
-		if(msgJSON.value.toString() != "undefined"){
-//			alert(msgJSON.name.toString() + " is set to " + msgJSON.value.toString());
-			setValue(msgJSON.name.toString(), msgJSON.value.toString());
-		}
-		var inners = msgJSON.params;
-		if(msgJSON.params.length != 0){
-			for(var i = 0; i < msgJSON.params.length; i++){
-				updateLocalVariable(msgJSON.params[i]);
-			}
-		}
 	}
 	
 	function updateVariableValueInJSON(src_msg, dest_msg){
