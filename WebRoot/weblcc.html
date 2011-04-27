@@ -722,13 +722,19 @@
 						}
 						break;
 					case OP_ROLE_CHANGE:
-						alert("Role change now!");
-						if(node.children[0]){
+						if(node.children[1]){
+							if(execute(node.children[1]) && node.children[1]){
+								alert("Role change now!");
+								execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]));
+							}
+							else{
+								throw constraitsSolvingFailedException();
+							}
+						}
+						else if(node.children[0]){
+							alert("Role change now!");
 							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]));						
 						}
-//	//					if(node.children[1]){
-//	//						
-//	//					}
 						break;
 					case OP_ROLE:
 						var roleIdNode = execute(node.children[1]);
@@ -987,7 +993,7 @@ Interaction:	Message '=>' Role                                 [* %% = createNod
 				| Constraint '<-' Message '<=' Role               [* %% = createNode(NODE_OP, OP_RECEIVE, %3, %5, %1); *]
 				| NULL '<-' Constraint                            [* %% = createNode(NODE_OP, OP_NO_MSG, %3); *]   /~ not in the original BNF declaration on the openk website ~/
 				| Role											  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1 );*]
-/~      		| Role '<-' Constraint							  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1, %3) *] ~/				
+	      		| Role '<-' Constraint							  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1, %3) *]			
 				;
 
 Constraint:	Constant  											[* %% = true; *]
