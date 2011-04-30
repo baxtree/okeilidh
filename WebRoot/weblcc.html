@@ -327,6 +327,7 @@
 	var currentConstraintsNode = undefined;
 	var nextThenNode = undefined;
 	var nextOrNode = undefined;
+	var peerID = undefined;
 	
 	var NODE_OP			= 1;
 	var NODE_VAR 		= 2;
@@ -355,6 +356,7 @@
 	var OP_MESSAGE		= 18;
 	var OP_CLAUSE 		= 19;
 	var OP_ROLE_CHANGE  = 20;
+	var OP_PAR			= 21;
 	
 	function Node(){
 		var type;
@@ -403,9 +405,11 @@
 		if(factors.length != 0){
 			for(var i = 0; i < factors.length; i++){
 				if(factors[i].name && factors[i].name.charAt(0) === factors[i].name.charAt(0).toUpperCase()){
-					var fvalue = prompt("Please assign a new value to variable '" + factors[i].name + "':", factors[i].value);
-					factors[i].value = fvalue;
-					setValue(factors[i].name, fvalue);
+					if(!factors[i].value || factors[i].value == undefined || factors[i].value == "undefined" ){
+						var fvalue = prompt("Please assign a new value to variable '" + factors[i].name + "':", factors[i].value);
+						factors[i].value = fvalue;
+						setValue(factors[i].name, fvalue);
+					}
 				}
 				if(factors[i].params && factors[i].params.length != 0){
 					readValue(factors[i].params);
@@ -454,12 +458,12 @@
 		clauses = new Array();
 		role_heads = new Array();
 		role_bodies = new Array();
-		init = undefined;
-		currentMessageNode = undefined;
-		currentRoleNode = undefined;
-		currentConstraintsNode = undefined;
-		nextThenNode = undefined;
-		nextOrNode = undefined;
+		var init = undefined;
+		var currentMessageNode = undefined;
+		var currentRoleNode = undefined;
+		var currentConstraintsNode = undefined;
+		var nextThenNode = undefined;
+		var nextOrNode = undefined;
 	}
 	
 	function isIdenticalRole(tnode1, tnode2){ //TODO need testing
@@ -577,6 +581,7 @@
 	}
 	
 	function initialize(jsonStr, node){
+		peerID = document.getElementById("jid").value;		//based on user's inputs
 //		alert("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
 //		alert("node " + JSON.stringify(node, null, "\t"));
@@ -829,6 +834,10 @@
 						emitter.on("nextOrDEF", execute);
 						execute(node.children[0]);
 						break;
+/*					case OP_PAR:
+						
+						break;
+*/						
 					case OP_SEND:
 //						alert("message : " + JSON.stringify(node.children[0]));
 //						alert("receipient : " + execute(node.children[1]));
@@ -916,6 +925,7 @@
 	"A"
 	"OR"
 	"THEN"
+/~  "PAR" ~/
 /~	"KNOWS" ~/
 	"NULL"
 /~	"MSG" ~/
@@ -985,6 +995,7 @@ Type:	Term                                                [* %% = createNode(NOD
 Def:	Interaction												  /~ [* %% = %1; *] ~/
 		| Def THEN Def                                            [* %% = createNode(NODE_OP, OP_THEN, %1, %3); *]
 		| Def OR Def                                              [* %% = createNode(NODE_OP, OP_OR, %1, %3); *]
+/~		| Def PAR Def                                             [* %% = createNode(NODE_OP, OP_PAR, %1, %3); *] ~/
 		;
 
 Interaction:	Message '=>' Role                                 [* %% = createNode(NODE_OP, OP_SEND, %1, %3); *]
@@ -1089,7 +1100,7 @@ Message:	Constant '(' Terms ')'                              [* %% = createNode(
 			</tr>
 			<tr>
 				<td colspan="2">
-					<textarea id="fromOKBook" name="code" rows="10" cols="255" style="width: 100%;" onchange="">
+					<textarea id="fromOKBook" name="code" rows="50" cols="255" style="width: 100%;" onchange="">
 head(
 	[
 		{	jid : "admin@okbook.inf.ed.ac.uk",

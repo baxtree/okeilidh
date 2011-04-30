@@ -1,6 +1,13 @@
 It does not support the wildcard "_".
-It does not support the role recursion.
-It does not support the role changing.
+[Done] It does not support the role recursion.
+[Done] It does not support the role changing.
+Unit test on each action with jsunit.
+Port WebLCC to node.js.
+Create stable LCC interpreter not on the fly.
+Currently the trigger role do not have variables which do not have values. (not flexible?)
+When the user logs on to the XMPP server, the JID will be verified and at the same time the peer ID should be determined.
+
+
 
 
 Factor Structure (foo("a", B, bar(C,"d"))):
