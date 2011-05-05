@@ -19,10 +19,84 @@
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/driver.js"></script>
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/webdriver.js"></script>
 	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzerDriver.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			$("#tabs").tabs();
+			$("#lcc_head_dropdown").click(function(){
+				$("lcc_head_effect").toggle("blind",{ to: { width: 200, height: 60 } }, 500);
+			});
+			var okcNum = 0; 
+			$("#add_okc_url").click(function(){
+				okcNum++;
+				var currentRow = $(this).parent();
+				var newRow = currentRow.clone();
+				$("input", currentRow).val("");
+				$("a", newRow).remove();
+				$("input", newRow).after($("<a href='#' class='remove'>Remove</a>"));
+				$("input", currentRow).attr("id", "okc_url_" + okcNum).attr("name", "okc_url_" + okcNum);
+				currentRow.before(newRow);
+				$("a.remove", newRow).click(function(){
+					$(this).parent().remove();
+					return false;
+				});
+				return false;
+			});
+		});
+	</script>
   </head>
   
   <body>
-  	<textarea id="fromOKBook" name="code" rows="50" cols="255" style="width: 100%;" onchange="">
+  	<div class="banner">	
+  		OKBuzzer
+  	</div>
+  	<div id="tabs">
+  		<ul>
+  			<li><a href="#tabs-1">Buzzing</a></li>
+  			<li><a href="#tabs-2">About</a></li>
+  			<li><a href="#tabs-3">Contact</a></li>
+  		</ul>
+		<div id="tabs-1">
+			<p>
+				<a id="lcc_head_dropdown" href="#">Edit LCC Head</a>
+				<div id="lcc_head_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Please input the head</h3>
+					<p>
+						<textarea id="lcc_head" name="lcc_head" rows="30" cols="80" style="width: 100%;" onchange="">
+							
+						</textarea>
+					</p>
+				</div>
+				<a id="lcc_body_dropdown" href="#">Edit LCC Body</a>
+				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Please input the body</h3>
+					<p>
+						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;" onchange="">
+					
+						</textarea>
+					</p>
+				</div>
+				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
+					<p>
+						<label for="okc_url">URL: </label><input type="text" name="okc_url_0" id="okc_url_0" size="80"/><a id="add_okc_url" href="#">add</a>
+					</p>
+					<p>
+						<a id="import_okc" href="#">Import the above OKC(s)</a>
+					</p>
+				</div>
+				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
+					Constraint Name: <input type="text" name=""><a id="edit_okc" href="#">Edit the OKC</a> 
+					<textarea id="okc_function" name="lcc_body" rows="20" cols="45" style="width: 100%;" onchange="">
+function ${constraint_name}_okc_hook(params, peerHelper){
+	peerHelper.readValue(params);
+//	peerHelper.setValue(name, value);
+//	peerHelper.getValue(name);
+	return true; // revise this as needed
+}
+					</textarea>
+				</div>
+				<textarea id="fromOKBook" name="code" rows="50" cols="255" style="width: 100%; display:none;" onchange="">
 head(
 	[
 		{	jid : "admin@okbook.inf.ed.ac.uk",
@@ -63,17 +137,29 @@ a(shop, S)::
 	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
 
 a(client(book, card), C).
-	</textarea>
-	<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
-	<span class="button" id="triggerButton" onclick="run_parser();">Trigger</span> &nbsp;
-	<span class="button" id="disconnect">Disconnect</span>
+				</textarea>
+			<p>
+				<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
+				<span class="button" id="triggerButton" onclick="run_parser();">Trigger</span> &nbsp;
+				<span class="button" id="disconnect">Disconnect</span>
+			</p>
+		</div> 
+		<div id="tabs-2">
+			<p>This is an introduction</p>
+		</div>
+		<div id="tabs-3">
+			<p>OKBuzzer is under active development of <a href="mailto:xi.bai@ed.ac.uk"><span class="external_link">Xi Bai</span></a> at <a href="http://www.inf.ed.ac.uk"><span class="external_link">University of Edinburgh</span></a></p>
+		</div> 		
+  	</div>	
    	<div id="popupcontent"></div>
 	<div id="login_dialog" class="hidden">
-   		<label>Server:</label><input type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/><br/>
+		<p>OKBuzzer requires your Jabber ID before buzzing</p>
+   		<label class="hidden">Server:</label><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/><br/>
    		<label>Jid:</label><input type="text" id="jid" value="alice@okbook.inf.ed.ac.uk"/><br/>
    		<label>Password:</label><input type="password" id="password" value="123456"/><br/>
+   		<p><a href="https://register.jabber.org/"><span class="external_link">Get a Jabber ID here</span></a></p>
    	</div>
-    <textarea id="lcc_interpretor">
+    <textarea id="lcc_interpretor" class="hidden">
     /~ Lightweight Coordination Calculus (LCC) Interpreter ~/
 
 [*
@@ -813,8 +899,8 @@ Message:	Constant '(' Terms ')'                              [* %% = createNode(
 				+ str.substr( error_off[i], 30 ) + "<, expecting \"" + error_la[i].join() + "\"" );
 	}
 *]					
-    </textarea>
-    <div id="parsetree"></div>
-    <div id="output"></div>
-  </body>
+	    </textarea>
+	    <div id="parsetree" class="hidden"></div>
+	    <div id="output" class="hidden"></div>
+    </body>
 </html>

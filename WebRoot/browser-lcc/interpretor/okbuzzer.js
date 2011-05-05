@@ -36,7 +36,7 @@ var OKBuzzer = {
 	    return true;
 	}
 };
-		
+
 $(document).ready(function () {
     $('#login_dialog').dialog({
         autoOpen: true,
