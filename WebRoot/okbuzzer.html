@@ -19,7 +19,19 @@
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/driver.js"></script>
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/webdriver.js"></script>
 	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzerDriver.js"></script>
-	<script type="text/javascript">
+	<script type="text/javascript"><!--
+		var url_okcs = new Array();
+		function construct(){
+			var url_inputs = document.getElementsByName("okc_url");
+			for(var i = 0; i < url_inputs.length; i++){
+				url_okcs.push(url_inputs[i].value);
+			}
+			var src_inputs = document.getElementsByName("okc_function");
+			for(var i = 0; i < src_inputs.length; i++){
+				eval(src_inputs[i].value);
+			}
+		}
+	
 		$(function() {
 			$("#tabs").tabs();
 			$("#lcc_head_dropdown").click(function(){
@@ -29,11 +41,13 @@
 			$("#add_okc_url").click(function(){
 				okcNum++;
 				var currentRow = $(this).parent();
+				if($("input", currentRow).val().trim() == "")
+					return false;
 				var newRow = currentRow.clone();
 				$("input", currentRow).val("");
 				$("a", newRow).remove();
 				$("input", newRow).after($("<a href='#' class='remove'>Remove</a>"));
-				$("input", currentRow).attr("id", "okc_url_" + okcNum).attr("name", "okc_url_" + okcNum);
+				$("input", currentRow).attr("id", "okc_url_" + okcNum);
 				currentRow.before(newRow);
 				$("a.remove", newRow).click(function(){
 					$(this).parent().remove();
@@ -41,8 +55,34 @@
 				});
 				return false;
 			});
+			var okcSrcNum = 0;
+			var okcTemplate = 	"function [[constraint_name]]_okc_hook(params, peerHelper){\r\n" +
+								"\tpeerHelper.readValue(params);\r\n" +
+								"\t//peerHelper.setValue(name, value);\r\n" +
+								"\t//peerHelper.getValue(name);\r\n" +
+								"\treturn true; // revise this as needed\r\n" +
+								"}";
+			$("#edit_okc").click(function(){
+				okcSrcNum++;
+				var currentSrc = $(this).parent();
+				if($("input", currentSrc).val().trim() == "")
+					return false;
+				var newSrc = currentSrc.clone();
+				var currentOKC = okcTemplate.replace("[[constraint\_name]]", $("input", currentSrc).val().trim().replace(/ /g, "_"));
+				$("textarea", newSrc).val(currentOKC);
+				$("a", newSrc).remove();
+				$("input", newSrc).after($("<a href='#' class='remove'>Remove</a>"));
+				$("input", currentSrc).attr("id", "constraint_" + okcSrcNum).val("");
+				$("textarea", currentSrc).attr("id", "okc_function_" + okcSrcNum).val("");
+				currentSrc.before(newSrc);
+				$("a.remove", newSrc).click(function(){
+					$(this).parent().remove();
+					return false;
+				});				
+				return false;
+			});
 		});
-	</script>
+	--></script>
   </head>
   
   <body>
@@ -78,7 +118,7 @@
 				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
 					<p>
-						<label for="okc_url">URL: </label><input type="text" name="okc_url_0" id="okc_url_0" size="80"/><a id="add_okc_url" href="#">add</a>
+						<label for="okc_url">URL: </label><input type="text" name="okc_url" id="okc_url_0" size="80"/><a id="add_okc_url" href="#">add</a>
 					</p>
 					<p>
 						<a id="import_okc" href="#">Import the above OKC(s)</a>
@@ -86,15 +126,11 @@
 				</div>
 				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
-					Constraint Name: <input type="text" name=""><a id="edit_okc" href="#">Edit the OKC</a> 
-					<textarea id="okc_function" name="lcc_body" rows="20" cols="45" style="width: 100%;" onchange="">
-function ${constraint_name}_okc_hook(params, peerHelper){
-	peerHelper.readValue(params);
-//	peerHelper.setValue(name, value);
-//	peerHelper.getValue(name);
-	return true; // revise this as needed
-}
-					</textarea>
+					<p>						
+						Constraint Name: <input type="text" name="constraint" id="constraint_0"><a id="edit_okc" href="#">Add</a> 
+						<textarea id="okc_function_0" name="okc_function" rows="10" cols="45" style="width: 100%;" onchange="">
+						</textarea>
+					</p>
 				</div>
 				<textarea id="fromOKBook" name="code" rows="50" cols="255" style="width: 100%; display:none;" onchange="">
 head(
@@ -140,7 +176,7 @@ a(client(book, card), C).
 				</textarea>
 			<p>
 				<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
-				<span class="button" id="triggerButton" onclick="run_parser();">Trigger</span> &nbsp;
+				<span class="button" id="triggerButton" onclick="construct();run_parser();">Run this IM!</span> &nbsp;
 				<span class="button" id="disconnect">Disconnect</span>
 			</p>
 		</div> 
@@ -308,6 +344,9 @@ a(client(book, card), C).
 		v_names = new Array();
 		v_values = new Array();
 		okcs = new Array();
+		if(url_okcs && url_okcs.length != 0){
+			url_okcs = new Array();	
+		}
 		clauses = new Array();
 		role_heads = new Array();
 		role_bodies = new Array();
@@ -453,6 +492,9 @@ a(client(book, card), C).
 		var count = 0;
 		var length = okcs.length;
 		var headElem = document.getElementsByTagName("head")[0];
+		if(url_okcs && url_okcs.length != 0){
+			okcs = okcs.concat(url_okcs);
+		}
 		retrieveOKCs(okcs, headElem, count, length, node);
 	}
 	

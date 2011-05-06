@@ -97,10 +97,16 @@ var html_output = new String();
 			error_output = new String();
 			reset_all( EXEC_WEB );
 			
-//			var src_head = new String(document.getELementById("lcc_head").value);
-//			var src_body = new String(document.getElementById("lcc_body").value);
-//			var src = src_head + src_body;
-			var src = new String( document.getElementById("lcc_interpretor").value);
+			
+			var src = "";
+			if(document.getELementById("lcc_head") && document.getElementById("lcc_body")){
+				var src_head = new String(document.getELementById("lcc_head").value);
+				var src_body = new String(document.getElementById("lcc_body").value);
+				src = src_head + src_body;
+			}
+			else if(document.getElementById("lcc_interpretor")){
+				src = new String( document.getElementById("lcc_interpretor").value);
+			}
 			parse_grammar( src ); //parse the .par file
 			
 			if( errors == 0 )
