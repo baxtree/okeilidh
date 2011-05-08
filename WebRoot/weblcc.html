@@ -221,6 +221,7 @@
 			show_warnings = document.source.with_warnings.checked;
 
 			var src = new String( document.source.code.value );
+			alert(src);
 			parse_grammar( src ); //parse the .par file
 			
 			if( errors == 0 )

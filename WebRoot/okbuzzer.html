@@ -6,19 +6,25 @@
     <meta http-equiv="keywords" content="LCC,Interaction Model,Peer">
     <meta http-equiv="description" content="this is a page which provides ...">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" href="browser-lcc/css/style.css" type="text/css">
     <link rel="stylesheet" href="browser-lcc/jquery/jquery-ui-1.7.3.custom.css" type="text/css">
 	<script type="text/javascript" src="browser-lcc/jquery/jquery-1.3.2.min.js"></script>
 	<script type="text/javascript" src="browser-lcc/jquery/jquery-ui-1.7.3.custom.min.js"></script>
 	<script type="text/javascript" src="browser-lcc/strophe/strophejs-1.0.1/strophe.js"></script>
 	<script type="text/javascript" src="browser-lcc/strophe/flXHR/flXHR.js"></script>
 	<script type="text/javascript" src="browser-lcc/strophe/strophejs-1.0.1/plugins/strophe.flxhr.js"></script>
+	<link rel="stylesheet" href="browser-lcc/css/style.css" type="text/css">
   	<script type="text/javascript" src="browser-lcc/interpretor/event.js"></script>
   	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzer.js"></script>
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/jscc.js"></script>
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/driver.js"></script>
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/webdriver.js"></script>
 	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzerDriver.js"></script>
+	<script src="browser-lcc/codemirror2/lib/codemirror.js"></script>
+	<link rel="stylesheet" href="browser-lcc/codemirror2/lib/codemirror.css">
+	<script src="browser-lcc/codemirror2/mode/javascript/javascript.js"></script>
+	<link rel="stylesheet" href="browser-lcc/codemirror2/mode/javascript/javascript.css">
+    <script src="browser-lcc/codemirror2/mode/lcc/lcc.js"></script>
+    <link rel="stylesheet" href="browser-lcc/codemirror2/mode/lcc/lcc.css">
 	<script type="text/javascript"><!--
 		var url_okcs = new Array();
 		function construct(){
@@ -31,7 +37,34 @@
 				eval(src_inputs[i].value);
 			}
 		}
-	
+		$(document).ready(function(){
+			$("h3").css("background-color", "#2E9AFE");
+			$(".tabs").css("background-color", "#2E9AFE").attr("class", "ui-corner-all");
+			$("textarea[name='okc_function']").hide();
+			$("#lcc_head_effect").hide();
+			$("#lcc_body_effect").hide();
+			$("#lcc_head_dropdown").click(function(){
+				$("#lcc_head_effect").show(500);
+				$("#submit_head").click(function(){
+					$("#lcc_head_effect").hide(500);	
+					$("lcc_head_dropdown").focus();
+					return false;			
+				});
+				return false;
+			});
+			$("#lcc_body_dropdown").click(function(){
+				$("#lcc_body_effect").show(500);
+				$("#submit_body").click(function(){
+					$("#lcc_body_effect").hide(500);
+					$("#lcc_body_dropdown").focus();
+					return false;
+				});
+				return false;			
+			});
+//			CodeMirror.fromTextArea($('#lcc_body')[0], {mode : 'text/lcc', lineNumbers : true}); 
+//			CodeMirror.fromTextArea($('#lcc_head')[0], {mode : 'text/javascript', lineNumbers : true});
+		});
+		
 		$(function() {
 			$("#tabs").tabs();
 			$("#lcc_head_dropdown").click(function(){
@@ -46,7 +79,7 @@
 				var newRow = currentRow.clone();
 				$("input", currentRow).val("");
 				$("a", newRow).remove();
-				$("input", newRow).after($("<a href='#' class='remove'>Remove</a>"));
+				$("input", newRow).after($("<a href='#' class='remove ui-state-default ui-corner-all'>Remove</a>"));
 				$("input", currentRow).attr("id", "okc_url_" + okcNum);
 				currentRow.before(newRow);
 				$("a.remove", newRow).click(function(){
@@ -71,7 +104,9 @@
 				var currentOKC = okcTemplate.replace("[[constraint\_name]]", $("input", currentSrc).val().trim().replace(/ /g, "_"));
 				$("textarea", newSrc).val(currentOKC);
 				$("a", newSrc).remove();
-				$("input", newSrc).after($("<a href='#' class='remove'>Remove</a>"));
+				$("input", newSrc).after($("<a href='#' class='remove ui-state-default ui-corner-all'>Remove</a>")).after($("<a href='#' class='edit ui-state-default ui-corner-all'>Edit</a>"));
+				$("textarea", newSrc).after($("<a href='#' class='submit_okc_src ui-state-default ui-corner-all'>Submit this function</a>")).show(500);
+//				CodeMirror.fromTextArea($("textarea", newSrc)[0], {mode : 'text/javascript', lineNumbers : true});
 				$("input", currentSrc).attr("id", "constraint_" + okcSrcNum).val("");
 				$("textarea", currentSrc).attr("id", "okc_function_" + okcSrcNum).val("");
 				currentSrc.before(newSrc);
@@ -79,6 +114,17 @@
 					$(this).parent().remove();
 					return false;
 				});				
+				$("a.edit", newSrc).click(function(){
+					$("textarea", $(this).parent()).show(250);
+					$("a.submit_okc_src", $(this).parent()).show(250);
+					return false;
+				});
+				$("a.submit_okc_src", newSrc).click(function(){
+					$("textarea", $(this).parent()).hide(250);
+					$(this).hide(250);
+					newSrc.focus();
+					return false;
+				});
 				return false;
 			});
 		});
@@ -90,49 +136,18 @@
   		OKBuzzer
   	</div>
   	<div id="tabs">
-  		<ul>
+  		<ul class="tabs">
   			<li><a href="#tabs-1">Buzzing</a></li>
   			<li><a href="#tabs-2">About</a></li>
   			<li><a href="#tabs-3">Contact</a></li>
   		</ul>
 		<div id="tabs-1">
 			<p>
-				<a id="lcc_head_dropdown" href="#">Edit LCC Head</a>
+				<a id="lcc_head_dropdown" class="ui-state-default ui-corner-all" href="#">Edit LCC Head</a>
 				<div id="lcc_head_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Please input the head</h3>
 					<p>
-						<textarea id="lcc_head" name="lcc_head" rows="30" cols="80" style="width: 100%;" onchange="">
-							
-						</textarea>
-					</p>
-				</div>
-				<a id="lcc_body_dropdown" href="#">Edit LCC Body</a>
-				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Please input the body</h3>
-					<p>
-						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;" onchange="">
-					
-						</textarea>
-					</p>
-				</div>
-				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
-					<p>
-						<label for="okc_url">URL: </label><input type="text" name="okc_url" id="okc_url_0" size="80"/><a id="add_okc_url" href="#">add</a>
-					</p>
-					<p>
-						<a id="import_okc" href="#">Import the above OKC(s)</a>
-					</p>
-				</div>
-				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
-					<p>						
-						Constraint Name: <input type="text" name="constraint" id="constraint_0"><a id="edit_okc" href="#">Add</a> 
-						<textarea id="okc_function_0" name="okc_function" rows="10" cols="45" style="width: 100%;" onchange="">
-						</textarea>
-					</p>
-				</div>
-				<textarea id="fromOKBook" name="code" rows="50" cols="255" style="width: 100%; display:none;" onchange="">
+						<textarea id="lcc_head" name="lcc_head" rows="30" cols="80" style="width: 100%;">
 head(
 	[
 		{	jid : "admin@okbook.inf.ed.ac.uk",
@@ -156,9 +171,18 @@ head(
 			okcs : ["http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js"]	// this need to be hidden to alice
 		}
 	]
-).
-
-
+).							
+						</textarea>
+					</p>
+					<p>
+						<a href="#" class="ui-state-default ui-corner-all" id="submit_head">Submit this head</a>
+					</p>
+				</div>
+				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit LCC Body</a>
+				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Please input the body</h3>
+					<p>
+						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;">
 a(client(PC), D)::
 	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
 	
@@ -172,8 +196,27 @@ a(shop, S)::
 	buy(PC, CC) <= a(client(_), C) then
 	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
 
-a(client(book, card), C).
-				</textarea>
+a(client(book, card), C).							
+						</textarea>
+					</p>
+					<p>
+						<a href="#" class="ui-state-default ui-corner-all" id="submit_body">Submit this body</a>
+					</p>
+				</div>
+				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
+					<p>
+						<label for="okc_url">URL: </label><input type="text" name="okc_url" id="okc_url_0" size="80"/><a id="add_okc_url" class="ui-state-default ui-corner-all" href="#">add</a>
+					</p>
+				</div>
+				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
+					<p>						
+						Constraint Name: <input type="text" name="constraint" id="constraint_0"><a id="edit_okc" class="ui-state-default ui-corner-all" href="#">Add</a> 
+						<textarea id="okc_function_0" name="okc_function" rows="10" cols="45" style="width: 100%;" onchange="">
+						</textarea>
+					</p>
+				</div>
 			<p>
 				<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
 				<span class="button" id="triggerButton" onclick="construct();run_parser();">Run this IM!</span> &nbsp;
@@ -193,10 +236,10 @@ a(client(book, card), C).
    		<label class="hidden">Server:</label><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/><br/>
    		<label>Jid:</label><input type="text" id="jid" value="alice@okbook.inf.ed.ac.uk"/><br/>
    		<label>Password:</label><input type="password" id="password" value="123456"/><br/>
-   		<p><a href="https://register.jabber.org/"><span class="external_link">Get a Jabber ID here</span></a></p>
+   		<p><a class="ui-state-default ui-corner-all" href="https://register.jabber.org/"><span class="external_link">Get a Jabber ID here</span></a></p>
    	</div>
     <textarea id="lcc_interpretor" class="hidden">
-    /~ Lightweight Coordination Calculus (LCC) Interpreter ~/
+/~ Lightweight Coordination Calculus (LCC) Interpreter ~/
 
 [*
 
@@ -344,9 +387,6 @@ a(client(book, card), C).
 		v_names = new Array();
 		v_values = new Array();
 		okcs = new Array();
-		if(url_okcs && url_okcs.length != 0){
-			url_okcs = new Array();	
-		}
 		clauses = new Array();
 		role_heads = new Array();
 		role_bodies = new Array();
@@ -492,9 +532,6 @@ a(client(book, card), C).
 		var count = 0;
 		var length = okcs.length;
 		var headElem = document.getElementsByTagName("head")[0];
-		if(url_okcs && url_okcs.length != 0){
-			okcs = okcs.concat(url_okcs);
-		}
 		retrieveOKCs(okcs, headElem, count, length, node);
 	}
 	
@@ -927,9 +964,8 @@ Id:	Constant                                                    [* %% = createNo
 Message:	Constant '(' Terms ')'                              [* %% = createNode(NODE_OP, OP_MESSAGE, %1, %3); *]
 			;
 
-	
 [*
-	var str = document.getElementById("fromOKBook").value;
+	var str = document.getElementById("lcc_head").value + document.getElementById("lcc_body").value;
 	var error_cnt 	= 0;
 	var error_off	= new Array();
 	var error_la	= new Array();

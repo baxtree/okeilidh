@@ -45,8 +45,8 @@ var html_output = new String();
 			if( document.source.code.value != "" )
 				if( confirm( "Delete current LCC?" ) )
 				{
-					document.getElementById("fromOKBook").value = "";
-					document.getElementById("fromOKBook").focus();
+					document.getElementById("lcc_head").value = "";
+					document.getElementById("lcc_body").value = "";
 					resetLCCEnvironment();
 					return true;
 				}
@@ -99,14 +99,7 @@ var html_output = new String();
 			
 			
 			var src = "";
-			if(document.getELementById("lcc_head") && document.getElementById("lcc_body")){
-				var src_head = new String(document.getELementById("lcc_head").value);
-				var src_body = new String(document.getElementById("lcc_body").value);
-				src = src_head + src_body;
-			}
-			else if(document.getElementById("lcc_interpretor")){
-				src = new String( document.getElementById("lcc_interpretor").value);
-			}
+			src = new String( document.getElementById("lcc_interpretor").value);
 			parse_grammar( src ); //parse the .par file
 			
 			if( errors == 0 )
@@ -128,8 +121,8 @@ var html_output = new String();
 					lalr1_parse_table( true );
 					
 					errors = 0;
-//					if( errors == 0 )
-//						document.getElementById( "output" ).innerHTML = html_output + "<hr />" + print_parse_tables( MODE_GEN_HTML );
+					if( errors == 0 )
+						document.getElementById( "output" ).innerHTML = html_output + "<hr />" + print_parse_tables( MODE_GEN_HTML );
 				}
 			}
 
@@ -178,7 +171,7 @@ var html_output = new String();
 			//driver = webdriver;
 			
 			//output the code
-			document.getElementById( "lcc_interpretor" ).innerHTML = driver.replace( /\n/g, "<br />" ).replace( /\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;" );
+//			document.getElementById( "lcc_interpretor" ).innerHTML = driver.replace( /\n/g, "<br />" ).replace( /\t/g, "&nbsp;&nbsp;&nbsp;&nbsp;" );
 
 			//run the webdriver
 			eval( webdriver );
