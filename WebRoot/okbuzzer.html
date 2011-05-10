@@ -27,19 +27,25 @@
 	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzerDriver.js"></script>
 	<script type="text/javascript"><!--
 		var url_okcs = new Array();
-		function construct(){
+		function submitOKCs(){
 			var url_inputs = document.getElementsByName("okc_url");
 			for(var i = 0; i < url_inputs.length; i++){
 				url_okcs.push(url_inputs[i].value);
 			}
 			var src_inputs = document.getElementsByName("okc_function");
 			for(var i = 0; i < src_inputs.length; i++){
-				eval(src_inputs[i].value);
+//				alert(src_inputs[i].value.replace(/\'/g, "\\\\\'").replace(/\"/g, "\\\\\""));
+				if(window.execScript){//eval okcs to the global scope.
+					window.execScript(src_inputs[i].value);
+				}
+				if(window.eval){
+					window.eval(src_inputs[i].value);
+				}
 			}
 		}
 		$(document).ready(function(){
-			CodeMirror.fromTextArea($('#lcc_body')[0], {mode : 'text/lcc', lineNumbers : true}); 
-			CodeMirror.fromTextArea($('#lcc_head')[0], {mode : 'text/javascript', lineNumbers : true});
+			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
+			var lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
 //			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
 			$("h3").css("background-color", "#2E9AFE");
 			$(".tabs").css("background-color", "#2E9AFE").attr("class", "ui-corner-all");
@@ -50,6 +56,7 @@
 			$("#lcc_head_dropdown").click(function(){
 				$("#lcc_head_effect").show(500);
 				$("#submit_head").click(function(){
+					lccHeadEditor.save();
 					$("#lcc_head_effect").hide(500);	
 					$("lcc_head_dropdown").focus();
 					return false;			
@@ -59,6 +66,7 @@
 			$("#lcc_body_dropdown").click(function(){
 				$("#lcc_body_effect").show(500);
 				$("#submit_body").click(function(){
+					lccBodyEditor.save();
 					$("#lcc_body_effect").hide(500);
 					$("#lcc_body_dropdown").focus();
 					return false;
@@ -105,11 +113,12 @@
 				var newSrc = currentSrc.clone();
 				var currentOKC = okcTemplate.replace("[[constraint\_name]]", $("input", currentSrc).val().trim().replace(/ /g, "_"));
 				$("textarea", newSrc).val(currentOKC);
+				$("textarea", newSrc).attr("name", "okc_function");
 				$(".add_okc_src", newSrc).remove();
 				$("input", newSrc).after($("<a href='#' class='remove ui-state-default ui-corner-all'>Remove</a>")).after($("<a href='#' class='edit ui-state-default ui-corner-all'>Edit</a>"));
 				$("textarea", newSrc).parent().show();
 				$("textarea", newSrc).parent().next().show();
-				CodeMirror.fromTextArea($("textarea", newSrc)[0], {mode : 'text/javascript', lineNumbers : true});
+				var okcEditor = CodeMirror.fromTextArea($("textarea", newSrc)[0], {mode : 'text/javascript', lineNumbers : true});
 				$("input", currentSrc).attr("id", "constraint_" + okcSrcNum).val("");
 				$("textarea", currentSrc).attr("id", "okc_function_" + okcSrcNum).val("");
 				currentSrc.before(newSrc);
@@ -123,6 +132,7 @@
 					return false;
 				});
 				$("a.submit_okc_src", newSrc).click(function(){
+					okcEditor.save();
 					$(this).parent().prev().hide(250);
 					$(this).parent().hide(250);
 					newSrc.focus();
@@ -219,7 +229,7 @@ a(client(book, card), C).
 							Constraint Name: <input type="text" name="constraint" id="constraint_0"><a class="add_okc_src ui-state-default ui-corner-all" href="#">Add</a> 
 						</p>
 						<p>
-							<textarea id="okc_function_0" name="okc_function" rows="10" cols="45" style="width: 100%;">
+							<textarea id="okc_function_0" name="okc_function" rows="10" cols="80" style="width: 100%;">
 							</textarea>
 						</p>
 						<p>
@@ -229,7 +239,7 @@ a(client(book, card), C).
 				</div>
 				<p>
 					<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
-					<span class="button" id="triggerButton" onclick="construct();run_parser();">Run this IM!</span> &nbsp;
+					<span class="button" id="triggerButton" onclick="submitOKCs();run_parser();">Run this IM!</span> &nbsp;
 					<span class="button" id="disconnect">Disconnect</span>
 				</p>
 		</div> 

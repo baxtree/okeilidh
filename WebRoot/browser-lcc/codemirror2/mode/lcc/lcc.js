@@ -22,7 +22,7 @@ CodeMirror.defineMode("lcc", function() {
 			else if(ch == "\|" && stream.eat("\|")){
 				return "lcc-keyword";
 			}
-			else if(/[a-z0-9_]/.test(ch)){
+			else if(/[a-z0-9]/.test(ch)){
 				if(ch == "t" && stream.match("hen") && stream.eol()){
 					return "lcc-keyword";
 				}
@@ -34,7 +34,7 @@ CodeMirror.defineMode("lcc", function() {
 					return "lcc-constant";
 				}
 			}
-			else if(/[A-Z]/.test(ch)){
+			else if(/[A-Z_]/.test(ch)){
 				stream.eatWhile(/[a-zA-Z0-9_]/);
 				return "lcc-variable";
 			}
