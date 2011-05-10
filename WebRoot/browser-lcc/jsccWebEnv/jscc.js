@@ -4463,7 +4463,7 @@ Usage:	Console-based program entry for the JS/CC parser generator.
 You may use, modify and distribute this software under the terms and conditions
 of the Artistic License. Please see ARTISTIC for more information.
 ----------------------------------------------------------------------------- */
-
+/*
 function version()
 {
 	var info = new String();
@@ -4505,7 +4505,7 @@ function help()
 
 //Initialize the globals
 reset_all( EXEC_CONSOLE );
-
+var DEFAULT_DRIVER = "driver_webenv.js_";
 //Processing the command line arguments
 var out_file	= new String();
 var src_file	= new String();
@@ -4633,6 +4633,7 @@ if( src_file != "" )
 else
 	help();
 
+
 //Exit with number of errors
 _quit( errors );
-
+*/
