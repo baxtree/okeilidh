@@ -269,6 +269,7 @@ a(client(book, card), C).
 	emitter.on("gotMessageFromXMPPServer", onMessageArrival);
 	var v_names = new Array();
 	var v_values = new Array();
+	var backtrack = undefined;
 	var okcs = new Array();
 //	var clauses = new Array();
 	var role_heads = new Array();
@@ -406,6 +407,7 @@ a(client(book, card), C).
 	function resetLCCEnvironment(){
 		v_names = new Array();
 		v_values = new Array();
+		backtrack = undefined;
 		okcs = new Array();
 		clauses = new Array();
 		role_heads = new Array();
@@ -611,6 +613,9 @@ a(client(book, card), C).
 		}
 		else{
 			if(emitter.listeners("nextOrDEF") != undefined && emitter.listeners("nextOrDEF").length != 0){
+					v_names = backtrack.v_names;
+					v_values = backtrack.v_values;
+//					alert("track back after OR");
 					emitter.emit("nextOrDEF", nextOrNode, "nextOrDEF");
 			}
 			else{
@@ -743,7 +748,18 @@ a(client(book, card), C).
 						ret = execute(node.children[0]) && execute(node.children[1]);
 						break;
 					case OP_LOGOR:
-						ret = execute(node.children[0]) || execute(node.children[1]);
+						backtrack = {};
+						backtrack.v_names = v_names;
+						backtrack.v_values = v_values;
+						if(execute(node.children[0])){
+							ret = ture;
+						}
+						else{
+//							alert("trackback after ||");
+							v_names = backtrack.v_names;
+							v_values = backtrack.v_values;
+							ret = execute(node.children[1]);
+						}
 						break;
 					case OP_LIST:
 						if(execute(node.children[0]) != undefined){
@@ -784,6 +800,9 @@ a(client(book, card), C).
 //						alert("after remove we got : " + emitter.listeners("nextThenDEF"));
 						nextOrNode = node.children[1];
 						emitter.on("nextOrDEF", execute);
+						backtrack = {};
+						backtrack.v_names = v_names;
+						backtrack.v_values = v_values;
 						execute(node.children[0]);
 						break;
 /*					case OP_PAR:

@@ -7,7 +7,7 @@
 	<!--  security-constraint>
 		<web-resource-collection>
 			<web-resource-name>Entire Application</web-resource-name>
-			<url-pattern>/*</url-pattern>
+			<url-pattern>/*</url-dgpattern>
 		</web-resource-collection>
 		<auth-constraint>
 			<role-name>manager</role-name>
