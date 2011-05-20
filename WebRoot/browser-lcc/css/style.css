@@ -3,9 +3,10 @@ body {
 }
 
 .banner {
-	padding-left: 30px;
-	padding-top: 30px;
-	padding-bottom: 30px;
+	padding-left: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	padding-right: 10px;
 	background-color: #2E9AFE;
 	font-weight: bold;
 	font-size: 30px;
