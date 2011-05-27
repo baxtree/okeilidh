@@ -44,7 +44,9 @@
 				}
 			}
 		}
+		var advanced_shown = false;
 		$(document).ready(function(){
+			$("#okc_edit_effect").hide();
 			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
 			var lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
 //			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
@@ -73,6 +75,18 @@
 					return false;
 				});
 				return false;			
+			});
+			$("#advanced").click(function(){
+				if(advanced_shown){
+					$("#okc_edit_effect").hide(500);
+					advanced_shown = false;
+					return false;
+				}
+				else{
+					$("#okc_edit_effect").show(500);
+					advanced_shown = true;
+					return false;
+			    }
 			});
 		});
 		
@@ -222,6 +236,9 @@ a(client(book, card), C).
 					<p>
 						<label for="okc_url">URL: </label><input type="text" name="okc_url" id="okc_url_0" size="80"/><a id="add_okc_url" class="ui-state-default ui-corner-all" href="#">add</a>
 					</p>
+				</div>
+				<div id="advanced_selection" class="ui-widget-content ui-corner-all">
+					<a id="advanced" href='#' class='advanced ui-state-default ui-corner-all'>Advanced buzz options</a>
 				</div>
 				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
