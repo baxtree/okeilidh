@@ -564,12 +564,9 @@ knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
 	}
 	
 	function initialize(clauses, builtIns){
-		alert("initial");
 		init = new Array();
 		okcs = new Array();
 		execute(builtIns);
-		alert(okcs.toString());
-		alert(init.toString());
 		peerID = document.getElementById("jid").value;		//based on user's inputs
 //		alert("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
