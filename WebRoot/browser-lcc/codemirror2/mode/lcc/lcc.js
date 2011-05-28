@@ -29,8 +29,14 @@ CodeMirror.defineMode("lcc", function() {
 				else if(ch == "o" && stream.eat("r") && stream.eol()){
 					return "lcc-keyword";
 				}
+				else if(ch == "p" && stream.match("lays") && stream.peek() == "("){
+					return "lcc-keyword";
+				}
+				else if(ch == "k" && stream.match("nows") && stream.peek() == "("){
+					return "lcc-keyword";
+				}
 				else{
-					stream.eatWhile(/[a-zA-Z0-9_]/);
+					stream.eatWhile(/[a-zA-Z0-9_@\.:\/]/);
 					return "lcc-constant";
 				}
 			}
