@@ -612,7 +612,7 @@
 		retrieveOKCs(okcs, headElem, count, length, clauses);
 	}
 	
-	function initializeByHeader(jsonStr, clauses){
+	function initializeByHeader(jsonStr, clauses, builtIns){
 		peerID = document.getElementById("jid").value;		//based on user's inputs
 //		alert("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
@@ -628,6 +628,9 @@
 				okcs.push(init[i].okcs[j]);
 //				alert(init[i].okcs[j]);
 			}
+		}
+		if(arguments.length == 3){
+			execute(builtIns);
 		}
 		var count = 0;
 		var length = okcs.length;
@@ -1047,6 +1050,8 @@ IM:		Clause_List	BuiltIn_List						[* initialize(%1, %2); *]
 		| BuiltIn_List Clause_List						[* initialize(%2, %1); *]
 		| HEAD '(' JSON ')' '.' Clause_List 			[* initializeByHeader(%3, %6); *]
 		| Clause_List HEAD '(' JSON ')' '.'				[* initializeByHeader(%4, %1); *]
+		| HEAD '(' JSON ')' '.' Clause_List BuiltIn_List			[* initializeByHeader(%3, %6, %7); *]
+		| HEAD '(' JSON ')' '.' BuiltIn_List Clause_List 			[* initializeByHeader(%3, %7, %6); *]
 		;
 
 Clause_List:	Clause									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
@@ -1220,6 +1225,14 @@ a(shop, S)::
 	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
 
 a(client(book, card), C).
+
+plays(alice@okbook.inf.ed.ac.uk, client).
+
+plays(bob@okbook.inf.ed.ac.uk, shop).
+
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
+
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
 					</textarea>
 				</td>
 			</tr>

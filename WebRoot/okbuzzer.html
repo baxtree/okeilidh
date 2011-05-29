@@ -28,6 +28,50 @@
 	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzerDriver.js"></script>
 	<script type="text/javascript"><!--
 		var url_okcs = new Array();
+		var lcc_exmaple = 	"a(client(PC), D)::\r\n" +
+							"\t buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).\r\n" +
+							"\r\n"+		
+							"a(client(AA, BB), C)::\r\n" +
+							"\t buy(AA, BB) => a(shop, S) <- payby(AA) then\r\n" +
+							"\t display(R) <- receipt(R) <= a(shop, S) then\r\n" +
+							"\t null <- display(R) then\r\n" +
+							"a(client(AA), C).\r\n" +
+							"\r\n" +		
+							"a(shop, S)::\r\n" +
+							"\t buy(PC, CC) <= a(client(_), C) then\r\n" +
+							"\t receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).\r\n" +
+							"\r\n" +	
+							"a(client(book, card), C).\r\n" +						
+							"\r\n" +
+							"plays(alice@okbook.inf.ed.ac.uk, client).\r\n" +	
+							"plays(bob@okbook.inf.ed.ac.uk, shop).\r\n" +
+							"knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).\r\n" +	
+							"knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).";
+		var head_exmaple =	"head(\r\n" +
+							"\t [\r\n" +
+							"\t\t {	jid : \"admin@okbook.inf.ed.ac.uk\",\r\n" +
+							"\t\t\t role: \"\",\r\n" +
+							"\t\t\t roleType : \"trigger\",\r\n" +
+							"\t\t\t okcs : \[\],\r\n" +
+							"\t\t\t iid : \"timestamp_and_random_factor_and_sha1_of_IMURI_and_community_domain\r\n" +
+							"\t\t}\r\n" +
+							"\t\t," +
+							"\t\t {\r\n" +
+							"\t\t\t jid : \"alice@okbook.inf.ed.ac.uk\",\r\n" +
+							"\t\t\t role : \"client\",\r\n" +
+							"\t\t\t roleType : \"initial\",\r\n" +
+							"\t\t\t okcs : \[\"http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js\"\]\r\n" +
+							"\t\t}\r\n" +
+							"\t\t,\r\n" +
+							"\t\t {\r\n" +
+							"\t\t\t jid : \"bob@okbook.inf.ed.ac.uk\",\r\n" +
+							"\t\t\t role : \"shop\",\r\n" +
+							"\t\t\t roleType : \"\",\r\n" +
+							"\t\t\t okcs : \[\"http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js\"\]\r\n" +
+							"\t\t}\r\n" +
+							"\t ]\r\n" +
+							").";
+										
 		function submitOKCs(){
 			var url_inputs = document.getElementsByName("okc_url");
 			for(var i = 0; i < url_inputs.length; i++){
@@ -47,6 +91,7 @@
 		var advanced_shown = false;
 		$(document).ready(function(){
 			$("#okc_edit_effect").hide();
+			$("#lcc_head_dropdown").hide();
 			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
 			var lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
 //			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
@@ -58,20 +103,32 @@
 			$("#lcc_body_effect").hide();
 			$("#lcc_head_dropdown").click(function(){
 				$("#lcc_head_effect").show(500);
+				lccHeadEditor.refresh();
 				$("#submit_head").click(function(){
 					lccHeadEditor.save();
 					$("#lcc_head_effect").hide(500);	
 					$("lcc_head_dropdown").focus();
 					return false;			
 				});
+				$("#load_head_example").click(function(){
+					lccHeadEditor.setValue(head_exmaple);
+					lccHeadEditor.refresh();
+					return false;
+				});
 				return false;
 			});
 			$("#lcc_body_dropdown").click(function(){
 				$("#lcc_body_effect").show(500);
+				lccBodyEditor.refresh();
 				$("#submit_body").click(function(){
 					lccBodyEditor.save();
 					$("#lcc_body_effect").hide(500);
 					$("#lcc_body_dropdown").focus();
+					return false;
+				});
+				$("#load_example_body").click(function(){
+					lccBodyEditor.setValue(lcc_exmaple);
+					lccBodyEditor.refresh();
 					return false;
 				});
 				return false;			
@@ -79,11 +136,15 @@
 			$("#advanced").click(function(){
 				if(advanced_shown){
 					$("#okc_edit_effect").hide(500);
+					$("#lcc_head_dropdown").hide(500);
+					$("#lcc_head_effect").hide(500);
 					advanced_shown = false;
 					return false;
 				}
 				else{
 					$("#okc_edit_effect").show(500);
+					$("#lcc_head_dropdown").show(500);
+					$("#lcc_head_effect").hide(500);
 					advanced_shown = true;
 					return false;
 			    }
@@ -99,8 +160,10 @@
 			$("#add_okc_url").click(function(){
 				okcNum++;
 				var currentRow = $(this).parent();
-				if($("input", currentRow).val().trim() == "")
+				if($("input", currentRow).val().trim() == ""){
+					alert("Please type in a URL of the OKC your want to use.");
 					return false;
+				}
 				var newRow = currentRow.clone();
 				$("input", currentRow).val("");
 				$("a", newRow).remove();
@@ -123,8 +186,10 @@
 			$(".add_okc_src").click(function(){
 				okcSrcNum++;
 				var currentSrc = $(this).parent().parent();
-				if($("input", currentSrc).val().trim() == "")
+				if($("input", currentSrc).val().trim() == ""){
+					alert("Please type in the name of the contraint used in your LCC code.");
 					return false;
+				}
 				var newSrc = currentSrc.clone();
 				var currentOKC = okcTemplate.replace("[[constraint\_name]]", $("input", currentSrc).val().trim().replace(/ /g, "_"));
 				$("textarea", newSrc).val(currentOKC);
@@ -171,9 +236,63 @@
   		</ul>
 		<div id="tabs-1">
 			<p>
+				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit LCC</a>
+				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Please input the body<a href="#" id="load_example_body">load an example</a></h3>
+					<p>
+						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;">
+a(client(PC), D)::
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
+	
+a(client(AA, BB), C)::
+	buy(AA, BB) => a(shop, S) <- payby(AA) then
+	display(R) <- receipt(R) <= a(shop, S) then
+	null <- display(R) then
+	a(client(AA), C).
+	
+a(shop, S)::
+	buy(PC, CC) <= a(client(_), C) then
+	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+
+a(client(book, card), C).					
+
+plays(alice@okbook.inf.ed.ac.uk, client).
+plays(bob@okbook.inf.ed.ac.uk, shop).
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).		
+						</textarea>
+					</p>
+					<p>
+						<a href="#" class="ui-state-default ui-corner-all" id="submit_body">Submit this body</a>
+					</p>
+				</div>
+				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
+					<p>
+						<label for="okc_url">URL: </label><input type="text" name="okc_url" id="okc_url_0" size="80"/><a id="add_okc_url" class="ui-state-default ui-corner-all" href="#">add</a>
+					</p>
+				</div>
+				<div id="advanced_selection" class="ui-widget-content ui-corner-all">
+					<a id="advanced" href='#' class='advanced ui-state-default ui-corner-all'>Advanced buzz options</a>
+				</div>
+				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
+					<div>
+						<p>						
+							Constraint Name: <input type="text" name="constraint" id="constraint_0"><a class="add_okc_src ui-state-default ui-corner-all" href="#">Add</a> 
+						</p>
+						<p>
+							<textarea id="okc_function_0" name="okc_function" rows="10" cols="80" style="width: 100%;">
+							</textarea>
+						</p>
+						<p>
+							<a href="#" class="submit_okc_src ui-state-default ui-corner-all">Submit this function</a>
+						</p>
+					</div>
+				</div>
 				<a id="lcc_head_dropdown" class="ui-state-default ui-corner-all" href="#">Edit LCC Head</a>
 				<div id="lcc_head_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Please input the head</h3>
+					<h3 class="ui-widget-header ui-corner-all">Please input the head<a href="#" id="load_head_example">load an example</a></h3>
 					<p>
 						<textarea id="lcc_head" name="lcc_head" rows="30" cols="80" style="width: 100%;">
 head(
@@ -205,63 +324,6 @@ head(
 					<p>
 						<a href="#" class="ui-state-default ui-corner-all" id="submit_head">Submit this head</a>
 					</p>
-				</div>
-				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit LCC Body</a>
-				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Please input the body</h3>
-					<p>
-						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;">
-a(client(PC), D)::
-	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
-	
-a(client(AA, BB), C)::
-	buy(AA, BB) => a(shop, S) <- payby(AA) then
-	display(R) <- receipt(R) <= a(shop, S) then
-	null <- display(R) then
-	a(client(AA), C).
-	
-a(shop, S)::
-	buy(PC, CC) <= a(client(_), C) then
-	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
-
-a(client(book, card), C).					
-
-plays(alice@okbook.inf.ed.ac.uk, client).
-
-plays(bob@okbook.inf.ed.ac.uk, shop).
-
-knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
-
-knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).		
-						</textarea>
-					</p>
-					<p>
-						<a href="#" class="ui-state-default ui-corner-all" id="submit_body">Submit this body</a>
-					</p>
-				</div>
-				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
-					<p>
-						<label for="okc_url">URL: </label><input type="text" name="okc_url" id="okc_url_0" size="80"/><a id="add_okc_url" class="ui-state-default ui-corner-all" href="#">add</a>
-					</p>
-				</div>
-				<div id="advanced_selection" class="ui-widget-content ui-corner-all">
-					<a id="advanced" href='#' class='advanced ui-state-default ui-corner-all'>Advanced buzz options</a>
-				</div>
-				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
-					<div>
-						<p>						
-							Constraint Name: <input type="text" name="constraint" id="constraint_0"><a class="add_okc_src ui-state-default ui-corner-all" href="#">Add</a> 
-						</p>
-						<p>
-							<textarea id="okc_function_0" name="okc_function" rows="10" cols="80" style="width: 100%;">
-							</textarea>
-						</p>
-						<p>
-							<a href="#" class="submit_okc_src ui-state-default ui-corner-all">Submit this function</a>
-						</p>
-					</div>
 				</div>
 				<p>
 					<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
@@ -589,7 +651,7 @@ knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
 		retrieveOKCs(okcs, headElem, count, length, clauses);
 	}
 	
-	function initializeByHeader(jsonStr, clauses){
+	function initializeByHeader(jsonStr, clauses, builtIns){
 		peerID = document.getElementById("jid").value;		//based on user's inputs
 //		alert("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
@@ -605,6 +667,9 @@ knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
 				okcs.push(init[i].okcs[j]);
 //				alert(init[i].okcs[j]);
 			}
+		}
+		if(arguments.length == 3){
+			execute(builtIns);
 		}
 		var count = 0;
 		var length = okcs.length;
@@ -1024,6 +1089,8 @@ IM:		Clause_List	BuiltIn_List						[* initialize(%1, %2); *]
 		| BuiltIn_List Clause_List						[* initialize(%2, %1); *]
 		| HEAD '(' JSON ')' '.' Clause_List 			[* initializeByHeader(%3, %6); *]
 		| Clause_List HEAD '(' JSON ')' '.'				[* initializeByHeader(%4, %1); *]
+		| HEAD '(' JSON ')' '.' Clause_List BuiltIn_List			[* initializeByHeader(%3, %6, %7); *]
+		| HEAD '(' JSON ')' '.' BuiltIn_List Clause_List 			[* initializeByHeader(%3, %7, %6); *]
 		;
 
 Clause_List:	Clause									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
@@ -1087,7 +1154,6 @@ Id:	Constant                                                    [* %% = createNo
 
 Message:	Constant '(' Terms ')'                              [* %% = createNode(NODE_OP, OP_MESSAGE, %1, %3); *]
 			;
-
 
 [*
 	var str = document.getElementById("lcc_head").value + document.getElementById("lcc_body").value;
