@@ -332,7 +332,29 @@ head(
 				</p>
 		</div> 
 		<div id="tabs-2">
-			<p>This is an introduction</p>
+			<p>OKBuzzer is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
+			assists users in editing, publishing and testing IMs written in LCCx. LCCx is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
+			and fully interpretable in modern browsers or server-side JavaScript engines. The syntax of LCCx is described as follows:  
+			</p>
+			<pre>
+    	  <span class="lcc-bnf">IM</span> := <span class="lcc-bnf">Clause_List</span>
+<span class="lcc-bnf">Clauses_List</span> := <span class="lcc-bnf">Clause</span> | <span class="lcc-bnf">Clause_List</span>
+   	  <span class="lcc-bnf">Clause</span> := <span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) .
+  		<span class="lcc-bnf">Role</span> := <span class="lcc-keyword">a</span> ( <span class="lcc-bnf">Type</span> , <span class="lcc-bnf">Id</span> )
+   		 <span class="lcc-bnf">Def</span> := <span class="lcc-bnf">Message</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">then</span> <span class="lcc-bnf">Def</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">or</span> <span class="lcc-bnf">Def</span>
+	 <span class="lcc-bnf">Message</span> := <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span>
+     	   <span class="lcc-bnf">C</span> := <span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span>
+	   <span class="lcc-bnf">Terms</span> := <span class="lcc-bnf">Term</span> , <span class="lcc-bnf">Terms</span> | <span class="lcc-bnf">Term</span>
+	    <span class="lcc-bnf">Type</span> := <span class="lcc-bnf">Term</span>
+		  <span class="lcc-bnf">Id</span> := <span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span>
+	       <span class="lcc-bnf">M</span> := <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Term</span> )
+	    <span class="lcc-bnf">Term</span> := <span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">_</span>
+    <span class="lcc-bnf">Constant</span> := lower case character, sequence or number
+    <span class="lcc-bnf">Variable</span> := upper case character, sequence or number
+			</pre>
+			<p>OKBuzzer supports on-the-fly creation of the <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/okc">OpenKnowledge Component</a> (OKC). Several methods which help users in
+			creating OKCs are already wrapped in the <i>PeerHelper</i> by default when the OKC template is automatically generated. 
+			</p>
 		</div>
 		<div id="tabs-3">
 			<p>OKBuzzer is under active development of <a href="mailto:xi.bai@ed.ac.uk"><span class="external_link">Xi Bai</span></a> at <a href="http://www.inf.ed.ac.uk"><span class="external_link">University of Edinburgh</span></a></p>
