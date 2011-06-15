@@ -8,7 +8,7 @@ var OKBuzzer = {
 	resource : null,
 	on_message : function (message) {
 //		alert("message in");
-	    var full_jid = $(message).attr('from');
+	    var full_jid = $(message).attr("from");
 	    var body = $(message).find("html > body");
 	    if(body.length === 0){
 	    	body = $(message).find("body");
@@ -38,21 +38,22 @@ var OKBuzzer = {
 };
 
 $(document).ready(function () {
-    $('#login_dialog').dialog({
+    $("#login_dialog").dialog({
         autoOpen: true,
         dragOKBuzzerle: false,
         modal: true,
-        title: 'Connect to XMPP',
+        title: "Connect to XMPP",
         buttons: {
             "Connect": function () {
-                $(document).trigger('connect', {
+                $(document).trigger("connect", {
                 	server: $("#server").val(),
-                    jid: $('#jid').val(),
-                    password: $('#password').val()
+                    jid: $("#jid").val(),
+                    password: $("#password").val()
                 });
                 
-                $('#password').val('');
-                $(this).dialog('close');
+                $("#password").val("");
+                $("#loading").show();
+//              $(this).dialog("close");
             }
         }
     });
@@ -62,26 +63,26 @@ $(document).ready(function () {
 	});
 });
     
-$(document).bind('connect', function (ev, data) {
+$(document).bind("connect", function (ev, data) {
     var conn = new Strophe.Connection(data.server);
 
     conn.connect(data.jid, data.password, function (status) {
         if (status === Strophe.Status.CONNECTED) {
-            $(document).trigger('connected');
+            $(document).trigger("connected");
         } else if (status === Strophe.Status.DISCONNECTED) {
-            $(document).trigger('disconnected');
+            $(document).trigger("disconnected");
         }
         else if(status === Strophe.Status.CONNFAIL){
         	alert("Can not connected to the XMPP Server. \n\r Please check its availability.");
-        	$('#login_dialog').dialog('open');
+        	$("#login_dialog").dialog("open");
         }
         else if(status === Strophe.Status.AUTHFAIL){
         	alert("Can not log on as this user. \n\r Please check your JID and password.");
-        	$('#login_dialog').dialog('open');
+        	$("#login_dialog").dialog("open");
         }
         else if(status === Strophe.Status.ERROR){
         	alert("An error occured! Please try again.");
-        	$('#login_dialog').dialog('open');
+        	$("#login_dialog").dialog("open");
         	
         }
     });
@@ -89,16 +90,18 @@ $(document).bind('connect', function (ev, data) {
     OKBuzzer.connection = conn;
 });
 	
-$(document).bind('connected', function () {
+$(document).bind("connected", function () {
+    $("#loading").hide();
+    $("#login_dialog").dialog("close");
 	OKBuzzer.connection.send($pres());
     OKBuzzer.connection.addHandler(OKBuzzer.on_message, null, "message", "chat");
     document.title = document.getElementById("jid").value;
-    alert("XMPP server connected!");
+//  alert("XMPP server connected!");
 });
 	
-$(document).bind('disconnected', function () {
+$(document).bind("disconnected", function () {
 	alert("XMPP server disconnected!");
 	document.title = "WebLCC Runtime Environment";
     OKBuzzer.connection = null;
-    $('#login_dialog').dialog('open');
+    $("#login_dialog").dialog("open");
 });

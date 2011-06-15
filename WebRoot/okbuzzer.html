@@ -114,20 +114,21 @@
 			$("#lcc_body_effect").hide();
 			$("#lcc_head_dropdown").click(function(){
 				if(lcc_head_shown){
-					$("#lcc_head_dropdown").text("Edit xLCC Head [+]");
+					$(this).text("Edit xLCC Head [+]");
 					lccHeadEditor.save();
 					$("#lcc_head_effect").hide(500);	
 					$("lcc_head_dropdown").focus();
 					lcc_head_shown = false;
 				}
 				else{
-					$("#lcc_head_dropdown").text("Edit xLCC Head [-]");
+					$(this).text("Edit xLCC Head [-]");
 					$("#lcc_head_effect").show(500);
 					lccHeadEditor.refresh();
 					$("#submit_head").click(function(){
 						lccHeadEditor.save();
 						$("#lcc_head_effect").hide(500);	
 						$("lcc_head_dropdown").focus();
+						$("#lcc_head_dropdown").text("Edit xLCC Head [+]");
 						return false;			
 					});
 					$("#load_head_example").click(function(){
@@ -155,6 +156,7 @@
 						lccBodyEditor.save();
 						$("#lcc_body_effect").hide(500);
 						$("#lcc_body_dropdown").focus();
+						$("#lcc_body_dropdown").text("Edit xLCC [+]");
 						return false;
 					});
 					$("#load_example_body").click(function(){
@@ -439,6 +441,7 @@ head(
    		<label>Jid:</label><input type="text" id="jid" value="alice@okbook.inf.ed.ac.uk"/><br/>
    		<label>Password:</label><input type="password" id="password" value="123456"/><br/>
    		<p><a class="ui-state-default ui-corner-all" href="https://register.jabber.org/"><span class="external_link">Get a Jabber ID here</span></a></p>
+   		<div id="loading" style="display:none"><img src="browser-lcc/images/ajax-loader.gif">connecting ...</div>
    	</div>
     <textarea id="lcc_interpretor" class="hidden">
 /~ Lightweight Coordination Calculus (LCC) Interpreter ~/
