@@ -71,6 +71,19 @@ $(document).bind('connect', function (ev, data) {
         } else if (status === Strophe.Status.DISCONNECTED) {
             $(document).trigger('disconnected');
         }
+        else if(status === Strophe.Status.CONNFAIL){
+        	alert("Can not connected to the XMPP Server. \n\r Please check its availability.");
+        	$('#login_dialog').dialog('open');
+        }
+        else if(status === Strophe.Status.AUTHFAIL){
+        	alert("Can not log on as this user. \n\r Please check your JID and password.");
+        	$('#login_dialog').dialog('open');
+        }
+        else if(status === Strophe.Status.ERROR){
+        	alert("An error occured! Please try again.");
+        	$('#login_dialog').dialog('open');
+        	
+        }
     });
 	
     OKBuzzer.connection = conn;

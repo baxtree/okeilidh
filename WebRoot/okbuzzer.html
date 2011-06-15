@@ -89,6 +89,8 @@
 			}
 		}
 		var advanced_shown = false;
+		var lcc_body_shown = false;
+		var lcc_head_shown = false;
 		$(document).ready(function(){
 			if(window.location.search){
 				var query = window.location.search.substring(1);
@@ -98,6 +100,7 @@
 			}
 			$("#okc_import_effect").hide();
 			$("#okc_edit_effect").hide();
+			$("#edit_subscription").hide();
 			$("#lcc_head_dropdown").hide();
 			$("#xmpphttp_change_effect").hide();
 			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
@@ -110,51 +113,78 @@
 			$("#lcc_head_effect").hide();
 			$("#lcc_body_effect").hide();
 			$("#lcc_head_dropdown").click(function(){
-				$("#lcc_head_effect").show(500);
-				lccHeadEditor.refresh();
-				$("#submit_head").click(function(){
+				if(lcc_head_shown){
+					$("#lcc_head_dropdown").text("Edit xLCC Head [+]");
 					lccHeadEditor.save();
 					$("#lcc_head_effect").hide(500);	
 					$("lcc_head_dropdown").focus();
-					return false;			
-				});
-				$("#load_head_example").click(function(){
-					lccHeadEditor.setValue(head_exmaple);
+					lcc_head_shown = false;
+				}
+				else{
+					$("#lcc_head_dropdown").text("Edit xLCC Head [-]");
+					$("#lcc_head_effect").show(500);
 					lccHeadEditor.refresh();
-					return false;
-				});
+					$("#submit_head").click(function(){
+						lccHeadEditor.save();
+						$("#lcc_head_effect").hide(500);	
+						$("lcc_head_dropdown").focus();
+						return false;			
+					});
+					$("#load_head_example").click(function(){
+						lccHeadEditor.setValue(head_exmaple);
+						lccHeadEditor.refresh();
+						return false;
+					});
+					lcc_head_shown = true;
+				}
 				return false;
 			});
 			$("#lcc_body_dropdown").click(function(){
-				$("#lcc_body_effect").show(500);
-				lccBodyEditor.refresh();
-				$("#submit_body").click(function(){
+				if(lcc_body_shown){
+					$(this).text("Edit xLCC [+]");
 					lccBodyEditor.save();
 					$("#lcc_body_effect").hide(500);
 					$("#lcc_body_dropdown").focus();
-					return false;
-				});
-				$("#load_example_body").click(function(){
-					lccBodyEditor.setValue(lcc_exmaple);
+					lcc_body_shown = false;
+				}
+				else{
+					$(this).text("Edit xLCC [-]");
+					$("#lcc_body_effect").show(500);
 					lccBodyEditor.refresh();
-					return false;
-				});
+					$("#submit_body").click(function(){
+						lccBodyEditor.save();
+						$("#lcc_body_effect").hide(500);
+						$("#lcc_body_dropdown").focus();
+						return false;
+					});
+					$("#load_example_body").click(function(){
+						lccBodyEditor.setValue(lcc_exmaple);
+						lccBodyEditor.refresh();
+						return false;
+					});
+					lcc_body_shown = true;
+				}	
 				return false;			
 			});
 			$("#advanced").click(function(){
 				if(advanced_shown){
+					$(this).text("Advanced buzz options [+]");
 					$("#xmpphttp_change_effect").hide(500);
 					$("#okc_import_effect").hide(500);
 					$("#okc_edit_effect").hide(500);
+					$("#edit_subscription").hide(500);
 					$("#lcc_head_dropdown").hide(500);
 					$("#lcc_head_effect").hide(500);
 					advanced_shown = false;
 					return false;
 				}
 				else{
+					$(this).text("Advanced buzz options [-]");
+					$("#xmpphttp_url").val($("#server").val());
 					$("#xmpphttp_change_effect").show(500);
 					$("#okc_import_effect").show(500);
 					$("#okc_edit_effect").show(500);
+					$("#edit_subscription").show(500);
 					$("#lcc_head_dropdown").show(500);
 					$("#lcc_head_effect").hide(500);
 					advanced_shown = true;
@@ -164,7 +194,7 @@
 						}
 						else{
 							$("#server").val($("#xmpphttp_url").val());
-							window.location.reload(true);
+							$('#login_dialog').dialog('open');
 							return false;
 						}
 					});
@@ -176,6 +206,7 @@
 		$(function() {
 			$("#tabs").tabs();
 			$("#lcc_head_dropdown").click(function(){
+				
 				$("lcc_head_effect").toggle("blind",{ to: { width: 200, height: 60 } }, 500);
 			});
 			var okcNum = 0; 
@@ -261,7 +292,7 @@
 				<object id="scPlayer"  width="640" height="480" type="application/x-shockwave-flash" data="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/jingswfplayer.swf" > <param name="movie" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/jingswfplayer.swf" /> <param name="quality" value="high" /> <param name="bgcolor" value="#FFFFFF" /> <param name="flashVars" value="thumb=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/FirstFrame.jpg&containerwidth=984&containerheight=753&content=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/00000006.swf&blurover=false" /> <param name="allowFullScreen" value="true" /> <param name="scale" value="showall" /> <param name="allowScriptAccess" value="always" /> <param name="base" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/" /> Unable to display content. Adobe Flash is required.</object>
 			</p>
 			<p>
-				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC</a>
+				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC [+]</a>
 				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Please input the body<a href="#" id="load_example_body">load an example</a></h3>
 					<p>
@@ -292,12 +323,13 @@ knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
 					</p>
 				</div>
 				<div id="advanced_selection" class="ui-widget-content ui-corner-all">
-					<a id="advanced" href='#' class='advanced ui-state-default ui-corner-all'>Advanced buzz options</a>
+					<a id="advanced" href='#' class='advanced ui-state-default ui-corner-all'>Advanced buzz options [+]</a>
 				</div>
 				<div id="xmpphttp_change_effect" class="ui-widget-content ui-corner-all">
-					<h3 class="ui-widget-header ui-corner-all">Set XMPP-HTTP endpoint:</h3>
+					<h3 class="ui-widget-header ui-corner-all">Configure the XMPP-HTTP endpoint:</h3>
 					<p>
-						<label for="xmpphttp_url">URL: </label><input type="text" name="xmpphttp_url" id="xmpphttp_url" value="http://bosh.metajack.im:5280/xmpp-httpbind" size="80"/><a id="change_xmpphttp_url" class="ui-state-default ui-corner-all" href="#">change</a>
+						<label for="xmpphttp_url">URL: </label><input type="text" name="xmpphttp_url" id="xmpphttp_url" value="" size="80"/><a id="change_xmpphttp_url" class="ui-state-default ui-corner-all" href="#">change</a><br/>
+						(this might cause some lost so please back up everything you have changed before clicking the "change" button.)
 					</p>
 				</div>
 				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
@@ -321,7 +353,12 @@ knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
 						</p>
 					</div>
 				</div>
-				<a id="lcc_head_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC Head</a>
+				<div id="edit_subscription" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Edit peer subscription head</h3>
+					<div>
+						<a id="lcc_head_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC Head [+]</a>
+					</div>
+				</div>
 				<div id="lcc_head_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Please input the head<a href="#" id="load_head_example">load an example</a></h3>
 					<p>
