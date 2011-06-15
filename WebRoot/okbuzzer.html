@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>OKBuzzer</title>
-	
+	<meta http-equiv="pragma" content="no-cache">
     <meta http-equiv="keywords" content="LCC,Interaction Model,Peer">
     <meta http-equiv="description" content="this is a page which provides ...">
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
@@ -99,6 +99,7 @@
 			$("#okc_import_effect").hide();
 			$("#okc_edit_effect").hide();
 			$("#lcc_head_dropdown").hide();
+			$("#xmpphttp_change_effect").hide();
 			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
 			var lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
 //			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
@@ -142,6 +143,7 @@
 			});
 			$("#advanced").click(function(){
 				if(advanced_shown){
+					$("#xmpphttp_change_effect").hide(500);
 					$("#okc_import_effect").hide(500);
 					$("#okc_edit_effect").hide(500);
 					$("#lcc_head_dropdown").hide(500);
@@ -150,11 +152,22 @@
 					return false;
 				}
 				else{
+					$("#xmpphttp_change_effect").show(500);
 					$("#okc_import_effect").show(500);
 					$("#okc_edit_effect").show(500);
 					$("#lcc_head_dropdown").show(500);
 					$("#lcc_head_effect").hide(500);
 					advanced_shown = true;
+					$("#change_xmpphttp_url").click(function(){
+						if($("#xmpphttp_url").val().trim() == ""){
+							return false;
+						}
+						else{
+							$("#server").val($("#xmpphttp_url").val());
+							window.location.reload(true);
+							return false;
+						}
+					});
 					return false;
 			    }
 			});
@@ -280,6 +293,12 @@ knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
 				</div>
 				<div id="advanced_selection" class="ui-widget-content ui-corner-all">
 					<a id="advanced" href='#' class='advanced ui-state-default ui-corner-all'>Advanced buzz options</a>
+				</div>
+				<div id="xmpphttp_change_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Set XMPP-HTTP endpoint:</h3>
+					<p>
+						<label for="xmpphttp_url">URL: </label><input type="text" name="xmpphttp_url" id="xmpphttp_url" value="http://bosh.metajack.im:5280/xmpp-httpbind" size="80"/><a id="change_xmpphttp_url" class="ui-state-default ui-corner-all" href="#">change</a>
+					</p>
 				</div>
 				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
