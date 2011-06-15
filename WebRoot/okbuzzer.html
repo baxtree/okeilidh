@@ -245,7 +245,7 @@
   		</ul>
 		<div id="tabs-1">
 			<p>
-				<object id="scPlayer"  width="800" height="600" type="application/x-shockwave-flash" data="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/03dc9d29-30f7-42e2-a1ea-a90503b61e6e/jingswfplayer.swf" > <param name="movie" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/03dc9d29-30f7-42e2-a1ea-a90503b61e6e/jingswfplayer.swf" /> <param name="quality" value="high" /> <param name="bgcolor" value="#FFFFFF" /> <param name="flashVars" value="thumb=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/03dc9d29-30f7-42e2-a1ea-a90503b61e6e/FirstFrame.jpg&containerwidth=971&containerheight=641&content=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/03dc9d29-30f7-42e2-a1ea-a90503b61e6e/00000004.swf&blurover=false" /> <param name="allowFullScreen" value="true" /> <param name="scale" value="showall" /> <param name="allowScriptAccess" value="always" /> <param name="base" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/03dc9d29-30f7-42e2-a1ea-a90503b61e6e/" /> Unable to display content. Adobe Flash is required.</object>
+				<object id="scPlayer"  width="640" height="480" type="application/x-shockwave-flash" data="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/jingswfplayer.swf" > <param name="movie" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/jingswfplayer.swf" /> <param name="quality" value="high" /> <param name="bgcolor" value="#FFFFFF" /> <param name="flashVars" value="thumb=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/FirstFrame.jpg&containerwidth=984&containerheight=753&content=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/00000006.swf&blurover=false" /> <param name="allowFullScreen" value="true" /> <param name="scale" value="showall" /> <param name="allowScriptAccess" value="always" /> <param name="base" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/" /> Unable to display content. Adobe Flash is required.</object>
 			</p>
 			<p>
 				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC</a>
@@ -346,7 +346,7 @@ head(
 		<div id="tabs-2">
 			<p>OKBuzzer is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
 			assists users in editing, publishing and testing IMs written in xLCC. xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
-			and fully interpretable in modern browsers or server-side JavaScript engines. The syntax of xLCC is described as follows:  
+			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions. The syntax of xLCC is described as follows:  
 			</p>
 			<pre>
     	  <span class="lcc-bnf">IM</span> := <span class="lcc-bnf">Clause_List</span>
@@ -365,7 +365,11 @@ head(
     <span class="lcc-bnf">Variable</span> := upper case character, sequence or number
 			</pre>
 			<p>OKBuzzer supports on-the-fly creation of the <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/okc">OpenKnowledge Component</a> (OKC). Several methods which help users in
-			creating OKCs are already wrapped in the <i>PeerHelper</i> by default when the OKC template is automatically generated. 
+			creating OKCs are already wrapped in the <i>PeerHelper</i> by default when the OKC template is automatically generated, which are:
+				<div>setValue(Variable, Constant)</div>
+				<div>getValue(Variable)</div>
+				<div>readValue(Terms)</div>
+				<div>displayValue(Terms)</div> 
 			</p>
 		</div>
 		<div id="tabs-3">
