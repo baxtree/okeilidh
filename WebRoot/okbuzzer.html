@@ -290,16 +290,29 @@
   			<li><a href="#tabs-3">Contact</a></li>
   		</ul>
 		<div id="tabs-1">
-			<p>
-				<object id="scPlayer"  width="640" height="480" type="application/x-shockwave-flash" data="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/jingswfplayer.swf" > <param name="movie" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/jingswfplayer.swf" /> <param name="quality" value="high" /> <param name="bgcolor" value="#FFFFFF" /> <param name="flashVars" value="thumb=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/FirstFrame.jpg&containerwidth=984&containerheight=753&content=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/00000006.swf&blurover=false" /> <param name="allowFullScreen" value="true" /> <param name="scale" value="showall" /> <param name="allowScriptAccess" value="always" /> <param name="base" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/45e6c6ba-9614-414f-a288-e9d3d36c553d/" /> Unable to display content. Adobe Flash is required.</object>
-			</p>
-			<p>
+			<div class="main_content">			
 				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC [+]</a>
 				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Please input the body<a href="#" id="load_example_body">load an example</a></h3>
 					<p>
 						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;">
-a(client(PC), D)::
+a(client(PC, CC), C):: 
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
+        receipt(R) <= a(shop, S).
+        
+a(shop, S):: 
+	buy(PC, CC) <= a(client(_),C) then
+        receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+
+a(client(0123456789, 1234567887654321), C). 
+
+plays(alice@okbook.inf.ed.ac.uk, client). 
+
+plays(bob@okbook.inf.ed.ac.uk, shop). 
+
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
+						</textarea>
+<!--  a(client(PC), D)::
 	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
 	
 a(client(AA, BB), C)::
@@ -317,8 +330,7 @@ a(client(book, card), C).
 plays(alice@okbook.inf.ed.ac.uk, client).
 plays(bob@okbook.inf.ed.ac.uk, shop).
 knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
-knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).		
-						</textarea>
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).-->		
 					</p>
 					<p>
 						<a href="#" class="ui-state-default ui-corner-all" id="submit_body">Submit this body</a>
@@ -400,6 +412,17 @@ head(
 					<span class="button" id="triggerButton" onclick="submitOKCs();run_parser();">Run this IM!</span> &nbsp;
 					<span class="button" id="disconnect">Disconnect</span>
 				</p>
+			</div>
+			<div class="sub_content">
+				<object id="scPlayer"  width="900" height="490" type="application/x-shockwave-flash" 
+data="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/bootstrap.swf" > <param 
+name="movie" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/bootstrap.swf" /> 
+<param name="quality" value="high" /> <param name="bgcolor" value="#FFFFFF" /> <param name="flashVars" 
+value="thumb=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/FirstFrame.jpg&containerwidth=979&containerheight=528&content=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/okbuzzer5.swf&blurover=false" 
+/> <param name="allowFullScreen" value="true" /> <param name="scale" value="showall" /> <param name="allowScriptAccess" value="always" /> <param 
+name="base" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/" /> Unable to 
+display content. Adobe Flash is required.</object>
+			</div>
 		</div> 
 		<div id="tabs-2">
 			<p>OKBuzzer is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
@@ -438,8 +461,8 @@ head(
 	<div id="login_dialog" class="hidden">
 		<p>OKBuzzer requires your Jabber ID before buzzing</p>
    		<label class="hidden">Server:</label><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/><br/>
-   		<label>Jid:</label><input type="text" id="jid" value="alice@okbook.inf.ed.ac.uk"/><br/>
-   		<label>Password:</label><input type="password" id="password" value="123456"/><br/>
+   		<label>Jid:</label><input type="text" id="jid" value=""/><br/>
+   		<label>Password:</label><input type="password" id="password" value=""/><br/>
    		<p><a class="ui-state-default ui-corner-all" href="https://register.jabber.org/"><span class="external_link">Get a Jabber ID here</span></a></p>
    		<div id="loading" style="display:none"><img src="browser-lcc/images/ajax-loader.gif">connecting ...</div>
    	</div>

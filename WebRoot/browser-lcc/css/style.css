@@ -160,3 +160,15 @@ td.node_name span {
 	padding: 5px;
 	overflow: scroll;
 }
+
+#main_content {
+	float : left;
+	left : 0;
+	width : 60%;
+}
+
+#sub_content {
+	float : left;
+	left : 60%;
+	width : 40%
+}
