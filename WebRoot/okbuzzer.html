@@ -376,31 +376,7 @@ knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).-->
 				<div id="lcc_head_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Please input the head<a href="#" id="load_head_example">load an example</a></h3>
 					<p>
-						<textarea id="lcc_head" name="lcc_head" rows="30" cols="80" style="width: 100%;">
-head(
-	[
-		{	jid : "admin@okbook.inf.ed.ac.uk",
-			role: "",
-			roleType : "trigger",
-			okcs : [],
-			iid : "timestamp_and_random_factor_and_sha1_of_IMURI_and_community_domain"
-		}
-		,
-		{
-			jid : "alice@okbook.inf.ed.ac.uk",
-			role : "client",
-			roleType : "initial",
-			okcs : ["http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js"]
-		}
-		,
-		{
-			jid : "bob@okbook.inf.ed.ac.uk",
-			role : "shop",
-			roleType : "",
-			okcs : ["http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js"]	// this need to be hidden to alice
-		}
-	]
-).							
+						<textarea id="lcc_head" name="lcc_head" rows="30" cols="80" style="width: 100%;">				
 						</textarea>
 					</p>
 					<p>
@@ -467,7 +443,7 @@ display content. Adobe Flash is required.</object>
    		<div id="loading" style="display:none"><img src="browser-lcc/images/ajax-loader.gif">connecting ...</div>
    	</div>
     <textarea id="lcc_interpretor" class="hidden">
-/~ Lightweight Coordination Calculus (LCC) Interpreter ~/
+/~eXtended Lightweight Coordination Calculus (XLCC) Interpreter ~/
 
 [*
 
@@ -806,7 +782,7 @@ display content. Adobe Flash is required.</object>
 	function sendMSG(message, recepientJID){
 		var success;
 		alert("Sending message " + message + " to " + recepientJID);
-		var fullJID = recepientJID + "/" + OKBuzzer.resource;
+		var fullJID = recepientJID + "/" + OKBuzzer.resource; //TODO: this needs to be passed from the xLCC codes
 		OKBuzzer.connection.send($msg({ "to" : fullJID, "type" : "chat"}).c("body").t(message));
 //		sendtext();
 		success = true;
