@@ -41,6 +41,9 @@ CodeMirror.defineMode("lcc", function() {
 				else if(ch == "k" && stream.match("nows") && stream.peek() == "("){
 					return "lcc-keyword";
 				}
+				else if(ch == "i" && stream.match("d") && stream.peek() == "("){
+					return "lcc-keyword";
+				}
 				else if(ch == "n" && stream.match("ot") && stream.peek() == "("){
 					return "lcc-keyword";
 				}

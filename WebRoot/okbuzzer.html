@@ -408,7 +408,7 @@ display content. Adobe Flash is required.</object>
 			<pre>
     	  <span class="lcc-bnf">IM</span> := <span class="lcc-bnf">Clause_List</span>
 <span class="lcc-bnf">Clauses_List</span> := <span class="lcc-bnf">Clause</span> | <span class="lcc-bnf">Clause_List</span>
-   	  <span class="lcc-bnf">Clause</span> := <span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) .
+   	  <span class="lcc-bnf">Clause</span> := <span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) . | <span class="lcc-keyword">id</span> ( <span class="lcc-bnf">Constant</span> ) .
   		<span class="lcc-bnf">Role</span> := <span class="lcc-keyword">a</span> ( <span class="lcc-bnf">Type</span> , <span class="lcc-bnf">Id</span> )
    		 <span class="lcc-bnf">Def</span> := <span class="lcc-bnf">Message</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">then</span> <span class="lcc-bnf">Def</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">or</span> <span class="lcc-bnf">Def</span>
 	 <span class="lcc-bnf">Message</span> := <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span>
@@ -496,7 +496,8 @@ display content. Adobe Flash is required.</object>
 	var OP_PAR			= 21;
 	var OP_KNOWS		= 22;
 	var OP_PLAYS		= 23;
-	var OP_CLAUSE		= 24;
+	var OP_ID			= 24;
+	var OP_CLAUSE		= 25;
 	
 	function Node(){
 		var type;
@@ -949,6 +950,11 @@ display content. Adobe Flash is required.</object>
 							init.push(info);						
 						}
 						break;
+					case OP_ID:
+						if(node.children[0])
+							OKBuzzer.resource = node.children[0].toString();
+						alert("in OP_ID " + OKBuzzer.resource);
+						break;
 					case OP_ROLE_TYPE:
 						var ret = execute(node.children[0]);
 						break;
@@ -1133,6 +1139,7 @@ display content. Adobe Flash is required.</object>
 /~  "PAR" ~/
 	"KNOWS"
 	"PLAYS"
+	"ID"
 	"NULL"
 /~	"MSG" ~/
 /~	"TEXT" ~/
@@ -1203,6 +1210,7 @@ BuiltIn_List: 	BuiltIn									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
 		
 BuiltIn:	PLAYS '(' Constant ',' Constant ')'	'.'						[* %% = createNode(NODE_OP, OP_PLAYS, %3, %5); *]
 		 	| KNOWS '(' Constant ')' '.'								[* %% = createNode(NODE_OP, OP_KNOWS, %3); *] 
+		 	| ID '(' Constant ')' '.'									[* %% = createNode(NODE_OP, OP_ID, %3); *]
 		 	;
 
 Role:	A '(' Type ',' Id ')'                           [* %% = createNode(NODE_OP, OP_ROLE, %3, %5); *]
