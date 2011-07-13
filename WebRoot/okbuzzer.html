@@ -46,14 +46,15 @@
 							"plays(alice@okbook.inf.ed.ac.uk, client).\r\n" +	
 							"plays(bob@okbook.inf.ed.ac.uk, shop).\r\n" +
 							"knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).\r\n" +	
-							"knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).";
+							"knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).\r\n" +
+							"iid(interaction_id).";
 		var head_exmaple =	"head(\r\n" +
 							"\t [\r\n" +
 							"\t\t {	jid : \"admin@okbook.inf.ed.ac.uk\",\r\n" +
 							"\t\t\t role: \"\",\r\n" +
 							"\t\t\t roleType : \"trigger\",\r\n" +
 							"\t\t\t okcs : \[\],\r\n" +
-							"\t\t\t iid : \"timestamp_and_random_factor_and_sha1_of_IMURI_and_community_domain\r\n" +
+							"\t\t\t iid : \"timestamp_and_random_factor_and_sha1_of_IMURI_and_community_domain\"\r\n" +
 							"\t\t}\r\n" +
 							"\t\t," +
 							"\t\t {\r\n" +
@@ -311,6 +312,8 @@ plays(alice@okbook.inf.ed.ac.uk, client).
 plays(bob@okbook.inf.ed.ac.uk, shop). 
 
 knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
+
+iid(interaction_id).
 						</textarea>
 <!--  a(client(PC), D)::
 	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
@@ -330,7 +333,8 @@ a(client(book, card), C).
 plays(alice@okbook.inf.ed.ac.uk, client).
 plays(bob@okbook.inf.ed.ac.uk, shop).
 knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
-knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).-->		
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
+iid(interaction_id).-->		
 					</p>
 					<p>
 						<a href="#" class="ui-state-default ui-corner-all" id="submit_body">Submit this body</a>
@@ -408,7 +412,7 @@ display content. Adobe Flash is required.</object>
 			<pre>
     	  <span class="lcc-bnf">IM</span> := <span class="lcc-bnf">Clause_List</span>
 <span class="lcc-bnf">Clauses_List</span> := <span class="lcc-bnf">Clause</span> | <span class="lcc-bnf">Clause_List</span>
-   	  <span class="lcc-bnf">Clause</span> := <span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) . | <span class="lcc-keyword">id</span> ( <span class="lcc-bnf">Constant</span> ) .
+   	  <span class="lcc-bnf">Clause</span> := <span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) . | <span class="lcc-keyword">iid</span> ( <span class="lcc-bnf">Constant</span> ) .
   		<span class="lcc-bnf">Role</span> := <span class="lcc-keyword">a</span> ( <span class="lcc-bnf">Type</span> , <span class="lcc-bnf">Id</span> )
    		 <span class="lcc-bnf">Def</span> := <span class="lcc-bnf">Message</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">then</span> <span class="lcc-bnf">Def</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">or</span> <span class="lcc-bnf">Def</span>
 	 <span class="lcc-bnf">Message</span> := <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span>
@@ -496,7 +500,7 @@ display content. Adobe Flash is required.</object>
 	var OP_PAR			= 21;
 	var OP_KNOWS		= 22;
 	var OP_PLAYS		= 23;
-	var OP_ID			= 24;
+	var OP_IID			= 24;
 	var OP_CLAUSE		= 25;
 	
 	function Node(){
@@ -950,10 +954,10 @@ display content. Adobe Flash is required.</object>
 							init.push(info);						
 						}
 						break;
-					case OP_ID:
+					case OP_IID:
 						if(node.children[0])
 							OKBuzzer.resource = node.children[0].toString();
-						alert("in OP_ID " + OKBuzzer.resource);
+//						alert("in OP_IID " + OKBuzzer.resource);
 						break;
 					case OP_ROLE_TYPE:
 						var ret = execute(node.children[0]);
@@ -1139,7 +1143,7 @@ display content. Adobe Flash is required.</object>
 /~  "PAR" ~/
 	"KNOWS"
 	"PLAYS"
-	"ID"
+	"IID"
 	"NULL"
 /~	"MSG" ~/
 /~	"TEXT" ~/
@@ -1210,7 +1214,7 @@ BuiltIn_List: 	BuiltIn									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
 		
 BuiltIn:	PLAYS '(' Constant ',' Constant ')'	'.'						[* %% = createNode(NODE_OP, OP_PLAYS, %3, %5); *]
 		 	| KNOWS '(' Constant ')' '.'								[* %% = createNode(NODE_OP, OP_KNOWS, %3); *] 
-		 	| ID '(' Constant ')' '.'									[* %% = createNode(NODE_OP, OP_ID, %3); *]
+		 	| IID '(' Constant ')' '.'									[* %% = createNode(NODE_OP, OP_IID, %3); *]
 		 	;
 
 Role:	A '(' Type ',' Id ')'                           [* %% = createNode(NODE_OP, OP_ROLE, %3, %5); *]
