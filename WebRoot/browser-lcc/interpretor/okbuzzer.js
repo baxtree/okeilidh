@@ -9,6 +9,7 @@ var OKBuzzer = {
 	on_message : function (message) {
 //		alert("message in");
 	    var full_jid = $(message).attr("from");
+	    var to_jid = $(message).attr("to");
 	    var body = $(message).find("html > body");
 	    if(body.length === 0){
 	    	body = $(message).find("body");
@@ -32,7 +33,7 @@ var OKBuzzer = {
 	    	});
 	    	body = span;
 	    }
-	    emitter.emit("gotMessageFromXMPPServer", {"from" : full_jid, "body" : body});
+	    emitter.emit("gotMessageFromXMPPServer", {"from" : full_jid, "to" : to_jid, "body" : body});
 	    return true;
 	}
 };
@@ -93,8 +94,8 @@ $(document).bind("connect", function (ev, data) {
 $(document).bind("connected", function () {
     $("#loading").hide();
     $("#login_dialog").dialog("close");
-	OKBuzzer.connection.send($pres());
     OKBuzzer.connection.addHandler(OKBuzzer.on_message, null, "message", "chat");
+    OKBuzzer.connection.send($pres());
     document.title = document.getElementById("jid").value;
 //  alert("XMPP server connected!");
 });
