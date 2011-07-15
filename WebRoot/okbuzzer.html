@@ -808,19 +808,26 @@ display content. Adobe Flash is required.</object>
 		alert("A new message came : " + msg.body); 
 		var senderJID = msg.from.toString();
 		var receiverJID = msg.to.toString();
-		if(receiverJID.indexOf("/") != -1 && receiverJID.split("/")[1] == OKBuzzer.resource){
-			//TODO the sender id and the resource need to be checked here.
-			var msgBody = JSON.parse(msg.body);
-	//		alert("body : " + JSON.stringify(msgBody));
-	//update variables here
-			//when receive message
-			if(currentConstraintsNode != undefined){
-				emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode), currentConstraintsNode);
+		if(!emitter.listeners("msgReceived")){
+			alert("got offline message");
+			offline_msg = msg;
+		}
+		else{
+			offline_msg = undefined;
+			if(receiverJID.indexOf("/") != -1 && receiverJID.split("/")[1] == OKBuzzer.resource){
+				//TODO the sender id and the resource need to be checked here.
+				var msgBody = JSON.parse(msg.body);
+		//		alert("body : " + JSON.stringify(msgBody));
+		//update variables here
+				//when receive message
+				if(currentConstraintsNode != undefined){
+					emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode), currentConstraintsNode);
+				}
+				else{
+					emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode));
+				}
+				emitter.removeAllListeners("msgReceived");
 			}
-			else{
-				emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode));
-			}
-			emitter.removeAllListeners("msgReceived");
 		}
 	}
 	
@@ -1088,10 +1095,18 @@ display content. Adobe Flash is required.</object>
 						else{
 							currentConstriantsNode = null;
 						}
-						emitter.on("msgReceived", receiveMSG);
-						alert("Start waiting for a new message");
-						alert("Initial present: " + $pres());
-						OKBuzzer.connection.send($pres()); // retrieve offline message does not work this way
+//						alert("offline_msg " + offline_msg);
+						if(offline_msg != undefined){
+//							alert("got offline msg");
+							emitter.on("msgReceived", receiveMSG);
+							emitter.emit("gotMessageFromXMPPServer", offline_msg);
+						}
+						else{
+							emitter.on("msgReceived", receiveMSG);
+							alert("Start waiting for a new message");
+	//						alert("Initial present: " + $pres());
+							OKBuzzer.connection.send($pres()); // retrieve offline message does not work this way
+						}
 						break;
 					case OP_MESSAGE:
 						ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : [' + execute(node.children[1]) + ']}';

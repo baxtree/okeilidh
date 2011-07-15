@@ -1,4 +1,5 @@
 var emitter = new EventEmitter();
+var offline_msg = undefined;
 
 var OKBuzzer = {
     connection : null,
