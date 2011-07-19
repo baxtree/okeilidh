@@ -76,14 +76,17 @@ $(document).bind("connect", function (ev, data) {
         }
         else if(status === Strophe.Status.CONNFAIL){
         	alert("Can not connected to the XMPP Server. \n\r Please check its availability.");
+        	$("#loading").hide();
         	$("#login_dialog").dialog("open");
         }
         else if(status === Strophe.Status.AUTHFAIL){
         	alert("Can not log on as this user. \n\r Please check your JID and password.");
+        	$("#loading").hide();
         	$("#login_dialog").dialog("open");
         }
         else if(status === Strophe.Status.ERROR){
         	alert("An error occured! Please try again.");
+        	$("#loading").hide();
         	$("#login_dialog").dialog("open");
         	
         }
@@ -105,5 +108,6 @@ $(document).bind("disconnected", function () {
 	alert("XMPP server disconnected!");
 	document.title = "WebLCC Runtime Environment";
     OKBuzzer.connection = null;
+    $("#loading").hide();
     $("#login_dialog").dialog("open");
 });
