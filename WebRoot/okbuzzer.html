@@ -74,6 +74,7 @@
 							").";
 										
 		function submitOKCs(){
+			triggered = true;
 			var url_inputs = document.getElementsByName("okc_url");
 			for(var i = 0; i < url_inputs.length; i++){
 				url_okcs.push(url_inputs[i].value);
@@ -804,8 +805,8 @@ display content. Adobe Flash is required.</object>
 	
 	function sendMSG(message, recepientJID){
 		var success;
-		alert("Sending message " + message + " to " + recepientJID);
 		var fullJID = recepientJID + "/" + OKBuzzer.resource; //TODO: this needs to be passed from the xLCC codes
+		alert("Sending message " + message + " to " + fullJID);
 		OKBuzzer.connection.send($msg({ "to" : fullJID, "type" : "chat"}).c("body").t(message));
 //		sendtext();
 		success = true;
@@ -826,26 +827,20 @@ display content. Adobe Flash is required.</object>
 		alert("A new message came : " + msg.body); 
 		var senderJID = msg.from.toString();
 		var receiverJID = msg.to.toString();
-		if(!emitter.listeners("msgReceived")){
-			alert("got offline message");
-			offline_msg = msg;
-		}
-		else{
-			offline_msg = undefined;
-			if(receiverJID.indexOf("/") != -1 && receiverJID.split("/")[1] == OKBuzzer.resource){
-				//TODO the sender id and the resource need to be checked here.
-				var msgBody = JSON.parse(msg.body);
-		//		alert("body : " + JSON.stringify(msgBody));
-		//update variables here
-				//when receive message
-				if(currentConstraintsNode != undefined){
-					emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode), currentConstraintsNode);
-				}
-				else{
-					emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode));
-				}
-				emitter.removeAllListeners("msgReceived");
+		offline_msg = undefined;
+		if(receiverJID.indexOf("/") != -1 && receiverJID.split("/")[1] == OKBuzzer.resource){
+			//TODO the sender id and the resource need to be checked here.
+			var msgBody = JSON.parse(msg.body);
+	//		alert("body : " + JSON.stringify(msgBody));
+	//update variables here
+			//when receive message
+			if(currentConstraintsNode != undefined){
+				emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode), currentConstraintsNode);
 			}
+			else{
+				emitter.emit("msgReceived", msgBody, execute(currentMessageNode), execute(currentRoleNode));
+			}
+			emitter.removeAllListeners("msgReceived");
 		}
 	}
 	
@@ -857,6 +852,7 @@ display content. Adobe Flash is required.</object>
 			}
 			else{
 				alert("Interaction finished successfully!");
+				triggered = false;
 			}
 		}
 		else{
@@ -1113,17 +1109,14 @@ display content. Adobe Flash is required.</object>
 						else{
 							currentConstriantsNode = null;
 						}
-//						alert("offline_msg " + offline_msg);
+						alert("offline_msg " + offline_msg);
+						emitter.on("msgReceived", receiveMSG);
 						if(offline_msg != undefined){
 //							alert("got offline msg");
-							emitter.on("msgReceived", receiveMSG);
 							emitter.emit("gotMessageFromXMPPServer", offline_msg);
 						}
 						else{
-							emitter.on("msgReceived", receiveMSG);
 							alert("Start waiting for a new message");
-	//						alert("Initial present: " + $pres());
-							OKBuzzer.connection.send($pres()); // retrieve offline message does not work this way
 						}
 						break;
 					case OP_MESSAGE:

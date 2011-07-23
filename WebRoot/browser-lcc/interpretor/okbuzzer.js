@@ -1,5 +1,7 @@
 var emitter = new EventEmitter();
 var offline_msg = undefined;
+var triggered = false;
+var xmpp_resource = undefined;
 
 var OKBuzzer = {
     connection : null,
@@ -12,29 +14,36 @@ var OKBuzzer = {
 	    var full_jid = $(message).attr("from");
 	    var to_jid = $(message).attr("to");
 	    var body = $(message).find("html > body");
-	    if(body.length === 0){
-	    	body = $(message).find("body");
-	    	if(body.length > 0){
-	    		body = body.text();
-	    	}
-	    	else{
-	    		body = null;
-	    	}
+	    if(Strophe.getResourceFromJid(to_jid) == xmpp_resource){
+		    if(body.length === 0){
+		    	body = $(message).find("body");
+		    	if(body.length > 0){
+		    		body = body.text();
+		    	}
+		    	else{
+		    		body = null;
+		    	}
+		    }
+		    else{
+		    	body = body.contents();
+		    	var span = $("<span></span>");
+		    	body.each(function(){
+		    		if(document.importNode){
+		    			$(document.importNode(this, true)).appendTo(span);
+		    		}
+		    		else{
+		    			span.append(this.xml);
+		    		}
+		    	});
+		    	body = span;
+		    }
+		    if(triggered)
+		    	emitter.emit("gotMessageFromXMPPServer", {"from" : full_jid, "to" : to_jid, "body" : body});
+		    else{
+		    	alert("got an offline message");
+		    	offline_msg = {"from" : full_jid, "to" : to_jid, "body" : body};
+		    }
 	    }
-	    else{
-	    	body = body.contents();
-	    	var span = $("<span></span>");
-	    	body.each(function(){
-	    		if(document.importNode){
-	    			$(document.importNode(this, true)).appendTo(span);
-	    		}
-	    		else{
-	    			span.append(this.xml);
-	    		}
-	    	});
-	    	body = span;
-	    }
-	    emitter.emit("gotMessageFromXMPPServer", {"from" : full_jid, "to" : to_jid, "body" : body});
 	    return true;
 	}
 };
@@ -99,7 +108,9 @@ $(document).bind("connected", function () {
     $("#loading").hide();
     $("#login_dialog").dialog("close");
     OKBuzzer.connection.addHandler(OKBuzzer.on_message, null, "message", "chat");
-    OKBuzzer.connection.send($pres());
+    OKBuzzer.connection.send($pres().c("status").t("Available").up().c("priority").t("1"));
+    OKBuzzer.resource = Strophe.getResourceFromJid($("#jid").val());
+    xmpp_resource = OKBuzzer.resource;
     document.title = document.getElementById("jid").value;
 //  alert("XMPP server connected!");
 });
