@@ -26,6 +26,20 @@
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/driver.js"></script>
 	<script type="text/javascript" src="browser-lcc/jsccWebEnv/webdriver.js"></script>
 	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzerDriver.js"></script>
+	<script type="text/javascript">
+		//this is for saving and loading the snapshots.
+/*		var storage;
+		if(window["localStorage"]){
+			storage = window["localStorage"];
+		}
+		document.onbeforeunload = function() {
+			if(!finished)
+				return confirm("Closing before finished may cause data lost! Are you sure?");
+			else
+				alert("Please select 'Stay on Page' and keep rolling!");
+		};
+*/
+	</script>
 	<script type="text/javascript"><!--
 		var url_okcs = new Array();
 		var lcc_exmaple = 	"a(client(PC), D)::\r\n" +
@@ -469,7 +483,6 @@ display content. Adobe Flash is required.</object>
 /~eXtended Lightweight Coordination Calculus (XLCC) Interpreter ~/
 
 [*
-
 	var constraints = {};
 	emitter.removeAllListeners("okcs loaded");
 	emitter.removeAllListeners("gotMessageFromXMPPServer");
@@ -488,6 +501,8 @@ display content. Adobe Flash is required.</object>
 	var nextThenNode = undefined;
 	var nextOrNode = undefined;
 	var peerID = undefined;
+	var iid = undefined;
+	var finished = undefined;
 	
 	var NODE_OP			= 1;
 	var NODE_VAR 		= 2;
@@ -623,12 +638,86 @@ display content. Adobe Flash is required.</object>
 		clauses = new Array();
 		role_heads = new Array();
 		role_bodies = new Array();
-		var init = undefined;
-		var currentMessageNode = undefined;
-		var currentRoleNode = undefined;
-		var currentConstraintsNode = undefined;
-		var nextThenNode = undefined;
-		var nextOrNode = undefined;
+		init = undefined;
+		currentMessageNode = undefined;
+		currentRoleNode = undefined;
+		currentConstraintsNode = undefined;
+		nextThenNode = undefined;
+		nextOrNode = undefined;
+		peerID = undefined;
+		finished = undefined;
+		
+		emitter = new EventEmitter();
+		offline_msg = undefined;
+		triggered = false;
+		xmpp_resource = undefined;
+		emitter.removeAllListeners("okcs loaded");
+		emitter.removeAllListeners("gotMessageFromXMPPServer");
+		emitter.on("gotMessageFromXMPPServer", onMessageArrival);
+	}
+	
+	function saveSnapShot(iid){
+		var funcStrs = new Array();
+		for(var func in window){
+			if(window.hasOwnProperty(func) && typeof window[func] === "function" && window[func].toString().indexOf("\[native code\]") == -1){
+				funcStrs.push(func.toString());
+			}
+		}
+		var snapShot = {
+			"v_names" : v_names,
+			"v_values" : v_values, 
+			"backtrack" : backtrack,
+			"okcs" : okcs,
+			"clauses" : clauses,
+			"role_heads" : role_heads,
+			"role_bodies" : role_bodies,
+			"init" : init,
+			"currentMessageNode" : currentMessageNode,
+			"currentRoleNode" : currentRoleNode,
+			"currentConstraintsNode" : currentConstraintsNode,
+			"nextThenNode" : nextThenNode,
+			"nextOrNode" : nextOrNode,
+			"peerID" : peerID,
+			"finished" : finished,
+			"emitter" : emitter,
+			"offline_msg" : offline_msg,
+			"triggered" : triggered;
+			"xmpp_resource" : xmpp_resource;
+			"functions" : funcStrs;
+		};
+		if(window[localStorage]){
+			window[localStorage].setItem(iid, JSON.stringify(snapShot));
+		}
+		else{
+			throw webStorageNotSupportedException();
+		}
+		return snapShot;
+	}
+	
+	function loadSnapShot(iid){
+		var snapshot;
+		if(window[localStorage]){
+			snapshot = JSON.parse(window[localStorage].getItem(iid));
+			for(var variable in snapshot){
+				if(variable.toString() != "functions"){
+					window[variable] = snapshot[variable];
+				}
+				else{
+					for(var funcStr in snapshot[variable]){
+						eval.call(null, funcStr);
+					}
+				}
+			}
+		}
+		else{
+			throw webStorageNotSupportedException();
+		}
+	}
+	
+	function removeSnapShot(iid){
+		if(window["localStorage"].getItem(iid)){
+			window["localStorage"].removeItem(iid);
+		}
 	}
 	
 	function isIdenticalRole(tnode1, tnode2){ //TODO need testing
@@ -749,6 +838,7 @@ display content. Adobe Flash is required.</object>
 		init = new Array();
 		okcs = new Array();
 		execute(builtIns);
+		finished = false;
 		peerID = document.getElementById("jid").value;		//based on user's inputs
 //		alert("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
@@ -756,6 +846,7 @@ display content. Adobe Flash is required.</object>
 		for(var i = 0; i < init.length; i++){
 			if(init[i].iid){
 				OKBuzzer.resource = init[i].iid.toString();
+				iid = init[i].iid.toString();
 				alert("Interaction ID is " + OKBuzzer.resource);
 			}
 			if(init[i].okcs){
@@ -768,6 +859,13 @@ display content. Adobe Flash is required.</object>
 		var count = 0;
 		var length = okcs.length;
 		var headElem = document.getElementsByTagName("head")[0];
+/*		if(window["localStorage"].getItem(iid) != undefined){
+			loadSnapShot(iid);
+		}
+		else{
+			retrieveOKCs(okcs, headElem, count, length, clauses);
+		}
+*/
 		retrieveOKCs(okcs, headElem, count, length, clauses);
 	}
 	
@@ -775,12 +873,14 @@ display content. Adobe Flash is required.</object>
 		peerID = document.getElementById("jid").value;		//based on user's inputs
 //		alert("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
+		finished = false;
 //		alert("node " + JSON.stringify(clauses, null, "\t"));
 		init = eval('(' + jsonStr + ')');
 //		alert(init[0].jid.toString());
 		for(var i = 0; i < init.length; i++){
 			if(init[i].iid){
 				OKBuzzer.resource = init[i].iid.toString();
+				iid = init[i].iid.toString();
 				alert("Interaction ID is " + OKBuzzer.resource);
 			}
 			for(var j = 0; j < init[i].okcs.length; j++){
@@ -794,6 +894,13 @@ display content. Adobe Flash is required.</object>
 		var count = 0;
 		var length = okcs.length;
 		var headElem = document.getElementsByTagName("head")[0];
+/*		if(window["localStorage"].getItem(iid) != undefined){
+			loadSnapShot(iid);
+		}
+		else{
+			retrieveOKCs(okcs, headElem, count, length, clauses);
+		}
+*/
 		retrieveOKCs(okcs, headElem, count, length, clauses);
 	}
 	
@@ -853,6 +960,8 @@ display content. Adobe Flash is required.</object>
 			else{
 				alert("Interaction finished successfully!");
 				triggered = false;
+				finished = true;
+//				removeSnapShot(iid);
 			}
 		}
 		else{
@@ -978,8 +1087,10 @@ display content. Adobe Flash is required.</object>
 						}
 						break;
 					case OP_IID:
-						if(node.children[0])
+						if(node.children[0]){
 							OKBuzzer.resource = node.children[0].toString();
+							iid = node.children[0].toString();
+						}
 //						alert("in OP_IID " + OKBuzzer.resource);
 						break;
 					case OP_ROLE_TYPE:
@@ -1143,15 +1254,27 @@ display content. Adobe Flash is required.</object>
 	}
 	
 	function invalidOKCException(okcName){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
 		return "OKC " + "'" + okcName + "()' has not been loaded."; 
 	}
 	
 	function roleDefinitionNotFoundException(roleName){
+		resetLCCEnvironment();
+//		if(iid) removeSnapShot(iid);
 		return "Role " + "'" + roleName + "' has not been defined in this interaction model.";
 	}
 	
 	function constraitsSolvingFailedException(){
+		resetLCCEnvironment();
+//		if(iid) removeSnapShot(iid);
 		return "Constraints can not be solved. Interaction terminated without completion!";
+	}
+	
+	function webStorageNotSupportedException(){
+		resetLCCEnvironment();
+//		if(iid) removeSnapShot(iid);
+		return "Web storage is not supported by this browser and your states may be lost after you close the current window.";
 	}
 
 	
