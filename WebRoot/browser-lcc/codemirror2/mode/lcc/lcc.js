@@ -26,11 +26,23 @@ CodeMirror.defineMode("lcc", function() {
 				return "lcc-keyword";
 			}
 			else if(/[a-z0-9_]/.test(ch)){
-				if(ch == "t" && stream.match("hen") && stream.eol()){
-					return "lcc-keyword";
+				if(ch == "t" && stream.match("hen")){
+					if(stream.peek() == " " && stream.eatSpace() && stream.eol())
+						return "lcc-keyword";
+					else if(stream.eol())
+						return "lcc-keyword";
 				}
-				else if(ch == "o" && stream.eat("r") && stream.eol()){
-					return "lcc-keyword";
+				else if(ch == "o" && stream.eat("r")){
+					if(stream.peek() == " " && stream.eatSpace() && stream.eol())
+						return "lcc-keyword";
+					else if(stream.eol())
+						return "lcc-keyword";
+				}
+				else if(ch == "n" && stream.match("iob")){
+					if(stream.peek() == " " && stream.eatSpace() && stream.eol())
+						return "lcc-keyword";
+					else if(stream.eol())
+						return "lcc-keyword";
 				}
 				else if(ch == "n" && stream.match("ull") && stream.eatSpace() && stream.peek() == "<"){
 					return "lcc-keyword";

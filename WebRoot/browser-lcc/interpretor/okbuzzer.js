@@ -2,6 +2,7 @@ var emitter = new EventEmitter();
 var offline_msg = undefined;
 var triggered = false;
 var xmpp_resource = undefined;
+var finished = false;
 
 var OKBuzzer = {
     connection : null,
@@ -37,10 +38,13 @@ var OKBuzzer = {
 		    	});
 		    	body = span;
 		    }
-		    if(triggered)
+//		    alert("triggered " + triggered);
+		    if(triggered){
+//		    	alert("get new message");
 		    	emitter.emit("gotMessageFromXMPPServer", {"from" : full_jid, "to" : to_jid, "body" : body});
+		    }
 		    else{
-		    	alert("got an offline message");
+//		    	alert("got an offline message");
 		    	offline_msg = {"from" : full_jid, "to" : to_jid, "body" : body};
 		    }
 	    }
