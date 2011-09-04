@@ -53,6 +53,7 @@ var OKBuzzer = {
 };
 
 $(document).ready(function () {
+	
     $("#login_dialog").dialog({
         autoOpen: true,
         dragOKBuzzerle: false,
@@ -71,6 +72,11 @@ $(document).ready(function () {
 //              $(this).dialog("close");
             }
         }
+    });
+    
+    $("#login_dialog").keyup(function(e){
+    	if(e.keyCode == 13)
+    		$("#login_dialog :button").click(); //this does not work
     });
     
     $("#disconnect").click(function(){
