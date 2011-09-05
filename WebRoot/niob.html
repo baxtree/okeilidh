@@ -899,6 +899,7 @@ display content. Adobe Flash is required.</object>
 	}
 	
 	function initializeByHeader(jsonStr, clauses, builtIns){
+		niob_counter = 1;
 		window.top.onbeforeunload = function() {
 //			alert("finished " + finished);
 			if(!finished){
@@ -1234,7 +1235,7 @@ display content. Adobe Flash is required.</object>
 					case OP_NIOB:
 						niob_counter++;
 //						alert("niob counter: " + niob_counter);
-						alert("hit 'niob'");
+//						alert("hit 'niob'");
 						execute(node.children[0]);
 						execute(node.children[1]);
 						break;
@@ -1276,7 +1277,7 @@ display content. Adobe Flash is required.</object>
 						else{
 							currentConstriantsNode = null;
 						}
-						alert("offline_msg " + offline_msg);
+//						alert("offline_msg " + offline_msg);
 						emitter.on("msgReceived", receiveMSG);
 						if(offline_msg != undefined){
 //							alert("got offline msg");
