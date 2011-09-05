@@ -514,6 +514,7 @@ display content. Adobe Flash is required.</object>
 	var nextOrNode = undefined;
 	var peerID = undefined;
 	var iid = undefined;
+	var niob_counter = undefined;
 	
 	var NODE_OP			= 1;
 	var NODE_VAR 		= 2;
@@ -547,6 +548,7 @@ display content. Adobe Flash is required.</object>
 	var OP_PLAYS		= 23;
 	var OP_IID			= 24;
 	var OP_CLAUSE		= 25;
+	var OP_NIOB			= 26;
 	
 	function Node(){
 		var type;
@@ -574,7 +576,6 @@ display content. Adobe Flash is required.</object>
 				found = true;
 				break;
 			}
-			
 		}
 		if(!found){
 			v_names.push(vname);
@@ -657,6 +658,7 @@ display content. Adobe Flash is required.</object>
 		nextOrNode = undefined;
 		peerID = undefined;
 		finished = undefined;
+		niob_counter = undefined;
 		
 		emitter = new EventEmitter();
 		offline_msg = undefined;
@@ -694,7 +696,8 @@ display content. Adobe Flash is required.</object>
 			"offline_msg" : offline_msg,
 			"triggered" : triggered,
 			"xmpp_resource" : xmpp_resource,
-			"functions" : funcStrs
+			"functions" : funcStrs,
+			"niob_counter" : niob_counter
 		};
 		if(window["localStorage"]){
 			window["localStorage"].setItem(iid, JSON.stringify(snapShot));
@@ -857,6 +860,7 @@ display content. Adobe Flash is required.</object>
 		}
 		init = new Array();
 		okcs = new Array();
+		niob_counter = 1;
 		execute(builtIns);
 		finished = false;
 		peerID = document.getElementById("jid").value;		//based on user's inputs
@@ -895,6 +899,7 @@ display content. Adobe Flash is required.</object>
 	}
 	
 	function initializeByHeader(jsonStr, clauses, builtIns){
+		niob_counter = 1;
 		window.top.onbeforeunload = function() {
 //			alert("finished " + finished);
 			if(!finished){
@@ -997,7 +1002,13 @@ display content. Adobe Flash is required.</object>
 				emitter.emit("nextThenDEF", nextThenNode, "nextThenDEF");
 			}
 			else{
-				alert("Interaction finished successfully!");
+				if(niob_counter == 0)
+					alert("Interaction finished successfully!");
+				else{
+					niob_counter--;
+					if(niob_counter == 0)
+						alert("Interaction finished successfully!");
+				}
 				triggered = false;
 				finished = true;
 				removeSnapShot(iid);
@@ -1221,6 +1232,13 @@ display content. Adobe Flash is required.</object>
 						backtrack.v_values = v_values;
 						execute(node.children[0]);
 						break;
+					case OP_NIOB:
+						niob_counter++;
+//						alert("niob counter: " + niob_counter);
+//						alert("hit 'niob'");
+						execute(node.children[0]);
+						execute(node.children[1]);
+						break;
 /*					case OP_PAR:
 						
 						break;
@@ -1259,7 +1277,7 @@ display content. Adobe Flash is required.</object>
 						else{
 							currentConstriantsNode = null;
 						}
-						alert("offline_msg " + offline_msg);
+//						alert("offline_msg " + offline_msg);
 						emitter.on("msgReceived", receiveMSG);
 						if(offline_msg != undefined){
 //							alert("got offline msg");
@@ -1331,6 +1349,7 @@ display content. Adobe Flash is required.</object>
 /~	"OKC" ~/
 	"OR"
 	"THEN"
+	"NIOB"
 /~  "PAR" ~/
 	"KNOWS"
 	"PLAYS"
@@ -1366,6 +1385,9 @@ display content. Adobe Flash is required.</object>
 	;
 
 >	"THEN"
+	;
+	
+> 	"NIOB"
 	;
 
 >       "<="
@@ -1417,6 +1439,7 @@ Type:	Term                                                [* %% = createNode(NOD
 Def:	Interaction												  /~ [* %% = %1; *] ~/
 		| Def THEN Def                                            [* %% = createNode(NODE_OP, OP_THEN, %1, %3); *]
 		| Def OR Def                                              [* %% = createNode(NODE_OP, OP_OR, %1, %3); *]
+		| Def NIOB Def											  [* %% = createNode(NODE_OP, OP_NIOB, %1, %3); *]
 /~		| Def PAR Def                                             [* %% = createNode(NODE_OP, OP_PAR, %1, %3); *] ~/
 		;
 
