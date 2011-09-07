@@ -11,6 +11,7 @@ body {
 	font-weight: bold;
 	font-size: 30px;
 	color: #FFFFFF;
+	text-align: center;
 }
 
 h3 {
@@ -18,7 +19,13 @@ h3 {
 }	
 
 #tabs {
-	float: left;
+	margin-left: 12%;
+	margin-right: 12%;
+}
+
+.tabs {
+	text-align: center;
+	margin:0 auto;
 }
 
 textarea {
@@ -171,4 +178,8 @@ td.node_name span {
 	float : left;
 	left : 60%;
 	width : 40%
+}
+
+.footer {
+	text-align: center;
 }

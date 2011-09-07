@@ -431,7 +431,7 @@ name="base" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/
 display content. Adobe Flash is required.</object>
 			</div>
 			<p>
-			<div>
+			<div class="footer">
 				<a href="http://www.instantssl.com">
 					<img src="browser-lcc/images/cot_white.gif" alt="Instant SSL Certificate Secure Site" width="100" height="85" style="border: 0px;">
 				</a>
@@ -446,20 +446,80 @@ display content. Adobe Flash is required.</object>
 			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions. The syntax of xLCC is described as follows:  
 			</p>
 			<pre>
-    	  <span class="lcc-bnf">IM</span> := <span class="lcc-bnf">Clause_List</span>
-<span class="lcc-bnf">Clauses_List</span> := <span class="lcc-bnf">Clause</span> | <span class="lcc-bnf">Clause_List</span>
-   	  <span class="lcc-bnf">Clause</span> := <span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) . | <span class="lcc-keyword">iid</span> ( <span class="lcc-bnf">Constant</span> ) .
-  		<span class="lcc-bnf">Role</span> := <span class="lcc-keyword">a</span> ( <span class="lcc-bnf">Type</span> , <span class="lcc-bnf">Id</span> )
-   		 <span class="lcc-bnf">Def</span> := <span class="lcc-bnf">Message</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">then</span> <span class="lcc-bnf">Def</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">or</span> <span class="lcc-bnf">Def</span>
-	 <span class="lcc-bnf">Message</span> := <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span>
-     	   <span class="lcc-bnf">C</span> := <span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span>
-	   <span class="lcc-bnf">Terms</span> := <span class="lcc-bnf">Term</span> , <span class="lcc-bnf">Terms</span> | <span class="lcc-bnf">Term</span>
-	    <span class="lcc-bnf">Type</span> := <span class="lcc-bnf">Term</span>
-		  <span class="lcc-bnf">Id</span> := <span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span>
-	       <span class="lcc-bnf">M</span> := <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Term</span> )
-	    <span class="lcc-bnf">Term</span> := <span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">_</span>
-    <span class="lcc-bnf">Constant</span> := lower case character, sequence or number
-    <span class="lcc-bnf">Variable</span> := upper case character, sequence or number
+				<table border="0">
+					<tbody>
+					<tr>
+		    	  		<td><span class="lcc-bnf">IM</span></td> 
+		    	  		<td>:=</td> 
+		    	  		<td><span class="lcc-bnf">Clause_List</span></td>
+		    	  	</tr>
+		    	  	<tr>
+						<td><span class="lcc-bnf">Clauses_List</span></td> 
+						<td>:=</td>
+						<td><span class="lcc-bnf">Clause</span> | <span class="lcc-bnf">Clause_List</span></td>
+					</tr>
+					<tr>
+		   	  			<td><span class="lcc-bnf">Clause</span></td> 
+		   	  			<td>:=</td> 
+		   	  			<td><span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) . | <span class="lcc-keyword">iid</span> ( <span class="lcc-bnf">Constant</span> ) .</td>
+		   	  		</tr>
+		   	  		<tr>
+		  				<td><span class="lcc-bnf">Role</span></td> 
+		  				<td>:=</td> 
+		  				<td><span class="lcc-keyword">a</span> ( <span class="lcc-bnf">Type</span> , <span class="lcc-bnf">Id</span> )</td>
+		  			</tr>
+		  			<tr>
+		   		 		<td><span class="lcc-bnf">Def</span></td> 
+		   		 		<td>:=</td> 
+		   		 		<td><span class="lcc-bnf">Message</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">then</span> <span class="lcc-bnf">Def</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">or</span> <span class="lcc-bnf">Def</span></td>
+		   		 	</tr>
+		   		 	<tr>	
+			 			<td><span class="lcc-bnf">Message</span></td> 
+			 			<td>:=</td> 
+			 			<td><span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span></td>
+			 		</tr>
+			 		<tr>
+		     	   		<td><span class="lcc-bnf">C</span></td> 
+		     	   		<td>:=</td> 
+		     	   		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span></td>
+		     	   	</tr>
+		     	   	<tr>
+			   			<td><span class="lcc-bnf">Terms</span></td> 
+			   			<td>:=</td> 
+			   			<td><span class="lcc-bnf">Term</span> , <span class="lcc-bnf">Terms</span> | <span class="lcc-bnf">Term</span></td>
+					</tr>		   			
+			    	<tr>
+			    		<td><span class="lcc-bnf">Type</span></td> 
+			    		<td>:=</td> 
+			    		<td><span class="lcc-bnf">Term</span></td>
+			    	</tr>
+			    	<tr>
+				  		<td><span class="lcc-bnf">Id</span></td> 
+				  		<td>:=</td> 
+				  		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span></td>
+				  	</tr>
+				  	<tr>
+			       		<td><span class="lcc-bnf">M</span></td> 
+			       		<td>:=</td> 
+			       		<td><span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Term</span> )</td>
+			       	</tr>
+			    	<tr>
+			    		<td><span class="lcc-bnf">Term</span></td> 
+			    		<td>:=</td> 
+			    		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">_</span></td>
+			    	</tr>
+			    	<tr>
+		    			<td><span class="lcc-bnf">Constant</span></td> 
+		    			<td>:=</td> 
+		    			<td>lower case character, sequence or number</td>
+		    		</tr>
+		    		<tr>
+		    			<td><span class="lcc-bnf">Variable</span></td> 
+		    			<td>:=</td> 
+		    			<td>upper case character, sequence or number</td>
+					</tr>
+					</tbody>
+				</table>
 			</pre>
 			<p>OKBuzzer supports on-the-fly creation of the <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/okc">OpenKnowledge Component</a> (OKC). Several methods which help users in
 			creating OKCs are already wrapped in the <i>PeerHelper</i> by default when the OKC template is automatically generated, which are:
