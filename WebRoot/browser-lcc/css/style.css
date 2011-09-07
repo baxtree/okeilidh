@@ -7,7 +7,6 @@ body {
 	padding-top: 10px;
 	padding-bottom: 10px;
 	padding-right: 10px;
-	background-color: #2E9AFE;
 	font-weight: bold;
 	font-size: 30px;
 	color: #FFFFFF;
@@ -175,11 +174,22 @@ td.node_name span {
 }
 
 #sub_content {
-	float : left;
-	left : 60%;
+	text-align: center;
 	width : 40%
 }
 
 .footer {
 	text-align: center;
+}
+
+#tabs-1 {
+	height: 110%;
+}
+
+#tabs-2 {
+	height: 100%;
+}
+
+#tabs-3 {
+	height: 100%;
 }
