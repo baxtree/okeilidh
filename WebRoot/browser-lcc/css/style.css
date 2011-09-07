@@ -175,11 +175,14 @@ td.node_name span {
 
 #sub_content {
 	text-align: center;
-	width : 40%
 }
 
 .footer {
 	text-align: center;
+}
+
+#tabs-0 {
+	height: 100%;
 }
 
 #tabs-1 {
