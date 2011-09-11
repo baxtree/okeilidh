@@ -49,7 +49,7 @@ EventEmitter.prototype.removeListener = function (name, callback) {
 };
 
 EventEmitter.prototype.removeAllListeners = function (name) {
-	if (!this._listeners) {
+	if (!this._listeners || arguments.length == 0) {
 		this._listeners = {};
 	}
 	if (!this._listeners[name]) {
