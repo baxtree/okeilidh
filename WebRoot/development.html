@@ -568,6 +568,7 @@ iid(interaction_id).-->
 	emitter.removeAllListeners("okcs loaded");
 	emitter.removeAllListeners("gotMessageFromXMPPServer");
 	emitter.on("gotMessageFromXMPPServer", onMessageArrival);
+	emitter.on("msgReceived", receiveMSG);
 	var v_names = new Array();
 	var v_values = new Array();
 	var okcs = new Array();
@@ -779,6 +780,7 @@ iid(interaction_id).-->
 		emitter.removeAllListeners("okcs loaded");
 		emitter.removeAllListeners("gotMessageFromXMPPServer");
 		emitter.on("gotMessageFromXMPPServer", onMessageArrival);
+		emitter.on("msgReceived", receiveMSG);
 	}
 	
 	function saveSnapShot(iid){
@@ -1089,22 +1091,31 @@ iid(interaction_id).-->
 	}
 	
 	function executeNextThenOrOrBranch(solved, niob_context){
+//		alert("niob counter: " + niob_counter);
 		if(solved){
 			if(emitter.listeners("nextThenDEF_" + niob_context.id) != undefined && emitter.listeners("nextThenDEF_" + niob_context.id).length != 0){
 //				alert("nextThenDEF is not empty! --- " + emitter.listeners("nextThenDEF_" + niob_context.id).length);
 				emitter.emit("nextThenDEF_" + niob_context.id, niob_context.currentNextThenNode, niob_context, "nextThenDEF");
 			}
 			else{
-				if(niob_counter == -1)
+				if(niob_counter == -1){
 					alert("Interaction finished successfully!");
+					triggered = false;
+					finished = true;
+					removeSnapShot(iid);	
+				}
 				else{
 					niob_counter--;
-					if(niob_counter == -1)
+					if(niob_counter == -1){
 						alert("Interaction finished successfully!");
+						triggered = false;
+						finished = true;
+						removeSnapShot(iid);
+					}
+					else{
+						alert("Start waiting for another niob context!");
+					}
 				}
-				triggered = false;
-				finished = true;
-				removeSnapShot(iid);
 			}
 		}
 		else{
@@ -1136,12 +1147,11 @@ iid(interaction_id).-->
 			//when receive message
 			
 			if(niob_context.currentConstraintsNode != undefined){
-				emitter.emit("msgReceived_" + niob_context.id, msgBody, execute(niob_context.currentMessageNode, niob_context), execute(niob_context.currentRoleNode, niob_context), niob_context, niob_context.currentConstraintsNode);
+				emitter.emit("msgReceived", msgBody, execute(niob_context.currentMessageNode, niob_context), execute(niob_context.currentRoleNode, niob_context), niob_context, niob_context.currentConstraintsNode);
 			}
 			else{
-				emitter.emit("msgReceived_" + niob_context.id, msgBody, execute(niob_context.currentMessageNode, niob_context), execute(niob_context.currentRoleNode, niob_context), niob_context);
+				emitter.emit("msgReceived", msgBody, execute(niob_context.currentMessageNode, niob_context), execute(niob_context.currentRoleNode, niob_context), niob_context);
 			}
-			emitter.removeAllListeners("msgReceived_" + niob_context.id);
 		}
 	}
 	
@@ -1427,7 +1437,7 @@ iid(interaction_id).-->
 							niob_context.currentConstriantsNode = null;
 						}
 //						alert("offline_msg " + offline_msg);
-						emitter.on("msgReceived_" + niob_context.id, receiveMSG);
+//						emitter.on("msgReceived", receiveMSG);
 						if(offline_msg != undefined){
 //							alert("got offline msg");
 							emitter.emit("gotMessageFromXMPPServer", offline_msg);
