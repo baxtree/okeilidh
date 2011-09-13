@@ -1305,9 +1305,14 @@ iid(interaction_id).-->
 					case OP_CONSTRAINT://TODO need check the Variables and which of them are inputs and wich of them are outputs (callback?).
 //						alert("hit constraint");
 						var constraintName = node.children[0];
-//						alert(execute(node.children[1], niob_context));
-				//		alert(eval("JSON.parse(\"" + execute(node.children[1], niob_context) + "\");"));
-						ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'" + execute(node.children[1], niob_context) + "\' + \'])\'), peerHelper);"); //according to "Conventions over configurations"
+						if(node.children[1]){
+//							alert(execute(node.children[1], niob_context));
+				//			alert(eval("JSON.parse(\"" + execute(node.children[1], niob_context) + "\");"));
+							ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'" + execute(node.children[1], niob_context) + "\' + \'])\'), peerHelper);"); //according to "Conventions over configurations"
+						}
+						else{
+							ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'])\'), peerHelper);");
+						}
 						if(ret == null || ret == undefined)
 							throw invalidOKCException(funcName);
 						break;
@@ -1619,6 +1624,7 @@ Interaction:	Message '=>' Role                                 [* %% = createNod
 				;
 
 Constraint:	Constant  											[* %% = true; *]
+			| Constant '(' ')'                            		[* %% = createNode(NODE_OP, OP_CONSTRAINT, %1); *]
 			| Constant '(' Terms ')'                            [* %% = createNode(NODE_OP, OP_CONSTRAINT, %1, %3); *]
 			| NOT '(' Constraint ')'                            [* %% = createNode(NODE_OP, OP_NEGATE, %3); *]
 			| Constraint '&&' Constraint                        [* %% = createNode(NODE_OP, OP_LOGAND, %1, %3); *]
