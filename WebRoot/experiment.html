@@ -35,7 +35,7 @@
 		}
 */		
 /*		window.top.onbeforeunload = function() {
-			alert("finished " + finished);
+			console.debug("finished " + finished);
 			if(!finished){
 				saveSnapShot(iid);
 				return "Closing before finished may cause data lost! Are you sure?";
@@ -100,7 +100,7 @@
 			}
 			var src_inputs = document.getElementsByName("okc_function");
 			for(var i = 0; i < src_inputs.length; i++){
-//				alert(src_inputs[i].value.replace(/\'/g, "\\\\\'").replace(/\"/g, "\\\\\""));
+//				console.debug(src_inputs[i].value.replace(/\'/g, "\\\\\'").replace(/\"/g, "\\\\\""));
 				if(window.execScript){//eval okcs to the global scope.
 					window.execScript(src_inputs[i].value);
 				}
@@ -117,14 +117,14 @@
 				var query = window.location.search.substring(1);
 				var xlccSrc = query.split("=")[1];
 				document.getElementById('lcc_body').value = xlccSrc;
-//				alert(xlccSrc);
+//				console.debug(xlccSrc);
 			}
 			$("#okc_import_effect").hide();
 			$("#okc_edit_effect").hide();
 			$("#edit_subscription").hide();
 			$("#lcc_head_dropdown").hide();
 			$("#xmpphttp_change_effect").hide();
-			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
+			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){console.debug(JSON.stringify(lccBodyEditor));}}); 
 			var lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
 //			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
 			$("h3").css("background-color", "#2E9AFE");
@@ -250,7 +250,7 @@
 				okcNum++;
 				var currentRow = $(this).parent();
 				if($("input", currentRow).val().trim() == ""){
-					alert("Please type in a URL of the OKC your want to use.");
+					console.debug("Please type in a URL of the OKC your want to use.");
 					return false;
 				}
 				var newRow = currentRow.clone();
@@ -276,7 +276,7 @@
 				okcSrcNum++;
 				var currentSrc = $(this).parent().parent();
 				if($("input", currentSrc).val().trim() == ""){
-					alert("Please type in the name of the contraint used in your LCC code.");
+					console.debug("Please type in the name of the contraint used in your LCC code.");
 					return false;
 				}
 				var newSrc = currentSrc.clone();
@@ -353,12 +353,14 @@ display content. Adobe Flash is required.</object>
 					<p>
 						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;">
 a(client(PC, CC), C):: 
-	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
-        receipt(R) <= a(shop, S).
+	buy(PC, CC) => a(shop, S) <- isTrue() then
+    isTrue() <- receipt(R) <= a(shop, S) then
+    a(client(PC, CC), C).
         
 a(shop, S):: 
-	buy(PC, CC) <= a(client(_),C) then
-        receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+	isTrue() <- buy(PC, CC) <= a(client(_),C) then
+    receipt(R) => a(client(_), C) <- isTrue() then
+    a(shop, S).
 
 a(client(0123456789, 1234567887654321), C). 
 
@@ -368,7 +370,9 @@ plays(bob@okbook.inf.ed.ac.uk, shop).
 
 knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).
 
-iid(interaction_id).
+knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js).
+
+iid(123456).
 						</textarea>
 <!--  a(client(PC), D)::
 	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
@@ -564,6 +568,21 @@ iid(interaction_id).-->
 /~eXtended Lightweight Coordination Calculus (XLCC) Interpreter ~/
 
 [*
+	var startTimeStamp;
+	var endTimeStamp;
+	var expCounter = 1;
+	var receivedMsgLength = 0;
+	var sentMsgLength = 0;
+	var receivedMsgCounter = 0;
+	var sentMsgCounter = 0;
+	function getStatistics(){
+		endTimeStamp = (new Date()).getTime();
+		var runningTime = endTimeStamp - startTimeStamp;
+		console.debug("%cRunning time (" + expCounter + "): " + runningTime + " | received msgs length(" + receivedMsgCounter +  "): " + receivedMsgLength + " | sent msgs length(" + sentMsgCounter + "): " + sentMsgLength, "color: blue; background-color: gray");
+		expCounter++;
+		startTimeStamp = (new Date()).getTime();
+	}
+	
 	var constraints = {};
 	emitter.removeAllListeners("okcs loaded");
 	emitter.removeAllListeners("gotMessageFromXMPPServer");
@@ -575,17 +594,13 @@ iid(interaction_id).-->
 //	var clauses = new Array();
 	var role_heads = new Array();
 	var role_bodies = new Array();
-	var init = undefined;
-	
+	var init = undefined;	
 	var currentBackTrack = undefined;
-	var currentBracketBackTrack = undefined;
 	var currentMessageNode = undefined;
 	var currentRoleNode = undefined;
 	var currentConstraintsNode = undefined;
 	var currentNextThenNode = undefined;
 	var currentNextOrNode = undefined;
-	var currentNextBracketNode = undefined;
-	var currentNextBracketOrNode = undefined;
 	var peerID = undefined;
 	var iid = undefined;
 	
@@ -599,10 +614,7 @@ iid(interaction_id).-->
 		this.currentConstraintsNode = undefined;
 		this.currentNextThenNode = undefined;
 		this.currentNextOrNode = undefined;
-		this.currentNextBracketNode = undefined;
-		this.currentNextBracketOrNode = undefined;
 		this.currentBackTrack = undefined;
-		this.currentBracketBackTrack = undefined;
 	}
 	var niob_default_context = new NiobContext();
 	niob_default_context.id = 0;
@@ -611,7 +623,7 @@ iid(interaction_id).-->
 	function getNiobContextByMsgName(msgName) {
 		for(var i = 0; i < niob_contexts.length; i++){
 			for(var j = 0; j < niob_contexts[i].msgs.length; j++){
-//				alert(niob_contexts[i].msgs[j] + ":" + msgName);
+//				console.debug(niob_contexts[i].msgs[j] + ":" + msgName);
 				if(niob_contexts[i].msgs[j] == msgName){
 					return niob_contexts[i]; 
 				}
@@ -668,8 +680,6 @@ iid(interaction_id).-->
 	var OP_IID			= 24;
 	var OP_CLAUSE		= 25;
 	var OP_NIOB			= 26;
-	var OP_BRACKET		= 27;
-	var OP_BRACKET_OR	= 28;
 	
 	function Node(){
 		var type;
@@ -733,14 +743,14 @@ iid(interaction_id).-->
 	function serialiseValue(factors){
 		var content = "";
 		for(var i = 0; i < factors.length; i++){
-//			alert(factors[i].name.charAt(0).toString() + " : " + factors[i].name.charAt(0).toString().toUpperCase());
+//			console.debug(factors[i].name.charAt(0).toString() + " : " + factors[i].name.charAt(0).toString().toUpperCase());
 			if(factors[i].name && factors[i].name.charAt(0).toString() == factors[i].name.charAt(0).toString().toUpperCase()){
 				if(factors[i].value == undefined){
-//					alert("here again");
+//					console.debug("here again");
 				}
 				else{
-//					alert(JSON.stringify(factors[i]));
-//					alert("detect factors " + factors[i].name + " " + factors[i].value);
+//					console.debug(JSON.stringify(factors[i]));
+//					console.debug("detect factors " + factors[i].name + " " + factors[i].value);
 					content += factors[i].name + " : " + factors[i].value + "\r\n";
 					
 				}
@@ -753,7 +763,7 @@ iid(interaction_id).-->
 	}
 	
 	function displayValue(factors){
-		alert(serialiseValue(factors));
+		console.debug(serialiseValue(factors));
 	}
 	
 	var peerHelper = { 
@@ -767,7 +777,6 @@ iid(interaction_id).-->
 		v_names = new Array();
 		v_values = new Array();
 		currentBackTrack = undefined;
-		currentBracketBackTrack = undefined;
 		okcs = new Array();
 //		clauses = new Array();
 		role_heads = new Array();
@@ -778,8 +787,6 @@ iid(interaction_id).-->
 		currentConstraintsNode = undefined;
 		currentNextThenNode = undefined;
 		currentNextOrNode = undefined;
-		currentNextBracketNode = undefined;
-		currentNextBracketOrNode = undefined;
 		peerID = undefined;
 		finished = undefined;
 		niob_counter = 0;
@@ -805,7 +812,6 @@ iid(interaction_id).-->
 			"v_names" : v_names,
 			"v_values" : v_values, 
 			"currentBackTrack" : currentBackTrack,
-			"currentBracketBackTrack" : currentBracketBackTrack,
 			"okcs" : okcs,
 //			"clauses" : clauses,
 			"role_heads" : role_heads,
@@ -816,8 +822,6 @@ iid(interaction_id).-->
 			"currentConstraintsNode" : currentConstraintsNode,
 			"currentNextThenNode" : currentNextThenNode,
 			"currentNextOrNode" : currentNextOrNode,
-			"currentNextBracketNode" : currentNextBracketNode,
-			"currentNextBracketOrNode" : currentNextBracketOrNode,
 			"peerID" : peerID,
 			"finished" : finished,
 			"emitter" : emitter,
@@ -882,19 +886,19 @@ iid(interaction_id).-->
 							continue;
 						}
 						else{
-//							alert("detect false here");
+//							console.debug("detect false here");
 							return false;
 						}
 					}
 					return true;
 				}
 				else{
-//					alert("different children lengths");
+//					console.debug("different children lengths");
 					return false;
 				}
 			}
 			else{
-//				alert("different types or values");
+//				console.debug("different types or values");
 				return false;
 			}
 		}
@@ -928,18 +932,18 @@ iid(interaction_id).-->
 			throw roleDefinitionNotFoundException(JSON.stringify(role_head));
 		}
 		else{
-//			alert("find the role definition!");
+//			console.debug("find the role definition!");
 		}
 		return role_body;
 	}
 	
 	function getRoleBodyByRoleHeadAfterRoleChanging(role_head){
 		var role_body = null;
-//		alert("number of pairs of heads and bodies: " + role_heads.length);
+//		console.debug("number of pairs of heads and bodies: " + role_heads.length);
 		for(var i = 0; i < role_heads.length; i++){
-//			alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
+//			console.debug(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
 			if(isIdenticalRole(role_head, role_heads[i])){
-//				alert("find identical roles");
+//				console.debug("find identical roles");
 				updateVariableValueInNode(role_head, role_heads[i]);
 				role_body = role_bodies[i];
 				break;
@@ -949,7 +953,7 @@ iid(interaction_id).-->
 			throw roleDefinitionNotFoundException(JSON.stringify(role_head));
 		}
 		else{
-//			alert("find the role definition!");
+//			console.debug("find the role definition!");
 		}
 		return role_body;
 	}
@@ -964,11 +968,13 @@ iid(interaction_id).-->
 		okcElem.type = "text/javascript";
 		okcElem.src =  okcs[count];
 		okcElem.onload = function () {
-			alert("OKC [" + okcs[count] + "] loaded!");
+			console.debug("OKC [" + okcs[count] + "] loaded!");
 			count++;
 			if(count == length){
-				alert("OKCs loading finished!");
-//				alert(JSON.stringify(node));
+				console.debug("OKCs loading finished!");
+//				console.debug(JSON.stringify(node));
+				console.debug()
+				startTimeStamp = (new Date()).getTime();
 				emitter.emit("okcs loaded", node, niob_contexts[0]);
 			}
 			else{
@@ -979,7 +985,7 @@ iid(interaction_id).-->
 	
 	function initialize(clauses, builtIns){
 		window.top.onbeforeunload = function() {
-//			alert("finished " + finished);
+//			console.debug("finished " + finished);
 			if(!finished){
 				saveSnapShot(iid);
 				return confirm("Closing before finished may cause data lost! Are you sure?");
@@ -993,19 +999,19 @@ iid(interaction_id).-->
 		execute(builtIns, niob_contexts[0]);
 		finished = false;
 		peerID = document.getElementById("jid").value;		//based on user's inputs
-//		alert("Start interpreting the codes");
+//		console.debug("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
-//		alert(init[0].jid.toString());
+//		console.debug(init[0].jid.toString());
 		for(var i = 0; i < init.length; i++){
 			if(init[i].iid){
 				OKBuzzer.resource = init[i].iid.toString();
 				iid = init[i].iid.toString();
-				alert("Interaction ID is " + OKBuzzer.resource);
+				console.debug("Interaction ID is " + OKBuzzer.resource);
 			}
 			if(init[i].okcs){
 				for(var j = 0; j < init[i].okcs.length; j++){
 					okcs.push(init[i].okcs[j]);
-	//				alert(init[i].okcs[j]);
+	//				console.debug(init[i].okcs[j]);
 				}
 			}
 		}
@@ -1014,7 +1020,7 @@ iid(interaction_id).-->
 		var headElem = document.getElementsByTagName("head")[0];
 		if(window["localStorage"].getItem(iid) != undefined){
 			if(confirm("You have an unfinished interaction. Do you want to rusume it?")){
-				alert("about to resume the unfinished interaction ...");
+				console.debug("about to resume the unfinished interaction ...");
 //				loadSnapShot(iid);
 				retrieveOKCs(okcs, headElem, count, length, clauses); //for debug only
 			}
@@ -1031,7 +1037,7 @@ iid(interaction_id).-->
 	function initializeByHeader(jsonStr, clauses, builtIns){
 		niob_counter = 0;
 		window.top.onbeforeunload = function() {
-//			alert("finished " + finished);
+//			console.debug("finished " + finished);
 			if(!finished){
 				saveSnapShot(iid);
 				return confirm("Closing before finished may cause data lost! Are you sure?");
@@ -1040,21 +1046,21 @@ iid(interaction_id).-->
 				return "Bye!";
 		}
 		peerID = document.getElementById("jid").value;		//based on user's inputs
-//		alert("Start interpreting the codes");
+//		console.debug("Start interpreting the codes");
 		emitter.on("okcs loaded", execute);
 		finished = false;
-//		alert("node " + JSON.stringify(clauses, null, "\t"));
+//		console.debug("node " + JSON.stringify(clauses, null, "\t"));
 		init = eval('(' + jsonStr + ')');
-//		alert(init[0].jid.toString());
+//		console.debug(init[0].jid.toString());
 		for(var i = 0; i < init.length; i++){
 			if(init[i].iid){
 				OKBuzzer.resource = init[i].iid.toString();
 				iid = init[i].iid.toString();
-				alert("Interaction ID is " + OKBuzzer.resource);
+				console.debug("Interaction ID is " + OKBuzzer.resource);
 			}
 			for(var j = 0; j < init[i].okcs.length; j++){
 				okcs.push(init[i].okcs[j]);
-//				alert(init[i].okcs[j]);
+//				console.debug(init[i].okcs[j]);
 			}
 		}
 		if(arguments.length == 3){
@@ -1065,7 +1071,7 @@ iid(interaction_id).-->
 		var headElem = document.getElementsByTagName("head")[0];
 		if(window["localStorage"].getItem(iid) != undefined){
 			if(confirm("You have an unfinished interaction. Do you want to rusume it?")){
-				alert("about to resume the unfinished interaction ...");
+				console.debug("about to resume the unfinished interaction ...");
 				loadSnapShot(iid);
 			}
 			else{
@@ -1085,9 +1091,11 @@ iid(interaction_id).-->
 //	}
 	
 	function sendMSG(message, recepientJID){
+		sentMsgLength += message.toString().length;
+		sentMsgCounter++;
 		var success;
 		var fullJID = recepientJID + "/" + OKBuzzer.resource; //TODO: this needs to be passed from the xLCC codes
-		alert("Sending message " + message + " to " + fullJID);
+//////	console.debug("Sending message " + message + " to " + fullJID);
 		OKBuzzer.connection.send($msg({ "to" : fullJID, "type" : "chat"}).c("body").t(message));
 //		sendtext();
 		success = true;
@@ -1104,19 +1112,19 @@ iid(interaction_id).-->
 		}
 	}
 	
+	
+	
 	function executeNextThenOrOrBranch(solved, niob_context){
-//		alert("niob counter: " + niob_counter);
+//		console.debug("niob counter: " + niob_counter);
 		if(solved){
 			if(emitter.listeners("nextThenDEF_" + niob_context.id) != undefined && emitter.listeners("nextThenDEF_" + niob_context.id).length != 0){
-//				alert("nextThenDEF is not empty! --- " + emitter.listeners("nextThenDEF_" + niob_context.id).length);
+//				console.debug("nextThenDEF is not empty! --- " + emitter.listeners("nextThenDEF_" + niob_context.id).length);
 				emitter.emit("nextThenDEF_" + niob_context.id, niob_context.currentNextThenNode, niob_context, "nextThenDEF");
-			}
-			else if(emitter.listeners("nextBracketDEF_" + niob_context.id) != undefined && emitter.listeners("nextBracketDEF_" + niob_context.id).length != 0){
-				emitter.emit("nextBracketDEF_" + niob_context.id, niob_context.currentNextBracketNode, niob_context, "nextBracketDEF");
 			}
 			else{
 				if(niob_counter == -1){
-					alert("Interaction finished successfully!");
+					console.debug("Interaction finished successfully!");
+					getStatistics();
 					triggered = false;
 					finished = true;
 					removeSnapShot(iid);	
@@ -1124,13 +1132,14 @@ iid(interaction_id).-->
 				else{
 					niob_counter--;
 					if(niob_counter == -1){
-						alert("Interaction finished successfully!");
+						console.debug("Interaction finished successfully!");
+						getStatistics();
 						triggered = false;
 						finished = true;
 						removeSnapShot(iid);
 					}
 					else{
-						alert("Start waiting for another niob context!");
+//////					console.debug("Start waiting for another niob context!");
 					}
 				}
 			}
@@ -1139,15 +1148,9 @@ iid(interaction_id).-->
 			if(emitter.listeners("nextOrDEF_" + niob_context.id) != undefined && emitter.listeners("nextOrDEF_" + niob_context.id).length != 0){
 				v_names = niob_context.currentBackTrack.v_names;
 				v_values = niob_context.currentBackTrack.v_values;
-//				alert("track back after OR");
+//				console.debug("track back after OR");
 				emitter.emit("nextOrDEF_" + niob_context.id, niob_context.currentNextOrNode, niob_context, "nextOrDEF");
 			}
-			else if(emitter.listeners("nextBracketOrDEF_" + niob_context.id) != undefined && emitter.listeners("nextBracketOrDEF_" + niob_context.id).length != 0){
-				v_names = niob_context.currentBracketBackTrack.v_names;
-				v_values = niob_context.currentBracketBackTrack.v_values;
-//				alert("track back after next OR");
-				emitter.emit("nextBracketOrDEF_" + niob_context.id, niob_context.currentNextBracketOrNode, niob_context, "nextBracketOrDEF");
-			} 
 			else{
 				throw constraitsSolvingFailedException();
 			}
@@ -1155,17 +1158,19 @@ iid(interaction_id).-->
 	}
 	
 	function onMessageArrival(msg) {
-		alert("A new message came : " + msg.body); 
+//////	console.debug("A new message came : " + msg.body); 
 		var senderJID = msg.from.toString();
 		var receiverJID = msg.to.toString();
 		offline_msg = undefined;
 		if(receiverJID.indexOf("/") != -1 && receiverJID.split("/")[1] == OKBuzzer.resource){
 			//TODO the sender id and the resource need to be checked here.
 			var msgBody = JSON.parse(msg.body);
-	//		alert("body : " + JSON.stringify(msgBody));
+	//		console.debug("body : " + JSON.stringify(msgBody));
+			receivedMsgLength += msg.body.toString().length;
+			receivedMsgCounter++;
 			var niob_context = getNiobContextByMsgName(msgBody.name);
-//			alert("context after receiving msg: " + JSON.stringify(niob_context));
-//			alert("msg name: " + msgBody.name);
+//			console.debug("context after receiving msg: " + JSON.stringify(niob_context));
+//			console.debug("msg name: " + msgBody.name);
 	//update variables here
 			//when receive message
 			
@@ -1181,7 +1186,7 @@ iid(interaction_id).-->
 	function receiveMSG(msgBody, msgJSONStr, roleNode, niob_context){
 		msgJSON = eval("(" + msgJSONStr + ")");
 		updateVariableValueInJSON(msgBody, msgJSON);
-//		alert("after update: " + JSON.stringify(msgBody) + "============" + JSON.stringify(msgJSON));
+//		console.debug("after update: " + JSON.stringify(msgBody) + "============" + JSON.stringify(msgJSON));
 		if(arguments[4]){
 			var solved = execute(niob_context.currentConstraintsNode, niob_context);
 			niob_context.currentConstraintsNode = undefined;
@@ -1196,29 +1201,18 @@ iid(interaction_id).-->
 	
 	
 	function execute(node, niob_context, removeListeners){
-//		alert(niob_context.id);
-//		alert("execute: " + JSON.stringify(niob_context));
+//		console.debug("execute: " + JSON.stringify(niob_context));
 		if(arguments.length == 3){
 			if(removeListeners == "nextThenDEF"){
 				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
-//				alert("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));	
+//				console.debug("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));	
 			}
 			else if(removeListeners == "nextOrDEF"){
 				emitter.removeAllListeners("nextOrDEF_" + niob_context.id);
-				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
-				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
-//				alert("after remove we got : " + emitter.listeners("nextOrDEF_" + niob_context.id));	
-			}
-			else if(removeListeners == "nextBracketDEF"){
-				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
-			}
-			else if(removeListeners == "nextBracketOrDEF"){
-				emitter.removeAllListeners("nextBracketOrDEF_" + niob_context.id);
-				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
-				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
+//				console.debug("after remove we got : " + emitter.listeners("nextOrDEF_" + niob_context.id));	
 			}
 		}
-//		alert("executing " + JSON.stringify(node));
+//		console.debug("executing " + JSON.stringify(node));
 		var ret = 0;
 		if(!node)
 			return 0;
@@ -1226,20 +1220,20 @@ iid(interaction_id).-->
 			case NODE_OP: 
 				switch(node.value){
 					case OP_ENTRY:
-//						alert("hit entry");
+//						console.debug("hit entry");
 						if(node.children[0]){
-//							alert(JSON.stringify(clauses));
+//							console.debug(JSON.stringify(clauses));
 							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);
 						}
 						break;
 					case OP_NONE:
-//						alert("hit none");
+//						console.debug("hit none");
 						if(node.children[0]){
 							execute(node.children[0], niob_context);
 						}
 						break;
 					case OP_CLAUSE:
-//						alert("hit clause");
+//						console.debug("hit clause");
 						if(node.children[0]){
 //							clauses.push(node.children[0]);
 							execute(node.children[0], niob_context);
@@ -1249,7 +1243,7 @@ iid(interaction_id).-->
 						}
 						break;
 					case OP_HEADBODY:
-//						alert("hit headbody");
+//						console.debug("hit headbody");
 						if(node.children[0]){
 							role_heads.push(node.children[0]);
 //							execute(node.children[0], niob_context);
@@ -1260,10 +1254,11 @@ iid(interaction_id).-->
 						}
 						break;
 					case OP_ROLE_CHANGE:
-//						alert("hit role_change");
+//						console.debug("hit role_change");
 						if(node.children[1]){
 							if(execute(node.children[1], niob_context) && node.children[1]){
-								alert("Role change now!");
+//////							console.debug("Role change now!");
+								getStatistics();
 								execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);
 							}
 							else{
@@ -1271,23 +1266,24 @@ iid(interaction_id).-->
 							}
 						}
 						else if(node.children[0]){
-							alert("Role change now!");
+//////						console.debug("Role change now!");
+							getStatistics();
 							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);						
 						}
 						break;
 					case OP_ROLE:
-//						alert("hit role");
+//						console.debug("hit role");
 						var roleIdNode = execute(node.children[1], niob_context);
-//						alert("role parse: " + JSON.stringify(execute(node.children[0], niob_context)));
+//						console.debug("role parse: " + JSON.stringify(execute(node.children[0], niob_context)));
 						var temp = eval("[(" + execute(node.children[0], niob_context) + ")]");
 						readValue(temp);
 						var roleType = temp[0];
 						var roleName = roleType.name;
 						for(var i = 0; i < init.length; i++){
-//							alert(roleName.toString().toLowerCase() + " : " + init[i].role.toString().toLowerCase());
+//							console.debug(roleName.toString().toLowerCase() + " : " + init[i].role.toString().toLowerCase());
 							if(roleName.toString().toLowerCase() == init[i].role.toString().toLowerCase()){
 								setValue(roleIdNode, init[i].jid.toString());
-//								alert(roleIdNode + " " + init[i].jid.toString());
+//								console.debug(roleIdNode + " " + init[i].jid.toString());
 								var jid = init[i].jid.toString();
 								ret = jid; 
 								break;
@@ -1295,12 +1291,12 @@ iid(interaction_id).-->
 						}
 						break;
 					case OP_KNOWS:
-//						alert("hit knows");
+//						console.debug("hit knows");
 						if(node.children[0])
 							okcs.push(node.children[0].toString());
 						break;
 					case OP_PLAYS:
-//						alert("hit plays");
+//						console.debug("hit plays");
 						if(node.children[0] && node.children[1]){
 							var info = {};
 							info["jid"] = node.children[0].toString();
@@ -1309,19 +1305,19 @@ iid(interaction_id).-->
 						}
 						break;
 					case OP_IID:
-//						alert("hit iid");
+//						console.debug("hit iid");
 						if(node.children[0]){
 							OKBuzzer.resource = node.children[0].toString();
 							iid = node.children[0].toString();
 						}
-//						alert("in OP_IID " + OKBuzzer.resource);
+//						console.debug("in OP_IID " + OKBuzzer.resource);
 						break;
 					case OP_ROLE_TYPE:
-//						alert("hit role_type");
+//						console.debug("hit role_type");
 						var ret = execute(node.children[0], niob_context);
 						break;
 					case OP_TERMS:
-//						alert("hit terms");
+//						console.debug("hit terms");
 						if(node.children[1]){
 							ret = execute(node.children[0], niob_context) + ", " + execute(node.children[1], niob_context);
 						}
@@ -1330,18 +1326,18 @@ iid(interaction_id).-->
 						}
 						break;
 					case OP_FACTOR:
-//						alert("hit factor");
+//						console.debug("hit factor");
 						if(node.children[1])
 							ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : [' + execute(node.children[1], niob_context) + ']}';
 						else
 							ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : []}';
 						break;
 					case OP_CONSTRAINT://TODO need check the Variables and which of them are inputs and wich of them are outputs (callback?).
-//						alert("hit constraint");
+//						console.debug("hit constraint");
 						var constraintName = node.children[0];
 						if(node.children[1]){
-//							alert(execute(node.children[1], niob_context));
-				//			alert(eval("JSON.parse(\"" + execute(node.children[1], niob_context) + "\");"));
+//							console.debug(execute(node.children[1], niob_context));
+				//			console.debug(eval("JSON.parse(\"" + execute(node.children[1], niob_context) + "\");"));
 							ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'" + execute(node.children[1], niob_context) + "\' + \'])\'), peerHelper);"); //according to "Conventions over configurations"
 						}
 						else{
@@ -1351,15 +1347,15 @@ iid(interaction_id).-->
 							throw invalidOKCException(funcName);
 						break;
 					case OP_NEGATE:
-//						alert("hit negate");
+//						console.debug("hit negate");
 						ret = !execute(node.children[0], niob_context);	
 						break;
 					case OP_LOGAND:
-//						alert("hit logand");
+//						console.debug("hit logand");
 						ret = execute(node.children[0], niob_context) && execute(node.children[1], niob_context);
 						break;
 					case OP_LOGOR:
-//						alert("hit logor");
+//						console.debug("hit logor");
 						niob_context.currentBackTrack = {};
 						niob_context.currentBackTrack.v_names = v_names;
 						niob_context.currentBackTrack.v_values = v_values;
@@ -1367,14 +1363,14 @@ iid(interaction_id).-->
 							ret = ture;
 						}
 						else{
-//							alert("trackback after ||");
+//							console.debug("trackback after ||");
 							v_names = niob_context.currentBackTrack.v_names;
 							v_values = niob_context.currentBackTrack.v_values;
 							ret = execute(node.children[1], niob_context);
 						}
 						break;
 					case OP_LIST:
-//						alert("hit list");
+//						console.debug("hit list");
 						if(execute(node.children[0], niob_context) != undefined){
 							if(execute(node.children[0], niob_context).length == 0){
 								setValue(node.children[1].value.toString(), []);
@@ -1398,60 +1394,43 @@ iid(interaction_id).-->
 						ret = true;
 						break;
 					case OP_THEN:
-						alert("hit 'then'");
+//						console.debug("hit 'then'");
 						emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
-//						alert("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));
+//						console.debug("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));
 						niob_context.currentNextThenNode = node.children[1];
 //						thens.unshift(niob_context.currentNextThenNode);
 						emitter.on("nextThenDEF_" + niob_context.id, execute);
-//						alert("the next then will be: " +JSON.stringify(niob_context.currentNextThenNode) + "  : nextThenDefLength: " + emitter.listeners("nextThenDEF_" + niob_context.id).length);
+//						console.debug("the next then will be: " +JSON.stringify(niob_context.currentNextThenNode) + "  : nextThenDefLength: " + emitter.listeners("nextThenDEF_" + niob_context.id).length);
 						execute(node.children[0], niob_context);
 						break;
 					case OP_OR:
-						alert("hit 'or'");
+//						console.debug("hit 'or'");
 						emitter.removeAllListeners("nextOrDEF_" + niob_context.id);
-//						alert("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));
+//						console.debug("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));
 						niob_context.currentNextOrNode = node.children[1];
+						emitter.on("nextOrDEF_" + niob_context.id, execute);
 						niob_context.currentBackTrack = {};
 						niob_context.currentBackTrack.v_names = v_names;
 						niob_context.currentBackTrack.v_values = v_values;
-						emitter.on("nextOrDEF_" + niob_context.id, execute);
 						execute(node.children[0], niob_context);
 						break;
 					case OP_NIOB:
-						alert("hit 'niob'");
+//						console.debug("hit 'niob'");
 						execute(node.children[0], niob_context);
 						niob_counter++;
-						alert("niob counter: " + niob_counter);
+//						console.debug("niob counter: " + niob_counter);
 						var nextNiobContext = new NiobContext();
 						nextNiobContext.id = niob_counter;
 						execute(node.children[1], nextNiobContext);// need to change
 						break;
-					case OP_BRACKET:
-						alert("hit 'bracket then'");
-						emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
-						niob_context.currentNextBracketNode = node.children[1];
-						emitter.on("nextBracketDEF_" + niob_context.id, execute);
-						execute(node.children[0], niob_context);
-						break;
-					case OP_BRACKET_OR:
-						alert("hit 'bracket or'");
-						emitter.removeAllListeners("nextBracketOrDEF_" + niob_context.id);
-						niob_context.currentNextBracketOrNode = node.children[1];
-						niob_context.currentBracketBackTrack = {};
-						niob_context.currentBracketBackTrack.v_names = v_names;
-						niob_context.currentBracketBackTrack.v_values = v_values;
-						emitter.on("nextBracketOrDEF_" + niob_context.id, execute);
-						execute(node.children[0], niob_context);
-						breakl
 /*					case OP_PAR:
-						alert("hit par");
+						console.debug("hit par");
 						break;
 */						
 					case OP_SEND:
-//						alert("hit send");
-//						alert("message : " + JSON.stringify(node.children[0]));
-//						alert("receipient : " + execute(node.children[1], niob_context));
+//						console.debug("hit send");
+//						console.debug("message : " + JSON.stringify(node.children[0]));
+//						console.debug("receipient : " + execute(node.children[1], niob_context));
 						var msgNode = node.children[0];
 						var roleNode = node.children[1];
 						var solved = true;
@@ -1459,12 +1438,12 @@ iid(interaction_id).-->
 						var recepientJID = undefined;
 						if(node.children[2]){
 							solved = execute(node.children[2], niob_context);
-//							alert("solved : " + solved);
+//							console.debug("solved : " + solved);
 							if(solved){
 								message = execute(msgNode, niob_context);
 								recepientJID = execute(roleNode, niob_context);
 								sendMSG(message, recepientJID);
-								alert("Message sent!");
+//////							console.debug("Message sent!");
 							}
 							executeNextThenOrOrBranch(solved, niob_context);
 						}
@@ -1472,43 +1451,43 @@ iid(interaction_id).-->
 							message = execute(msgNode, niob_context);
 							recepientJID = execute(roleNode, niob_context);
 							sendMSG(message, recepientJID);
-							alert("Message sent!");
-							alert("Message sent!");
-//							alert("next then DEF: " + emitter.listeners("nextThenDEF_" + niob_context.id));
+							console.debug("Message sent!");
+							console.debug("Message sent!");
+//							console.debug("next then DEF: " + emitter.listeners("nextThenDEF_" + niob_context.id));
 							executeNextThenOrOrBranch(true, niob_context);
 						}
 						break;
 					case OP_RECEIVE: 
-//						alert("hit receive");
+//						console.debug("hit receive");
 //						emitter.removeAllListeners("receive");
 						niob_context.currentMessageNode = node.children[0];
 						niob_context.currentRoleNode = node.children[1];
-//						alert("message name: " + JSON.parse(execute(node.children[0], niob_context)).name);
+//						console.debug("message name: " + JSON.parse(execute(node.children[0], niob_context)).name);
 						niob_context.msgs.push(JSON.parse(execute(node.children[0], niob_context)).name);
-//						alert("current niob context: " + JSON.stringify(niob_context));
+//						console.debug("current niob context: " + JSON.stringify(niob_context));
 						if(node.children[2]){
 							niob_context.currentConstraintsNode = node.children[2];
 						}
 						else{
 							niob_context.currentConstriantsNode = null;
 						}
-//						alert("offline_msg " + offline_msg);
+//						console.debug("offline_msg " + offline_msg);
 //						emitter.on("msgReceived", receiveMSG);
 						if(offline_msg != undefined){
-//							alert("got offline msg");
+//							console.debug("got offline msg");
 							emitter.emit("gotMessageFromXMPPServer", offline_msg);
 						}
 						else{
-							alert("Start waiting for a new message");
+/////						console.debug("Start waiting for a new message");
 						}
 						break;
 					case OP_MESSAGE:
-//						alert("hit message");
+//						console.debug("hit message");
 						ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : [' + execute(node.children[1], niob_context) + ']}';
-//						alert("return message : " + ret);
+//						console.debug("return message : " + ret);
 						break;
 					case OP_NO_MSG:
-//						alert("hit no_msg");
+//						console.debug("hit no_msg");
 						ret = execute(node.children[0], niob_context);
 						executeNextThenOrOrBranch(ret, niob_context);
 						break;						
@@ -1525,7 +1504,7 @@ iid(interaction_id).-->
 				break;
 		}
 		updateNiobContext(niob_context);
-//		alert("after update the contexts:" + JSON.stringify(niob_contexts));
+//		console.debug("after update the contexts:" + JSON.stringify(niob_contexts));
 		return ret;
 	}
 	
@@ -1661,15 +1640,7 @@ Def:	Interaction												  /~ [* %% = %1; *] ~/
 		| Def THEN Def                                            [* %% = createNode(NODE_OP, OP_THEN, %1, %3); *]
 		| Def OR Def                                              [* %% = createNode(NODE_OP, OP_OR, %1, %3); *]
 		| Def NIOB Def											  [* %% = createNode(NODE_OP, OP_NIOB, %1, %3); *]
-/~		| '{' Def '}'											  [* %% = %2; *]~/
- 		| '{' Def '}' THEN '{' Def '}'						      [* %% = createNode(NODE_OP, OP_THEN, %2, %6); *]
- 		| '{' Def '}' OR '{' Def '}'						      [* %% = createNode(NODE_OP, OP_OR, %2, %6); *]
- 		| '{' Def '}' THEN Def									  [* %% = createNode(NODE_OP, OP_THEN, %2, %5); *]
-		| '{' Def '}' OR Def									  [* %% = createNode(NODE_OP, OP_OR, %2, %5); *]
-/~		| '{' Def '}' THEN Def									  [* %% = createNode(NODE_OP, OP_BRACKET, %2, %5); *]~/
-/~		| '{' Def '}' OR Def									  [* %% = createNode(NODE_OP, OP_BRACKET_OR, %2, %5); *]~/
-		| Def THEN '{' Def '}'						      		  [* %% = createNode(NODE_OP, OP_THEN, %1, %4); *]
- 		| Def OR '{' Def '}'						      		  [* %% = createNode(NODE_OP, OP_OR, %1, %4); *]
+		| '{' Def '}'											  [* %% = %2; *]
 /~		| Def PAR Def                                             [* %% = createNode(NODE_OP, OP_PAR, %1, %3); *] ~/
 		;
 
@@ -1717,7 +1688,7 @@ Message:	Constant '(' Terms ')'                              [* %% = createNode(
 	if( ( error_cnt = __parse( str, error_off, error_la ) ) > 0 )
 	{
 		for( i = 0; i < error_cnt; i++ )
-			alert( "Parse error near >" 
+			console.debug( "Parse error near >" 
 				+ str.substr( error_off[i], 30 ) + "<, expecting \"" + error_la[i].join() + "\"" );
 	}
 *]					
