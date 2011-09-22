@@ -588,7 +588,10 @@ iid(interaction_id).-->
 	var currentNextBracketOrNode = undefined;
 	var peerID = undefined;
 	var iid = undefined;
-	
+	var webStorageSupported = window["localStorage"]? true : false;
+	if(!webStorageSupported){
+		alert("Your browser does not support local storage. Click 'OK' and keep going ...");
+	}
 	var niob_counter = 0;
 	var niob_contexts = new Array();	
 	function NiobContext() {
@@ -832,7 +835,7 @@ iid(interaction_id).-->
 			window["localStorage"].setItem(iid, JSON.stringify(snapShot));
 		}
 		else{
-			throw webStorageNotSupportedException();
+//			throw webStorageNotSupportedException();
 		}
 		return snapShot;
 	}
@@ -853,12 +856,12 @@ iid(interaction_id).-->
 			}
 		}
 		else{
-			throw webStorageNotSupportedException();
+//			throw webStorageNotSupportedException();
 		}
 	}
 	
 	function removeSnapShot(iid){
-		if(window["localStorage"].getItem(iid)){
+		if(window["localStorage"] && window["localStorage"].getItem(iid)){
 			window["localStorage"].removeItem(iid);
 		}
 	}
@@ -1012,7 +1015,8 @@ iid(interaction_id).-->
 		var count = 0;
 		var length = okcs.length;
 		var headElem = document.getElementsByTagName("head")[0];
-		if(window["localStorage"].getItem(iid) != undefined){
+/* Web storage		
+		if(webStorageSupported && window["localStorage"].getItem(iid) != undefined){
 			if(confirm("You have an unfinished interaction. Do you want to rusume it?")){
 				alert("about to resume the unfinished interaction ...");
 //				loadSnapShot(iid);
@@ -1025,7 +1029,8 @@ iid(interaction_id).-->
 		else{
 			retrieveOKCs(okcs, headElem, count, length, clauses);
 		}
-//		retrieveOKCs(okcs, headElem, count, length, clauses);
+*/
+		retrieveOKCs(okcs, headElem, count, length, clauses);	/* delete this when uncomment Web storage */
 	}
 	
 	function initializeByHeader(jsonStr, clauses, builtIns){
@@ -1063,7 +1068,8 @@ iid(interaction_id).-->
 		var count = 0;
 		var length = okcs.length;
 		var headElem = document.getElementsByTagName("head")[0];
-		if(window["localStorage"].getItem(iid) != undefined){
+/* Web storage
+		if(webStorageSupported && window["localStorage"].getItem(iid) != undefined){
 			if(confirm("You have an unfinished interaction. Do you want to rusume it?")){
 				alert("about to resume the unfinished interaction ...");
 				loadSnapShot(iid);
@@ -1075,7 +1081,8 @@ iid(interaction_id).-->
 		else{
 			retrieveOKCs(okcs, headElem, count, length, clauses);
 		}
-//		retrieveOKCs(okcs, headElem, count, length, clauses);
+*/
+		retrieveOKCs(okcs, headElem, count, length, clauses); /* delete this when uncomment Web storage */
 	}
 	
 //	function sendtext(){
@@ -1205,7 +1212,7 @@ iid(interaction_id).-->
 			}
 			else if(removeListeners == "nextOrDEF"){
 				emitter.removeAllListeners("nextOrDEF_" + niob_context.id);
-				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
+//				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);	//problematic
 				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
 //				alert("after remove we got : " + emitter.listeners("nextOrDEF_" + niob_context.id));	
 			}
@@ -1214,7 +1221,7 @@ iid(interaction_id).-->
 			}
 			else if(removeListeners == "nextBracketOrDEF"){
 				emitter.removeAllListeners("nextBracketOrDEF_" + niob_context.id);
-				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
+//				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);	//problematic
 				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
 			}
 		}
@@ -1532,25 +1539,33 @@ iid(interaction_id).-->
 	function invalidOKCException(okcName){
 		resetLCCEnvironment();
 		if(iid) removeSnapShot(iid);
-		return "OKC " + "'" + okcName + "()' has not been loaded."; 
+		var message = "OKC " + "'" + okcName + "()' has not been loaded.";
+		alert(message);
+		return message; 
 	}
 	
 	function roleDefinitionNotFoundException(roleName){
 		resetLCCEnvironment();
 		if(iid) removeSnapShot(iid);
-		return "Role " + "'" + roleName + "' has not been defined in this interaction model.";
+		var message = "Role " + "'" + roleName + "' has not been defined in this interaction model.";
+		alert(message);
+		return message;
 	}
 	
 	function constraitsSolvingFailedException(){
 		resetLCCEnvironment();
 		if(iid) removeSnapShot(iid);
-		return "Constraints can not be solved. Interaction terminated without completion!";
+		var message = "Constraints can not be solved. Interaction terminated without completion!";
+		alert(message);
+		return message;
 	}
 	
 	function webStorageNotSupportedException(){
 		resetLCCEnvironment();
 		if(iid) removeSnapShot(iid);
-		return "Web storage is not supported by this browser and your states may be lost after you close the current window.";
+		var message = "Web storage is not supported by this browser and your states may be lost after you close the current window.";
+		alert(message)
+		return message;
 	}
 
 	
