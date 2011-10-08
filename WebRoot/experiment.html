@@ -552,8 +552,8 @@ iid(interaction_id).-->
 		<div>
 			<div class="loginleft">
 		   		<label class="hidden">Server:</label><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/><br/>
-		   		<label>Jid:</label><input type="text" id="jid" value=""/><br/>
-		   		<label>Password:</label><input type="password" id="password" value=""/>
+		   		<label>Jid:</label><input type="text" id="jid" value="alice@okbook.inf.ed.ac.uk/123456"/><br/>
+		   		<label>Password:</label><input type="password" id="password" value="123456"/>
 	   		<div>
 	   		<div class="loginright">
 	   			<a href="http://www.instantssl.com">
@@ -1254,10 +1254,10 @@ iid(interaction_id).-->
 						}
 						break;
 					case OP_ROLE_CHANGE:
-//						console.debug("hit role_change");
+						console.debug("hit role_change");
 						if(node.children[1]){
 							if(execute(node.children[1], niob_context) && node.children[1]){
-//////							console.debug("Role change now!");
+								console.debug("Role change now!");
 								getStatistics();
 								execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);
 							}
@@ -1266,7 +1266,7 @@ iid(interaction_id).-->
 							}
 						}
 						else if(node.children[0]){
-//////						console.debug("Role change now!");
+							console.debug("Role change now!");
 							getStatistics();
 							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);						
 						}
