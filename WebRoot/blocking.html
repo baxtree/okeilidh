@@ -827,22 +827,27 @@ display content. Adobe Flash is required.</object>
 	}
 	
 	function retrieveOKCs(okcs, headElem, count, length, node){
-		var okcElem = document.createElement("script");
-		headElem.appendChild(okcElem);
-		okcElem.type = "text/javascript";
-		okcElem.src =  okcs[count];
-		okcElem.onload = function () {
-			alert("OKC [" + okcs[count] + "] loaded!");
-			count++;
-			if(count == length){
-				alert("OKCs loading finished!");
-//				alert(JSON.stringify(node));
-				emitter.emit("okcs loaded", node);
-			}
-			else{
-				retrieveOKCs(okcs, headElem, count, length, node);
-			}
-		};
+		if(okcs.length == 0){
+			emitter.emit("okcs loaded", node, niob_contexts[0]);
+		}
+		else{
+			var okcElem = document.createElement("script");
+			headElem.appendChild(okcElem);
+			okcElem.type = "text/javascript";
+			okcElem.src =  okcs[count];
+			okcElem.onload = function () {
+				alert("OKC [" + okcs[count] + "] loaded!");
+				count++;
+				if(count == length){
+					alert("OKCs loading finished!");
+	//				alert(JSON.stringify(node));
+					emitter.emit("okcs loaded", node);
+				}
+				else{
+					retrieveOKCs(okcs, headElem, count, length, node);
+				}
+			};
+		}
 	}
 	
 	function initialize(clauses, builtIns){
@@ -1326,20 +1331,21 @@ display content. Adobe Flash is required.</object>
         ;						
 
 /~ Grammar tokens ~/
-	"HEAD"
-	"A"
-/~	"OKC" ~/
-	"OR"
-	"THEN"
-/~  "PAR" ~/
-	"KNOWS"
-	"PLAYS"
-	"IID"
-	"NULL"
-/~	"MSG" ~/
-/~	"TEXT" ~/
-/~	"INPUT" ~/
-/~	"INITIAL" ~/
+	'head'
+	'a'
+/~	'okc' ~/
+	'or'
+	'then'
+/~  'par' ~/
+	'knows'
+	'plays'
+	'iid'
+	'null'
+	'not'									/~ logical "NOT" ~/
+/~	'msg' ~/
+/~	'text' ~/
+/~	'input' ~/
+/~	'initiakl' ~/
 	'::'
 	','
 	'\.'
@@ -1347,6 +1353,8 @@ display content. Adobe Flash is required.</object>
 	'\)'
 	'\['
 	'\]'
+	'\{'
+	'\}'
 	'=>'
 	'<='
 	'->'
@@ -1354,7 +1362,6 @@ display content. Adobe Flash is required.</object>
 	'='
 	'_'
 	'\|'                             ListBar
-	"NOT"									/~ logical "NOT" ~/
 	'([A-Z][A-Za-z0-9_]*)'	Variable
 	'(([\'\"])?[a-z][A-Za-z0-9_@\.://]*([\'\"])?)|(([\'\"])?([0-9])+([\'\"])?)'		Constant
 	'\[(.)+\]'				JSON
@@ -1362,10 +1369,10 @@ display content. Adobe Flash is required.</object>
 	
 	
 /~ associativity ~/
->	"OR"							
+>	"or"							
 	;
 
->	"THEN"
+>	"then"
 	;
 
 >       "<="
@@ -1385,10 +1392,10 @@ display content. Adobe Flash is required.</object>
 
 IM:		Clause_List	BuiltIn_List						[* initialize(%1, %2); *]
 		| BuiltIn_List Clause_List						[* initialize(%2, %1); *]
-		| HEAD '(' JSON ')' '.' Clause_List 			[* initializeByHeader(%3, %6); *]
-		| Clause_List HEAD '(' JSON ')' '.'				[* initializeByHeader(%4, %1); *]
-		| HEAD '(' JSON ')' '.' Clause_List BuiltIn_List			[* initializeByHeader(%3, %6, %7); *]
-		| HEAD '(' JSON ')' '.' BuiltIn_List Clause_List 			[* initializeByHeader(%3, %7, %6); *]
+		| head '(' JSON ')' '.' Clause_List 			[* initializeByHeader(%3, %6); *]
+		| Clause_List head '(' JSON ')' '.'				[* initializeByHeader(%4, %1); *]
+		| head '(' JSON ')' '.' Clause_List BuiltIn_List			[* initializeByHeader(%3, %6, %7); *]
+		| head '(' JSON ')' '.' BuiltIn_List Clause_List 			[* initializeByHeader(%3, %7, %6); *]
 		;
 
 Clause_List:	Clause									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
@@ -1403,35 +1410,37 @@ BuiltIn_List: 	BuiltIn									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
 				| BuiltIn BuiltIn_List					[* %% = createNode(NODE_OP, OP_CLAUSE, %1, %2); *]
 				;
 		
-BuiltIn:	PLAYS '(' Constant ',' Constant ')'	'.'						[* %% = createNode(NODE_OP, OP_PLAYS, %3, %5); *]
-		 	| KNOWS '(' Constant ')' '.'								[* %% = createNode(NODE_OP, OP_KNOWS, %3); *] 
-		 	| IID '(' Constant ')' '.'									[* %% = createNode(NODE_OP, OP_IID, %3); *]
+BuiltIn:	plays '(' Constant ',' Constant ')'	'.'						[* %% = createNode(NODE_OP, OP_PLAYS, %3, %5); *]
+		 	| knows '(' Constant ')' '.'								[* %% = createNode(NODE_OP, OP_KNOWS, %3); *] 
+		 	| iid '(' Constant ')' '.'									[* %% = createNode(NODE_OP, OP_IID, %3); *]
 		 	;
 
-Role:	A '(' Type ',' Id ')'                           [* %% = createNode(NODE_OP, OP_ROLE, %3, %5); *]
+Role:	a '(' Type ',' Id ')'                           [* %% = createNode(NODE_OP, OP_ROLE, %3, %5); *]
 		;
 
 Type:	Term                                                [* %% = createNode(NODE_OP, OP_ROLE_TYPE, %1); *]
 		;
 	
 Def:	Interaction												  /~ [* %% = %1; *] ~/
-		| Def THEN Def                                            [* %% = createNode(NODE_OP, OP_THEN, %1, %3); *]
-		| Def OR Def                                              [* %% = createNode(NODE_OP, OP_OR, %1, %3); *]
-/~		| Def PAR Def                                             [* %% = createNode(NODE_OP, OP_PAR, %1, %3); *] ~/
+		| Def then Def                                            [* %% = createNode(NODE_OP, OP_THEN, %1, %3); *]
+		| Def or Def                                              [* %% = createNode(NODE_OP, OP_OR, %1, %3); *]
+		| '{' Def '}'											  [* %% = %2; *]
+/~		| Def par Def                                             [* %% = createNode(NODE_OP, OP_PAR, %1, %3); *] ~/
 		;
 
 Interaction:	Message '=>' Role                                 [* %% = createNode(NODE_OP, OP_SEND, %1, %3); *]
 				| Message '=>' Role '<-' Constraint               [* %% = createNode(NODE_OP, OP_SEND, %1, %3, %5); *]
 				| Message '<=' Role                               [* %% = createNode(NODE_OP, OP_RECEIVE, %1, %3); *]
 				| Constraint '<-' Message '<=' Role               [* %% = createNode(NODE_OP, OP_RECEIVE, %3, %5, %1); *]
-				| NULL '<-' Constraint                            [* %% = createNode(NODE_OP, OP_NO_MSG, %3); *]   /~ not in the original BNF declaration on the openk website ~/
+				| null '<-' Constraint                            [* %% = createNode(NODE_OP, OP_NO_MSG, %3); *]   /~ not in the original BNF declaration on the openk website ~/
 				| Role											  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1 );*]
 	      		| Role '<-' Constraint							  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1, %3) *]			
 				;
 
 Constraint:	Constant  											[* %% = true; *]
+			| Constant '(' ')'                            		[* %% = createNode(NODE_OP, OP_CONSTRAINT, %1); *]
 			| Constant '(' Terms ')'                            [* %% = createNode(NODE_OP, OP_CONSTRAINT, %1, %3); *]
-			| NOT '(' Constraint ')'                            [* %% = createNode(NODE_OP, OP_NEGATE, %3); *]
+			| not '(' Constraint ')'                            [* %% = createNode(NODE_OP, OP_NEGATE, %3); *]
 			| Constraint '&&' Constraint                        [* %% = createNode(NODE_OP, OP_LOGAND, %1, %3); *]
 			| Constraint '\|\|' Constraint                      [* %% = createNode(NODE_OP, OP_LOGOR, %1, %3); *] 
 			| Variable '=' '\[' Variable ListBar Variable '\]'	[* %% = createNode(NODE_OP, OP_LIST, %1, %4, %6); *] 
