@@ -9,7 +9,7 @@ body {
 	padding-right: 10px;
 	font-weight: bold;
 	font-size: 30px;
-	color: #FFFFFF;
+	color: #5882FA;
 	text-align: center;
 }
 
@@ -49,7 +49,7 @@ textarea {
 a:link,a:visited {
 	border: 0;
 	text-decoration: none;
-	color: #003168;
+	color: #2E9AFE;
 	font-weight: bold;
 	font-size: 10px;
 }
@@ -177,12 +177,22 @@ td.node_name span {
 	text-align: center;
 }
 
-.sub_content {
-	text-align: center;
+.sub_content_left {
+	width: 45%;
+	height: 75%;
+	text-align: justify;
+	float: left;
+}
+
+.sub_content_right {
+	width: 45%;
+	text-align: right;
+	float: right;
 }
 
 .footer {
-	text-align: center;
+	float: none;
+	text-align: left;
 }
 
 #tabs-0 {
@@ -199,4 +209,8 @@ td.node_name span {
 
 #tabs-3 {
 	height: 100%;
+}
+
+p {
+	color: #084B8A;
 }
