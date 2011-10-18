@@ -109,6 +109,14 @@
 				}
 			}
 		}
+		
+		function gleanLCCFromHTMLSnippet(html){
+			var temp = document.createElement("div");
+			temp.innerHTML = html;
+			var text = temp.textContent || temp.innerText;
+			return text; 
+		}
+		
 		var advanced_shown = false;
 		var lcc_body_shown = false;
 		var lcc_head_shown = false;
@@ -174,6 +182,9 @@
 					$("#lcc_body_effect").show(500);
 					lccBodyEditor.refresh();
 					$("#submit_body").click(function(){
+						lccBodyEditor.save();
+						lccBodyEditor.setValue(gleanLCCFromHTMLSnippet($("#lcc_body").val()));
+						lccBodyEditor.refresh();
 						lccBodyEditor.save();
 						$("#lcc_body_effect").hide(500);
 						$("#lcc_body_dropdown").focus();
@@ -1211,8 +1222,6 @@ iid(interaction_id).-->
 			executeNextThenOrOrBranch(true, niob_context);
 		}
 	}
-	
-	
 	
 	function execute(node, niob_context, removeListeners){
 //		alert(niob_context.id);
