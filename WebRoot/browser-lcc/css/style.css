@@ -214,3 +214,8 @@ td.node_name span {
 p {
 	color: #084B8A;
 }
+
+#messages {
+	color: #2E64FE;
+	text-align: left;
+}

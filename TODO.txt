@@ -11,7 +11,7 @@ Message pass can not be rolled back. (there is no need appearently)
 Message names determines the niob contexts so in each role clauses, message names should be different from one another.
 Embedded brackets are not supported.
 [important]role changing does not work for niob.
-
+[important]irrelevant constraints should be ignored 
 
 Factor Structure (foo("a", B, bar(C,"d"))):
 {

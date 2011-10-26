@@ -55,13 +55,6 @@
 							"\t display(R) <- receipt(R) <= a(shop, S) then\r\n" +
 							"\t null <- display(R) then\r\n" +
 							"a(client(AA), C).\r\n" +
-							"\r\n" +		
-							"a(shop, S)::\r\n" +
-							"\t buy(PC, CC) <= a(client(_), C) then\r\n" +
-							"\t receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).\r\n" +
-							"\r\n" +	
-							"a(client(book, card), C).\r\n" +						
-							"\r\n" +
 							"plays(alice@okbook.inf.ed.ac.uk, client).\r\n" +	
 							"plays(bob@okbook.inf.ed.ac.uk, shop).\r\n" +
 							"knows(http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js).\r\n" +	
@@ -461,11 +454,15 @@ iid(interaction_id).-->
 						<a href="#" class="ui-state-default ui-corner-all" id="submit_head">Submit this head</a>
 					</p>
 				</div>
-				<p>
+				<p/>
+				<div class="actions">
 					<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
 					<span class="button" id="triggerButton" onclick="submitOKCs();run_parser();">Run this IM!</span> &nbsp;
 					<span class="button" id="disconnect">Disconnect</span>
-				</p>
+				</div>
+				<p/>
+				<div id="messages">
+				</div>
 			</div>
 		</div> 
 		<div id="tabs-2">
@@ -751,8 +748,44 @@ iid(interaction_id).-->
 			}
 		}
 	}
+
+/*  this can not block the thread as prompt() can	
+	function submitValue(factors, msgDiv){
+		alert("submit");
+		var temp;
+		if(arguments.length == 1){
+			temp = $("<div></div>");
+		}
+		else{
+			temp = arguments[1];
+		}
+		if(factors.length != 0){
+			for(var i = 0; i < factors.length; i++){
+				if(factors[i].name && factors[i].name.charAt(0) === factors[i].name.charAt(0).toUpperCase()){
+					if(!factors[i].value || factors[i].value == undefined || factors[i].value == "undefined" ){
+						var inputTemp =  $("<input></input>").attr({"name": factors[i].name, "size": "5"});
+						inputTemp.type = "text";
+						temp.append($("<span></span>").text("Please give values to the variable(s):").append($("<label></label>").attr("for", factors[i].name).text(factors[i].name + ":")).append(inputTemp));						
+					}
+				}
+				if(factors[i].params && factors[i].params.length != 0){
+					submitValue(factors[i].params, temp);
+				}
+			}
+			temp.append($("<button></button>").attr({"name": "submit", "value": "submit"}).click(function() {
+				temp.find("input").each(function() {
+					setValue($(this).attr("name"), $(this).val());
+					$(this).attr("disabled", "disabled");
+				});
+				temp.find("button").remove();
+				return false;
+			}));
+			$("#messages").append(temp);
+		}			
+	}
+*/
 	
-	function serialiseValue(factors){
+	function serialiseValue(factors, delimiter){
 		var content = "";
 		for(var i = 0; i < factors.length; i++){
 //			alert(factors[i].name.charAt(0).toString() + " : " + factors[i].name.charAt(0).toString().toUpperCase());
@@ -763,26 +796,33 @@ iid(interaction_id).-->
 				else{
 //					alert(JSON.stringify(factors[i]));
 //					alert("detect factors " + factors[i].name + " " + factors[i].value);
-					content += factors[i].name + " : " + factors[i].value + "\r\n";
+					content += factors[i].name + " : " + factors[i].value + delimiter;
 					
 				}
 			}
 			if(factors[i].params && factors[i].params.length != 0){
-				content += serialiseValue(factors[i].params);
+				content += serialiseValue(factors[i].params, delimiter);
 			}
 		}
 		return content;
 	}
 	
 	function displayValue(factors){
-		alert(serialiseValue(factors));
+		alert("[" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + "]\r\n" + serialiseValue(factors, "\r\n"));
+	}
+	
+	function renderValues(factors){
+		var time = new Date();
+		$("#messages").append($("<div></div>").html("[" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + "]<br/>" + serialiseValue(factors, "<br/>")));
 	}
 	
 	var peerHelper = { 
 		"setValue" : setValue, 
 		"getValue" : getValue,
 		"readValue" : readValue,
-		"displayValue" : displayValue
+		"displayValue" : displayValue,
+//		"submitValue" : submitValue,
+		"renderValues" : renderValues
 	}
 	
 	function resetLCCEnvironment(){
@@ -995,6 +1035,7 @@ iid(interaction_id).-->
 				if(count == length){
 					alert("OKCs loading finished!");
 	//				alert(JSON.stringify(node));
+					emitter.emit("okcs loaded", node, niob_contexts[0]);
 				}
 				else{
 					retrieveOKCs(okcs, headElem, count, length, node);
@@ -1309,6 +1350,7 @@ iid(interaction_id).-->
 //						alert("role parse: " + JSON.stringify(execute(node.children[0], niob_context)));
 						var temp = eval("[(" + execute(node.children[0], niob_context) + ")]");
 						readValue(temp);
+//						submitValue(temp);		// this can not block the thread as prompt() can
 						var roleType = temp[0];
 						var roleName = roleType.name;
 						for(var i = 0; i < init.length; i++){
@@ -1321,7 +1363,7 @@ iid(interaction_id).-->
 								break;
 							}
 						}
-						break;
+						;
 					case OP_KNOWS:
 //						alert("hit knows");
 						if(node.children[0])
