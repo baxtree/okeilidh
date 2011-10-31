@@ -18,8 +18,10 @@ h3 {
 }	
 
 #tabs {
-	margin-left: 5%;
-	margin-right: 5%;
+	margin-left: auto;
+	margin-right: auto;
+	width: 950px;
+	height:100%;
 }
 
 .tabs {

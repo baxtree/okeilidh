@@ -1,4 +1,4 @@
-Hi, Please allow me to present you this OKBuzzer, that is a platform for peer to manage interaction model. 
+Hi, Please allow me to present you this OKeilidh, that is a platform for peer to manage interaction model. 
 
 
 
@@ -6,7 +6,7 @@ Interaction model is a protocol which direct peers to interact with one another.
 
 
 
-OKBuzzer can be regarded as an online application deployed on a public server or standalone downloadable application running in the peer-side browser for peers to edit, publish and execute interaction models in a distributed knowledge sharing environment. 
+OKeilidh can be regarded as an online application deployed on a public server or standalone downloadable application running in the peer-side browser for peers to edit, publish and execute interaction models in a distributed knowledge sharing environment. 
 
 
 
@@ -18,7 +18,7 @@ In this demo, we have built our own XMPP server. For example, Alice has got a Ja
 
 
 
-On OKBuzzer, Interaction models will be written a so-called xLCC language, which is an extension of LCC short for lightweight coordination calculus. LCC was developed in University of Edinburgh, both LCC and xLCC are dedicated to describing the interactions in the p2p network. 
+On OKeilidh, Interaction models will be written a so-called xLCC language, which is an extension of LCC short for lightweight coordination calculus. LCC was developed in University of Edinburgh, both LCC and xLCC are dedicated to describing the interactions in the p2p network. 
 
 
 
@@ -26,7 +26,7 @@ As you can see in this coding area, this is a simple example showing a trade int
 
 
 
-Back to the OKBuzzer page, if you make any change to the code please remember to click the submission buttion on the bottom. Otherwise, your change will not recogonised by the xLCC interpreter.
+Back to the OKeilidh page, if you make any change to the code please remember to click the submission buttion on the bottom. Otherwise, your change will not recogonised by the xLCC interpreter.
 
 
 
@@ -38,4 +38,4 @@ You can also edit the header of lcc which basically contains the peer subscripti
 
 
 
-OK. This is a brief introduction to OKBuzzer. In the next a screencast, i will show some examples in which two peers interact with each other to fulfill a purchase task with OKBuzzer. That's it. Please try it and have fun!
+OK. This is a brief introduction to OKeilidh. In the next a screencast, i will show some examples in which two peers interact with each other to fulfill a purchase task with OKeilidh. That's it. Please try it and have fun!

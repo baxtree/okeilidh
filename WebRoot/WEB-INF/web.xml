@@ -15,7 +15,7 @@
 	</security-constraint>
 	<login-config>
 		<auth-method>BASIC</auth-method>
-		<realm-name>OKBuzzer Demo</realm-name>
+		<realm-name>OKeilidh Demo</realm-name>
 	</login-config-->
 
 </web-app>

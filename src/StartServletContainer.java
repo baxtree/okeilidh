@@ -28,7 +28,7 @@ public class StartServletContainer {
 	 
 	        server.start();
 	        server.join();
-			System.out.println("OKBuzzer started, please go to http://127.0.0.1:" + PORT + "/");
+			System.out.println("OKeilidh started, please go to http://127.0.0.1:" + PORT + "/");
 		} catch (final Exception e) {
 			e.printStackTrace();
 		}
