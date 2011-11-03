@@ -52,10 +52,9 @@ var OKBuzzer = {
 	}
 };
 
-$(document).ready(function () {
-	
-    $("#login_dialog").dialog({
-        autoOpen: true,
+$(document).ready(function (){
+	$("#login_dialog").dialog({
+        autoOpen: false,
         dragOKBuzzerle: false,
         modal: true,
         title: "Connect to XMPP",
@@ -83,6 +82,11 @@ $(document).ready(function () {
 		OKBuzzer.connection.disconnect();
 	});
 });
+
+function peerLogin() {
+	if(OKBuzzer.connection == null)
+		$("#login_dialog").dialog("open");
+}
     
 $(document).bind("connect", function (ev, data) {
     var conn = new Strophe.Connection(data.server);

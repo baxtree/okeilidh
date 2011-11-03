@@ -114,6 +114,7 @@
 		var lcc_body_shown = false;
 		var lcc_head_shown = false;
 		$(document).ready(function(){
+//			$("#tabs-1").bind("click", peerLogin);
 			if(window.location.search){
 				var query = window.location.search.substring(1);
 				var xlccSrc = query.split("=")[1];
@@ -323,8 +324,8 @@
  	</div>
   	<div id="tabs">
   		<ul class="tabs">
-  			<li><a href="#tabs-0">Demo</a></li>
-  			<li><a href="#tabs-1">Buzzing</a></li>
+  			<li><a href="#tabs-0">Home</a></li>
+  			<li><a href="#tabs-1" onclick="javascript: peerLogin();">Start</a></li>
   			<li><a href="#tabs-2">About</a></jjli>
   			<li><a href="#tabs-3">Contact</a></li>
   		</ul>
@@ -332,7 +333,7 @@
   			<div class="sub_content_left">
   			<p>OKeilidh is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
 			assists users in editing, publishing and testing IMs written in xLCC. xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
-			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions. The syntax of xLCC is described as follows:  
+			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions.
 			</p>
   			</div>
   			<div class="sub_content_right">
@@ -560,7 +561,7 @@ iid(interaction_id).-->
   	</div>	
    	<div id="popupcontent"></div>
 	<div id="login_dialog" class="hidden">
-		<p>OKeilidh requires your Jabber ID before buzzing</p>
+		<p>OKeilidh requires your Jabber ID before rolling</p>
 		<div>
 			<div class="loginleft">
 		   		<label class="hidden">Server:</label><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/><br/>
@@ -689,6 +690,12 @@ iid(interaction_id).-->
 	var OP_NIOB			= 26;
 	var OP_BRACKET		= 27;
 	var OP_BRACKET_OR	= 28;
+	var OP_EQU			= 29;
+	var OP_NEQ			= 30;
+	var OP_GRT			= 31;
+	var OP_LOT			= 32;
+	var OP_GRE			= 33;
+	var OP_LOE			= 34;
 	
 	function Node(){
 		var type;
@@ -1581,6 +1588,24 @@ iid(interaction_id).-->
 //						alert("hit no_msg");
 						ret = execute(node.children[0], niob_context);
 						executeNextThenOrOrBranch(ret, niob_context);
+						break;
+					case OP_EQU:
+						ret = execute(node.children[0]) == execute(node.children[1]);
+						break;
+					case OP_NEQ:
+						ret = execute(node.children[0]) != execute(node.children[1]);
+						break;
+					case OP_GRT:
+						ret = execute(node.children[0]) > execute(node.children[1]);
+						break;
+					case OP_LOT:
+						ret = execute(node.children[0]) < execute(node.children[1]);
+						break;
+					case OP_GRE:
+						ret = execute(node.children[0]) >= execute(node.children[1]);
+						break;
+					case OP_LOE:
+						ret = execute(node.children[0]) <= execute(node.children[1]);
 						break;						
 				}
 				break;
@@ -1666,6 +1691,12 @@ iid(interaction_id).-->
 	'\]'
 	'\{'
 	'\}'
+	'=='
+	'!='
+	'>'
+	'<'
+	'>='
+	'=<'
 	'=>'
 	'<='
 	'->'
@@ -1689,19 +1720,27 @@ iid(interaction_id).-->
 >	"then"
 	;
 
->       "<="
-        "=>"
+>       '<='
+        '=>'
         ;
 
->       "<-"
-        "->"
+>       '<-'
+        '->'
         ;
 
->	"\|\|"									/~ logical "OR" ~/
+>	'\|\|'									/~ logical "OR" ~/
 	;
 	
->	"&&"									/~ logical "AND" ~/
+>	'&&'									/~ logical "AND" ~/
 	;	
+	
+> 	'=='
+	'!='
+	'>'
+	'<'
+	'>='
+	'=<'
+	;
 ##
 
 IM:		Clause_List	BuiltIn_List						[* initialize(%1, %2); *]
@@ -1756,6 +1795,12 @@ Constraint:	Constant  											[* %% = true; *]
 			| Constant '(' ')'                            		[* %% = createNode(NODE_OP, OP_CONSTRAINT, %1); *]
 			| Constant '(' Terms ')'                            [* %% = createNode(NODE_OP, OP_CONSTRAINT, %1, %3); *]
 			| not '(' Constraint ')'                            [* %% = createNode(NODE_OP, OP_NEGATE, %3); *]
+			| Id '==' Id										[* %% = createNode(NODE_OP, OP_EQU, %1, %3) *]
+			| Id '!=' Id										[* %% = createNode(NODE_OP, OP_NEQ, %1, %3) *]
+			| Id '>' Id											[* %% = createNode(NODE_OP, OP_GRT, %1, %3) *]
+			| Id '<' Id											[* %% = createNode(NODE_OP, OP_LOT, %1, %3) *]
+			| Id '>=' Id										[* %% = createNode(NODE_OP, OP_GRE, %1, %3) *]
+			| Id '=<' Id										[* %% = createNode(NODE_OP, OP_LOE, %1, %3) *]
 			| Constraint '&&' Constraint                        [* %% = createNode(NODE_OP, OP_LOGAND, %1, %3); *]
 			| Constraint '\|\|' Constraint                      [* %% = createNode(NODE_OP, OP_LOGOR, %1, %3); *] 
 			| Variable '=' '\[' Variable ListBar Variable '\]'	[* %% = createNode(NODE_OP, OP_LIST, %1, %4, %6); *] 
