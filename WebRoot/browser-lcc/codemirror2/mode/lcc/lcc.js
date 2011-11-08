@@ -53,6 +53,9 @@ CodeMirror.defineMode("lcc", function() {
 				else if(ch == "n" && stream.match("ull") && stream.eatSpace() && stream.peek() == "<"){
 					return "lcc-keyword";
 				}
+				else if(ch == "l" && stream.match("ist") && stream.peek() == "("){
+					return "lcc-keyword";
+				}
 				else if(ch == "p" && stream.match("lays") && stream.peek() == "("){
 					return "lcc-keyword";
 				}
