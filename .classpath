@@ -3,8 +3,5 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="com.genuitec.eclipse.j2eedt.core.J2EE14_CONTAINER"/>
-	<classpathentry kind="lib" path="WebRoot/lib/jetty-6.1.26.jar"/>
-	<classpathentry kind="lib" path="WebRoot/lib/jetty-util-6.1.26.jar"/>
-	<classpathentry kind="lib" path="WebRoot/lib/servlet-api-2.5-20081211.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>
