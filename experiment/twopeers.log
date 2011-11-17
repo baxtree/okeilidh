@@ -1,0 +1,30 @@
+set terminal postscript enhanced "Helvetica"
+set output "twopeers.eps"
+set parametric 
+timeout_1 = 34
+set object 1 polygon from \
+	34, 0 to \
+	34, 5852 to \
+	35, 6150 to \
+	36, 5980 to \
+	37, 6236 to \
+	38, 6048 to \
+	39, 6088 to \
+	40, 5978 to \
+	41, 6159 to \
+	42, 6210 to \
+	43, 6103 to \
+	44, 6153 to \
+	44, 0 to \
+	34, 0
+set object 1 fc rgb 'gray' fillstyle solid lw 0
+set pointsize 1.5
+set trange [0:62269]
+set xrange [0:50]
+set xrange [2:50]
+set yrange [2000:70000]
+set xlabel "Number of Messages"
+set ylabel "Cost of Time (ms)"
+set title "Message Passing Between Two Peers"
+plot "twopeers.dat" using 1:2 title "Blocking I/O" with linespoints lt 1 lw 3, "twopeers.dat" using 1:3 title "Non-Blocking I/O" with linespoints lt 1 lw 3, timeout_1,t title "Timeout_{blockingI/O}" with lines
+ 

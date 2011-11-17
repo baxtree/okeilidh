@@ -1,3 +1,8 @@
 /src
-/src
-/src
+.classpath
+.mymetadata
+.project
+/.settings
+BrowserLCC.war
+deploy.sh
+/promotion
