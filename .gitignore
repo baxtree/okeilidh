@@ -1,3 +1,9 @@
 /src
-/src
-/src
+/.settings
+.project
+.classpath
+.mymetadata
+BrowserLCC.war
+/promotion
+deploy.sh
+/.myeclipse

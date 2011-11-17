@@ -2,8 +2,8 @@
 <project-module
   type="WEB"
   name="WebLCC"
-  id="myeclipse.1294965065718"
-  context-root="/BrowserLCC"
+  id="myeclipse.1321565939890"
+  context-root="/WebLCC"
   j2ee-spec="1.4"
   archive="WebLCC.war">
   <attributes>
