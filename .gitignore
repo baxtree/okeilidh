@@ -1,0 +1,12 @@
+/src
+.classpath
+.mymetadata
+.project
+/.settings
+BrowserLCC.war
+deploy.sh
+/promotion
+TODO.txt
+/WebRoot/WEB-INF
+/WebRoot/META-INF
+/WebRoot/lib
