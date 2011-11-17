@@ -1,5 +1,4 @@
 /src
-<<<<<<< HEAD
 .classpath
 .mymetadata
 .project
@@ -7,13 +6,7 @@
 BrowserLCC.war
 deploy.sh
 /promotion
-=======
-/.settings
-.project
-.classpath
-.mymetadata
-BrowserLCC.war
-/promotion
-deploy.sh
-/.myeclipse
->>>>>>> fa55156413a648312f13ea665c5334eb0c2fdaae
+TODO.txt
+/WebRoot/lib
+/WebRoot/META-INF
+/WebRoot/WEB-INF
