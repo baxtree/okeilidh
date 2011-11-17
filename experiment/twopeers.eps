@@ -1,9 +1,11 @@
-%!PS-Adobe-2.0 EPSF-2.0
+%!PS-Adobe-2.0
 %%Title: twopeers.eps
 %%Creator: gnuplot 4.4 patchlevel 2
-%%CreationDate: Sun Oct  9 23:40:21 2011
+%%CreationDate: Thu Nov 10 03:30:54 2011
 %%DocumentFonts: (atend)
-%%BoundingBox: 50 50 410 302
+%%BoundingBox: 50 50 554 770
+%%Orientation: Landscape
+%%Pages: (atend)
 %%EndComments
 %%BeginProlog
 /gnudict 256 dict def
@@ -12,11 +14,11 @@ gnudict begin
 % The following true/false flags may be edited by hand if desired.
 % The unit line width and grayscale image gamma correction may also be changed.
 %
-/Color true def
+/Color false def
 /Blacktext false def
-/Solid true def
+/Solid false def
 /Dashlength 1 def
-/Landscape false def
+/Landscape true def
 /Level1 false def
 /Rounded false def
 /ClipToBoundingBox false def
@@ -50,13 +52,13 @@ SDict begin [
   /Author (baxtree)
 %  /Producer (gnuplot)
 %  /Keywords ()
-  /CreationDate (Sun Oct  9 23:40:21 2011)
+  /CreationDate (Thu Nov 10 03:30:54 2011)
   /DOCINFO pdfmark
 end
 } ifelse
 /doclip {
   ClipToBoundingBox {
-    newpath 50 50 moveto 410 50 lineto 410 302 lineto 50 302 lineto closepath
+    newpath 50 50 moveto 554 50 lineto 554 770 lineto 50 770 lineto closepath
     clip
   } if
 } def
@@ -463,11 +465,14 @@ currentdict end definefont pop
 /XYrestore { [( ) 1 2 true false 4 ()] } bind def
 end
 %%EndProlog
+%%Page: 1 1
 gnudict begin
 gsave
 doclip
 50 50 translate
-0.050 0.050 scale
+0.100 0.100 scale
+90 rotate
+0 -5040 translate
 0 setgray
 newpath
 (Helvetica) findfont 140 scalefont setfont
@@ -660,26 +665,44 @@ grestore
 LTb
 LCb setrgbcolor
 3900 98 M
-[ [(Helvetica) 140.0 0.0 true true 0 (Number of RnR Units)]
+[ [(Helvetica) 140.0 0.0 true true 0 (Number of Messages)]
 ] -46.7 MCshow
 LTb
 3900 4829 M
 [ [(Helvetica) 140.0 0.0 true true 0 (Message Passing Between Two Peers)]
 ] -46.7 MCshow
-1.000 UP
+0.000 UP
+0.000 UL
+LTb
+0.75 0.75 0.75 C gsave 4916 448 N 0 236 V 0 0 V 127 19 V 127 -11 V 127 16 V 127 -12 V 127 3 V 127 -7 V 127 11 V 127 3 V 126 -6 V 127 3 V 0 -255 V 1 PolyFill
+4916 448 N
+0 236 V
+127 19 V
+127 -11 V
+127 16 V
+127 -12 V
+127 3 V
+127 -7 V
+127 11 V
+127 3 V
+126 -6 V
+127 3 V
+0 -255 V
+Z stroke
+1.500 UP
 1.000 UL
 LTb
 % Begin plot #1
-1.000 UP
-1.000 UL
+1.500 UP
+3.000 UL
 LT0
 LCb setrgbcolor
-6296 4486 M
+6265 4486 M
 [ [(Helvetica) 140.0 0.0 true true 0 (Blocking I/O)]
 ] -46.7 MRshow
 LT0
-6380 4486 M
-399 0 V
+6349 4486 M
+430 0 V
 854 543 M
 981 648 L
 127 107 V
@@ -746,19 +769,19 @@ LT0
 4662 3934 Pls
 4789 4041 Pls
 4916 4145 Pls
-6579 4486 Pls
+6564 4486 Pls
 % End plot #1
 % Begin plot #2
-1.000 UP
-1.000 UL
-LT1
+1.500 UP
+3.000 UL
+LT0
 LCb setrgbcolor
-6296 4346 M
+6265 4346 M
 [ [(Helvetica) 140.0 0.0 true true 0 (Non-Blocking I/O)]
 ] -46.7 MRshow
-LT1
-6380 4346 M
-399 0 V
+LT0
+6349 4346 M
+430 0 V
 854 494 M
 127 41 V
 127 6 V
@@ -845,9 +868,118 @@ LT1
 5932 706 Crs
 6058 700 Crs
 6185 703 Crs
-6579 4346 Crs
+6564 4346 Crs
 % End plot #2
+% Begin plot #3
 1.000 UL
+LT2
+LCb setrgbcolor
+6265 4206 M
+[ [(Helvetica) 140.0 0.0 true true 0 (Timeout)]
+[(Helvetica) 112.0 -42.0 true true 0 (blockingI/O)]
+] -32.7 MRshow
+LT2
+6349 4206 M
+430 0 V
+4916 448 M
+0 32 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 38 V
+0 39 V
+0 39 V
+0 38 V
+0 39 V
+% End plot #3
+stroke
 LTb
 854 4619 N
 854 448 L
@@ -855,12 +987,10 @@ LTb
 0 4171 V
 -6093 0 V
 Z stroke
-1.000 UP
+1.500 UP
 1.000 UL
 LTb
 stroke
 grestore
 end
 showpage
-%%Trailer
-%%DocumentFonts: Helvetica
