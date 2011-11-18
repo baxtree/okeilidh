@@ -10,3 +10,4 @@ TODO.txt
 /WebRoot/WEB-INF
 /WebRoot/META-INF
 /WebRoot/lib
+.DS_Store
