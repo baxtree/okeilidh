@@ -213,6 +213,10 @@ td.node_name span {
 	height: 100%;
 }
 
+#tabs-4 {
+	height: 100%;
+}
+
 p {
 	color: #084B8A;
 }
@@ -220,4 +224,8 @@ p {
 #messages {
 	color: #2E64FE;
 	text-align: left;
+}
+
+#xlcc {
+	background-color: #edf5fa;
 }
