@@ -1,12 +1,12 @@
 /src
+/.settings
+.project
 .classpath
 .mymetadata
-.project
-/.settings
 BrowserLCC.war
-deploy.sh
 /promotion
-TODO.txt
+deploy.sh
+/.myeclipse
 /WebRoot/WEB-INF
 /WebRoot/META-INF
 /WebRoot/lib
