@@ -245,7 +245,11 @@
 		});
 		
 		$(function() {
-			$("#tabs").tabs();
+			$("#tabs").tabs({
+				select: function(event, ui){
+					$("#xlcc").val($("#lcc_body").val());
+				}
+			});
 			$("#lcc_head_dropdown").click(function(){
 				
 				$("lcc_head_effect").toggle("blind",{ to: { width: 200, height: 60 } }, 500);
@@ -316,18 +320,6 @@
 			});
 		});
 	--></script>
-	<script type="text/javascript">
-	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-15358580-4']);
-	  _gaq.push(['_trackPageview']);
-	
-	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();
-	
-	</script>
   </head>
   
   <body>
@@ -339,26 +331,25 @@
   			<li><a href="#tabs-0">Home</a></li>
   			<li><a href="#tabs-1" onclick="javascript: peerLogin();">Start</a></li>
   			<li><a href="#tabs-2">About</a></jjli>
+  			<li><a href="#tabs-4">Annotate</a></li>
   			<li><a href="#tabs-3">Contact</a></li>
   		</ul>
   		<div id="tabs-0">
   			<div class="sub_content_left">
-  			<p>OKeilidh is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
-			assists users in editing, publishing and testing IMs written in xLCC. xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
-			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions.  
+  			<p>OKeilidh is an online Web Service (WS) choreography management system, which
+			assists users in editing, publishing and testing WS choreography in the form of <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Models</a> (IMs) encoded in xLCC. 
+			An IM is a set of clauses defining the behaviours associated with roles within peer interactions and a <it>role</it> describes the necessary actions for
+			one of the peers taking part in the interaction. The term <it>peer</it> is used here instead of <it>agent</it> since we focus on reactive behaviours of participants within their interactions, which complies with the term <it>peer</it>} in <a href="http://www.openk.org">OpenKnowledge</a>.
+			</p>
+			<p>
+			xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
+			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions.
 			</p>
   			</div>
-  			<div class="sub_content_right">
-				<object id="scPlayer"  width="420" height="245" type="application/x-shockwave-flash" 
-data="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/bootstrap.swf" > <param 
-name="movie" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/bootstrap.swf" /> 
-<param name="quality" value="high" /> <param name="bgcolor" value="#FFFFFF" /> <param name="flashVars" 
-value="thumb=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/FirstFrame.jpg&containerwidth=979&containerheight=528&content=http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/okbuzzer5.swf&blurover=false" 
-/> <param name="allowFullScreen" value="true" /> <param name="scale" value="showall" /> <param name="allowScriptAccess" value="always" /> <param 
-name="base" value="http://content.screencast.com/users/baxtree/folders/OKBuzzer/media/94c554ac-393f-44a7-b565-29fef3b36900/" /> Unable to 
-display content. Adobe Flash is required.</object>
-			<div style="height: 26px;"></div>
-			<object id="scPlayer" width="420" height="245" type="application/x-shockwave-flash" data="http://content.screencast.com/users/baxtree/folders/Camtasia/media/b8fc6f8a-5ed4-4164-806b-f6586c6737a3/mp4h264player.swf" > <param name="movie" value="http://content.screencast.com/users/baxtree/folders/Camtasia/media/b8fc6f8a-5ed4-4164-806b-f6586c6737a3/mp4h264player.swf" /> <param name="quality" value="high" /> <param name="bgcolor" value="#FFFFFF" /> <param name="flashVars" value="thumb=http://content.screencast.com/users/baxtree/folders/Camtasia/media/b8fc6f8a-5ed4-4164-806b-f6586c6737a3/FirstFrame.jpg&containerwidth=1201&containerheight=732&content=http://content.screencast.com/users/baxtree/folders/Camtasia/media/b8fc6f8a-5ed4-4164-806b-f6586c6737a3/MR.mp4&blurover=false" /> <param name="allowFullScreen" value="true" /> <param name="scale" value="showall" /> <param name="allowScriptAccess" value="always" /> <param name="base" value="http://content.screencast.com/users/baxtree/folders/Camtasia/media/b8fc6f8a-5ed4-4164-806b-f6586c6737a3/" /> <iframe type="text/html" frameborder="0" scrolling="no" style="overflow:hidden;" src="http://www.screencast.com/users/baxtree/folders/Camtasia/media/b8fc6f8a-5ed4-4164-806b-f6586c6737a3/embed" height="500" width="272" ></iframe> </object>
+			 <div class="sub_content_right">
+				<object width="420" height="245"><param name="movie" value="http://www.youtube.com/v/GLGed7-1BqY?version=3&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/GLGed7-1BqY?version=3&amp;hl=en_US" type="application/x-shockwave-flash" width="420" height="245" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+				<div style="height: 26px;"></div>
+				<object width="420" height="245"><param name="movie" value="http://www.youtube.com/v/Ixcxsq7O16M?version=3&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/Ixcxsq7O16M?version=3&amp;hl=en_US" type="application/x-shockwave-flash" width="420" height="245" allowscriptaccess="always" allowfullscreen="true"></embed></object>
 			</div>
 			<p>
 			<div class="footer">
@@ -519,7 +510,7 @@ iid(interaction_id).-->
 			 		<tr>
 		     	   		<td><span class="lcc-bnf">C</span></td> 
 		     	   		<td>:=</td> 
-		     	   		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span></td>
+		     	   		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">list</span> ( <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Terms</span></td>
 		     	   	</tr>
 		     	   	<tr>
 			   			<td><span class="lcc-bnf">Terms</span></td> 
@@ -544,7 +535,7 @@ iid(interaction_id).-->
 			    	<tr>
 			    		<td><span class="lcc-bnf">Term</span></td> 
 			    		<td>:=</td> 
-			    		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">_</span></td>
+			    		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">_</span> )</td>
 			    	</tr>
 			    	<tr>
 		    			<td><span class="lcc-bnf">Constant</span></td> 
@@ -565,6 +556,16 @@ iid(interaction_id).-->
 				<div>getValue(Variable)</div>
 				<div>readValue(Terms)</div>
 				<div>displayValue(Terms)</div> 
+			</p>
+		</div>
+		<div id="tabs-4">
+			<p>
+			<form name="startAnnotating" method="POST" action="http://localhost:8080/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet">
+			<!-- <form name="startAnnotating" method="POST" action="http://demos.inf.ed.ac.uk:8836/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet"> -->
+				<textarea id="xlcc" name="xlcc" rows="18" cols="80" style="width: 100%;">
+				</textarea>
+			</form>
+			<span class="button" id="annotate" onclick="javascript: document.startAnnotating.submit();">Start annotating</span>
 			</p>
 		</div>
 		<div id="tabs-3">
@@ -670,6 +671,7 @@ iid(interaction_id).-->
 	var NODE_OP			= 1;
 	var NODE_VAR 		= 2;
 	var NODE_CONST		= 3;
+	var NODE_ARR		= 4;
 	
 	var OP_ENTRY		= -2;
 	var OP_NONE 		= -1;
@@ -702,6 +704,13 @@ iid(interaction_id).-->
 	var OP_NIOB			= 26;
 	var OP_BRACKET		= 27;
 	var OP_BRACKET_OR	= 28;
+	var OP_EQU			= 29;
+	var OP_NEQ			= 30;
+	var OP_GRT			= 31;
+	var OP_LOT			= 32;
+	var OP_GRE			= 33;
+	var OP_LOE			= 34;
+	var OP_ASSIGN		= 35;
 	
 	function Node(){
 		var type;
@@ -725,14 +734,14 @@ iid(interaction_id).-->
 		var found = false;
 		for(var i = 0; i < v_names.length; i++){
 			if(v_names[i].toString() == vname.toString()){
-				v_values[i] = (arguments.length == 1)? undefined : vvalue; //The type is now checked here.
+				v_values[i] = (arguments.length == 1)? undefined : vvalue.toString(); //The type is now checked here.
 				found = true;
 				break;
 			}
 		}
 		if(!found){
 			v_names.push(vname);
-			v_values.push((arguments.length == 1)? undefined : vvalue);
+			v_values.push((arguments.length == 1)? undefined : vvalue.toString());
 		}
 	}
 	
@@ -993,6 +1002,7 @@ iid(interaction_id).-->
 	
 	function getRoleBodyByRoleHead(role_head){
 		var role_body = null;
+		alert(role_head + " ::::: " + role_heads);
 		for(var i = 0; i < role_heads.length; i++){
 			if(isIdenticalRole(role_head, role_heads[i])){
 				role_body = role_bodies[i];
@@ -1010,6 +1020,7 @@ iid(interaction_id).-->
 	
 	function getRoleBodyByRoleHeadAfterRoleChanging(role_head){
 		var role_body = null;
+//		alert(JSON.stringify(role_head) + " ::::: " + JSON.stringify(role_heads));
 //		alert("number of pairs of heads and bodies: " + role_heads.length);
 		for(var i = 0; i < role_heads.length; i++){
 //			alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
@@ -1416,8 +1427,15 @@ iid(interaction_id).-->
 //						alert("hit factor");
 						if(node.children[1])
 							ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : [' + execute(node.children[1], niob_context) + ']}';
-						else
-							ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : []}';
+						else{
+//							alert(node.children[0].toString());
+							if(node.children[0].toString().charAt(0) == "[" && node.children[0].toString().charAt(node.children[0].toString().length - 1) == "]"){
+								ret = '{ "name" : "list", "value" : [' + eval(node.children[0]).toString() + '], "params" : []}';
+							}
+							else{
+								ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : []}';
+							}
+						}
 						break;
 					case OP_CONSTRAINT://TODO need check the Variables and which of them are inputs and wich of them are outputs (callback?).
 //						alert("hit constraint");
@@ -1458,27 +1476,27 @@ iid(interaction_id).-->
 						break;
 					case OP_LIST:
 //						alert("hit list");
-						if(execute(node.children[0], niob_context) != undefined){
-							if(execute(node.children[0], niob_context).length == 0){
-								setValue(node.children[1].value.toString(), []);
-								setValue(node.children[2].value.toString(), []);
-							}
-							else if(execute(node.children[0], niob_context).length = 1){
-								setValue(node.children[1].value.toString(), execute(node.children[0], niob_context)[0]);
-								setValue(node.children[2].value.toString(), []);
-							}
-							else if(execute(node.children[0], niob_context).length > 1){
-								setValue(node.children[1].value.toString(), execute(node.children[0], niob_context)[0]);
-								setValue(node.children[2].value.toString(), execute(node.children[0], niob_context).slice(1));
-							}
+						var list = execute(node.children[0], niob_context);
+						var listHead = execute(node.children[1], niob_context);
+						var listTail = execute(node.children[2], niob_context);
+						if(listHead != undefined && listTail != undefined && listTail.length){
+							setValue(node.children[0].value.toString(), listTail.unshift(listHead));
 						}
-						else if(execute(node.children[1], niob_context) != undefined && execute(node.children[2], niob_context) != undefined){
-							setValue(node.children[0].value.toString(), execute(node.children[1], niob_context).concat(execute(node.children[2], niob_context)));
-						}
-						if(execute(node.children[1], niob_context) != undefined && execute(node.children[2], niob_context) != undefined){
-							setValue(node.children[0].value.toString(), []);
-						}
-						ret = true;
+						else if(list != undefined && list.length){
+							if(list.length == 0){
+								setValue(node.children[1].value.toString(), new Array());
+								setValue(node.children[2].value.toString(), new Array());
+							}
+							else{
+								setValue(node.children[1].value.toString(), list[0]);
+								list.shift();
+								setValue(node.children[2].value.toString(), list);
+							}
+							ret = true;
+						}	
+						else{
+							throw listDefinitionNotSupportedException();
+						}					
 						break;
 					case OP_THEN:
 //						alert("hit 'then'");
@@ -1594,7 +1612,29 @@ iid(interaction_id).-->
 //						alert("hit no_msg");
 						ret = execute(node.children[0], niob_context);
 						executeNextThenOrOrBranch(ret, niob_context);
-						break;						
+						break;
+					case OP_EQU:
+						ret = execute(node.children[0], niob_context) == execute(node.children[1], niob_context);
+						break;
+					case OP_NEQ:
+						ret = execute(node.children[0], niob_context) != execute(node.children[1], niob_context);
+						break;
+					case OP_GRT:
+						ret = execute(node.children[0], niob_context) > execute(node.children[1], niob_context);
+						break;
+					case OP_LOT:
+						ret = execute(node.children[0], niob_context) < execute(node.children[1], niob_context);
+						break;
+					case OP_GRE:
+						ret = execute(node.children[0], niob_context) >= execute(node.children[1], niob_context);
+						break;
+					case OP_LOE:
+						ret = execute(node.children[0], niob_context) <= execute(node.children[1], niob_context);
+						break;					
+					case OP_ASSIGN:
+						setValue(node.children[0].value.toString(), execute(node.children[1], niob_context));
+						ret = true;
+						break;
 				}
 				break;
 			case NODE_VAR:
@@ -1605,6 +1645,9 @@ iid(interaction_id).-->
 				break;
 			case NODE_CONST:
 				ret = node.value;
+				break;
+			case NODE_ARR:
+				ret = eval(node.value);
 				break;
 		}
 		updateNiobContext(niob_context);
@@ -1640,10 +1683,17 @@ iid(interaction_id).-->
 		resetLCCEnvironment();
 		if(iid) removeSnapShot(iid);
 		var message = "Web storage is not supported by this browser and your states may be lost after you close the current window.";
-		alert(message)
+		alert(message);
 		return message;
 	}
 
+	function listDefinitionNotSupportedException(){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "This usage of the constraint list is not supported or correct.";
+		alert(message);
+		return message;
+	}
 	
 *]
 
@@ -1664,6 +1714,7 @@ iid(interaction_id).-->
 	'knows'
 	'plays'
 	'iid'
+	'list'
 	'null'
 	'not'									/~ logical "NOT" ~/
 /~	'msg' ~/
@@ -1679,16 +1730,23 @@ iid(interaction_id).-->
 	'\]'
 	'\{'
 	'\}'
+	'=='
+	'!='
+	'>'
+	'<'
+	'>='
+	'=<'
 	'=>'
 	'<='
 	'->'
 	'<-'
 	'='
 	'_'
-	'\|'                             ListBar
+	'\|'                             
 	'([A-Z][A-Za-z0-9_]*)'	Variable
 	'(([\'\"])?[a-z][A-Za-z0-9_@\.://]*([\'\"])?)|(([\'\"])?([0-9])+([\'\"])?)'		Constant
-	'\[(.)+\]'				JSON
+	'\[[^\|]*\{[^\|]+\}[^\|]*\]'				JSONLIST
+	'\[[^\{\}><=!]*\]'								LIST 
 	;
 	
 	
@@ -1702,27 +1760,37 @@ iid(interaction_id).-->
 >	"then"
 	;
 
->       "<="
-        "=>"
+>       '<='
+        '=>'
         ;
 
->       "<-"
-        "->"
+>       '<-'
+        '->'
         ;
 
->	"\|\|"									/~ logical "OR" ~/
+>	'\|\|'									/~ logical "OR" ~/
 	;
 	
->	"&&"									/~ logical "AND" ~/
+>	'&&'									/~ logical "AND" ~/
 	;	
+	
+> 	'=='
+	'!='
+	'>'
+	'<'
+	'>='
+	'=<'
+	'='
+	;
+
 ##
 
 IM:		Clause_List	BuiltIn_List						[* initialize(%1, %2); *]
 		| BuiltIn_List Clause_List						[* initialize(%2, %1); *]
-		| head '(' JSON ')' '.' Clause_List 			[* initializeByHeader(%3, %6); *]
-		| Clause_List head '(' JSON ')' '.'				[* initializeByHeader(%4, %1); *]
-		| head '(' JSON ')' '.' Clause_List BuiltIn_List			[* initializeByHeader(%3, %6, %7); *]
-		| head '(' JSON ')' '.' BuiltIn_List Clause_List 			[* initializeByHeader(%3, %7, %6); *]
+		| head '(' JSONLIST ')' '.' Clause_List 			[* initializeByHeader(%3, %6); *]
+		| Clause_List head '(' JSONLIST ')' '.'				[* initializeByHeader(%4, %1); *]
+		| head '(' JSONLIST ')' '.' Clause_List BuiltIn_List			[* initializeByHeader(%3, %6, %7); *]
+		| head '(' JSONLIST ')' '.' BuiltIn_List Clause_List 			[* initializeByHeader(%3, %7, %6); *]
 		;
 
 Clause_List:	Clause									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
@@ -1769,27 +1837,37 @@ Constraint:	Constant  											[* %% = true; *]
 			| Constant '(' ')'                            		[* %% = createNode(NODE_OP, OP_CONSTRAINT, %1); *]
 			| Constant '(' Terms ')'                            [* %% = createNode(NODE_OP, OP_CONSTRAINT, %1, %3); *]
 			| not '(' Constraint ')'                            [* %% = createNode(NODE_OP, OP_NEGATE, %3); *]
+			| Id '==' Id										[* %% = createNode(NODE_OP, OP_EQU, %1, %3); *]
+			| Id '!=' Id										[* %% = createNode(NODE_OP, OP_NEQ, %1, %3); *]
+			| Id '>' Id											[* %% = createNode(NODE_OP, OP_GRT, %1, %3); *]
+			| Id '<' Id											[* %% = createNode(NODE_OP, OP_LOT, %1, %3); *]
+			| Id '>=' Id										[* %% = createNode(NODE_OP, OP_GRE, %1, %3); *]
+			| Id '=<' Id										[* %% = createNode(NODE_OP, OP_LOE, %1, %3); *]
+			| Variable '=' Id									[* %% = createNode(NODE_OP, OP_ASSIGN, %1, %3); *]
 			| Constraint '&&' Constraint                        [* %% = createNode(NODE_OP, OP_LOGAND, %1, %3); *]
 			| Constraint '\|\|' Constraint                      [* %% = createNode(NODE_OP, OP_LOGOR, %1, %3); *] 
-			| Variable '=' '\[' Variable ListBar Variable '\]'	[* %% = createNode(NODE_OP, OP_LIST, %1, %4, %6); *] 
+			| list '(' Id ',' Id ',' Id ')' 					[* %% = createNode(NODE_OP, OP_LIST, %3, %5, %7); *]
 			;
 	
 Terms:	Terms ',' Term                                          [* %% = createNode(NODE_OP, OP_TERMS, %1, %3); *] 
 		| Term                                                  [* %% = createNode(NODE_OP, OP_TERMS, %1); *] 
 		;
 		
-Term:	Constant                                                [* %% = createNode(NODE_OP, OP_FACTOR, %1); *] 
-		| Variable                                              [* %% = createNode(NODE_OP, OP_FACTOR, %1); *] 
-		| Constant '(' Terms ')'                                [* %% = createNode(NODE_OP, OP_FACTOR, %1, %3)*]
+Term:	Constant                                              	[* %% = createNode(NODE_OP, OP_FACTOR, %1); *] 
+		| Variable                                              [* %% = createNode(NODE_OP, OP_FACTOR, %1); *]  
+		| LIST					 								[* %% = createNode(NODE_OP, OP_FACTOR, %1); *] 
+		| Constant '(' Terms ')'                                [* %% = createNode(NODE_OP, OP_FACTOR, %1, %3); *]
 		| '_'
 		;
 
 Id:	Constant                                                    [* %% = createNode(NODE_CONST, %1); *] 
 	| Variable                                                  [* %% = createNode(NODE_VAR, %1); *]  
+	| LIST														[* %% = createNode(NODE_ARR, %1); *] 
 	;
 
 Message:	Constant '(' Terms ')'                              [* %% = createNode(NODE_OP, OP_MESSAGE, %1, %3); *]
 			;
+
 
 [*
 	var str = document.getElementById("lcc_head").value + document.getElementById("lcc_body").value;

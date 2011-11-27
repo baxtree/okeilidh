@@ -11,3 +11,4 @@ deploy.sh
 /WebRoot/META-INF
 /WebRoot/lib
 TODO.txt
+.DS_Store
