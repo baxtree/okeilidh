@@ -339,7 +339,7 @@
   			<p>OKeilidh is an online Web Service (WS) choreography management system, which
 			assists users in editing, publishing and testing WS choreography in the form of <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Models</a> (IMs) encoded in xLCC. 
 			An IM is a set of clauses defining the behaviours associated with roles within peer interactions and a <it>role</it> describes the necessary actions for
-			one of the peers taking part in the interaction. The term <it>peer</it> is used here instead of <it>agent</it> since we focus on reactive behaviours of participants within their interactions, which complies with the term <it>peer</it>} in <a href="http://www.openk.org">OpenKnowledge</a>.
+			one of the peers taking part in the interaction. The term <it>peer</it> is used here instead of <it>agent</it> since we focus on reactive behaviours of participants within their interactions, which complies with the term <it>peer</it> in <a href="http://www.openk.org">OpenKnowledge</a>.
 			</p>
 			<p>
 			xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
@@ -462,8 +462,8 @@ iid(interaction_id).-->
 				</div>
 				<p/>
 				<div class="actions">
-					<span class="button" id="reset" onclick="reset();" style="display:none;">Reset</span> &nbsp;
 					<span class="button" id="triggerButton" onclick="submitOKCs();run_parser();">Run this IM!</span> &nbsp;
+					<span class="button" id="reset" onclick="reset();">Reset</span> &nbsp;
 					<span class="button" id="disconnect">Disconnect</span>
 				</div>
 				<p/>
@@ -562,7 +562,7 @@ iid(interaction_id).-->
 		</div>
 		<div id="tabs-4">
 			<p>
-			<form name="startAnnotating" method="POST" action="http://localhost:8080/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet">
+			<form name="startAnnotating" method="POST" action="http://demos.inf.ed.ac.uk:8836/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet">
 			<!-- <form name="startAnnotating" method="POST" action="http://demos.inf.ed.ac.uk:8836/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet"> -->
 				<textarea id="xlcc" name="xlcc" rows="18" cols="80" style="width: 100%;">
 				</textarea>
