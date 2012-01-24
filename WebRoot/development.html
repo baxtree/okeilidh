@@ -949,14 +949,26 @@ iid(interaction_id).-->
 		}
 	}
 	
-	function isIdenticalRole(tnode1, tnode2){ //TODO need testing
+	function isIdenticalRole(tnode1, tnode2, recursion_counter){ //TODO need testing
+//		alert(recursion_counter + " : "+ JSON.stringify(tnode1) + " " + JSON.stringify(tnode2));
 		if(typeof(tnode1) == "string" && typeof(tnode2) == "string"){
-			return true;	
+			if(recursion_counter < 4){
+				if(tnode1 == tnode2){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				return true;
+			}	
 		}
 		else if(typeof(tnode1) == "string" && typeof(tnode2) != "string" || typeof(tnode1) != "string" && typeof(tnode2) == "string"){
 			return false;
 		}
 		else{
+			recursion_counter++;
 			if((tnode1.type == 1 && tnode1.type.toString() == tnode2.type.toString() && tnode1.value.toString() == tnode2.value.toString())
 			|| (tnode1.type != 1 && tnode1.type.toString() == tnode2.type.toString())){
 				if(tnode1.children.length == 0 && tnode2.children.length == 0){
@@ -964,7 +976,7 @@ iid(interaction_id).-->
 				}
 				else if(tnode1.children.length == tnode2.children.length){
 					for(var i = 0; i < tnode1.children.length; i++){
-						if(isIdenticalRole(tnode1.children[i], tnode2.children[i])){
+						if(isIdenticalRole(tnode1.children[i], tnode2.children[i], recursion_counter)){
 							continue;
 						}
 						else{
@@ -1006,7 +1018,7 @@ iid(interaction_id).-->
 		var role_body = null;
 		alert(role_head + " ::::: " + role_heads);
 		for(var i = 0; i < role_heads.length; i++){
-			if(isIdenticalRole(role_head, role_heads[i])){
+			if(isIdenticalRole(role_head, role_heads[i], 0)){
 				role_body = role_bodies[i];
 				break;
 			}
@@ -1026,7 +1038,7 @@ iid(interaction_id).-->
 //		alert("number of pairs of heads and bodies: " + role_heads.length);
 		for(var i = 0; i < role_heads.length; i++){
 //			alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
-			if(isIdenticalRole(role_head, role_heads[i])){
+			if(isIdenticalRole(role_head, role_heads[i], 0)){
 //				alert("find identical roles");
 				updateVariableValueInNode(role_head, role_heads[i]);
 				role_body = role_bodies[i];

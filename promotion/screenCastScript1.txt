@@ -1,0 +1,41 @@
+Hi, Please allow me to present you this OKeilidh, that is a platform for peer to manage interaction model. 
+
+
+
+Interaction model is a protocol which direct peers to interact with one another.
+
+
+
+OKeilidh can be regarded as an online application deployed on a public server or standalone downloadable application running in the peer-side browser for peers to edit, publish and execute interaction models in a distributed knowledge sharing environment. 
+
+
+
+Before you create or run any interaction model, you need a Jabber id to identify your self and make youself reachable by other peers. If you dont have Jabber id as of now, you can apply one on any public XMPP server. For example, this link will direct you to the Jabber.org website, which is basically a fully functioning XMPP server. By filling out this form, you can get a Jabber ID or alternatively, you may want to create your own XMPP server and get a Jabber ID on that. Therefore your can get an ID with your own domain name. 
+
+
+
+In this demo, we have built our own XMPP server. For example, Alice has got a Jabber ID from our domain. By clicking the connect button, she will be connected to this XMPP server shortly. There is pop-up dialog showing that the connection has been created successfully. Thereafter, you can see the tab name as well as the title of this page are both changed to Alice's Jabber ID. 
+
+
+
+On OKeilidh, Interaction models will be written a so-called xLCC language, which is an extension of LCC short for lightweight coordination calculus. LCC was developed in University of Edinburgh, both LCC and xLCC are dedicated to describing the interactions in the p2p network. 
+
+
+
+As you can see in this coding area, this is a simple example showing a trade interaction model. From the codes, you can see role definitions, built-in predicates, message passing and constrants. For further understanding how to create an interaction model, please refer to th OpenKnowledge project website and there are plenty documents for you to understand what the interaction model is, how to write it in LCC and how to write Openknowledge component etc. etc. 
+
+
+
+Back to the OKeilidh page, if you make any change to the code please remember to click the submission buttion on the bottom. Otherwise, your change will not recogonised by the xLCC interpreter.
+
+
+
+You also have some advanced options here. For example, you can import an external OKC via its dereferenceable URL. Or you can create your OKC on the fly by inputing the corresponding constraint name into this box. Then a handy template will be created and it has a so called peer helper which wraps several ready-to-use function to manipulate the variables and create required logics.
+
+
+
+You can also edit the header of lcc which basically contains the peer subscription information. Alternatively, you can use built-in predicates like plays or knows here to serve the information pre-required by the xLCC interpreter.
+
+
+
+OK. This is a brief introduction to OKeilidh. In the next a screencast, i will show some examples in which two peers interact with each other to fulfill a purchase task with OKeilidh. That's it. Please try it and have fun!

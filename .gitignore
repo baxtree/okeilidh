@@ -1,0 +1,15 @@
+/src*
+/.settings*
+.project
+.classpath
+.mymetadata
+BrowserLCC.war
+/promotion*
+deploy.sh
+/.myeclipse*
+/WebRoot/WEB-INF*
+/WebRoot/META-INF*
+/WebRoot/lib*
+.DS_Store
+TODO.txt
+.gitignore
