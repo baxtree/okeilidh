@@ -58,6 +58,7 @@ $(document).ready(function (){
         dragOKBuzzerle: false,
         modal: true,
         title: "Connect to XMPP",
+        resizable: false,
         buttons: {
             "Connect": function () {
                 $(document).trigger("connect", {

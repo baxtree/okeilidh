@@ -47,6 +47,8 @@
 	</script>
 	<script type="text/javascript"><!--
 		var url_okcs = new Array();
+		var lccBodyEditor;
+		var lccHeadEditor;
 		var lcc_exmaple = 	"a(client(PC), D)::\r\n" +
 							"\t buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).\r\n" +
 							"\r\n"+		
@@ -110,6 +112,33 @@
 			return text; 
 		}
 		
+		function startIM(){
+			lccBodyEditor.save();
+			lccBodyEditor.refresh();
+			peerLogin();
+		}
+		
+		function resetIM()
+		{
+			if( lccBodyEditor )
+				if( confirm( "Delete current LCC?" ) )
+				{
+					lccBodyEditor.setValue("");
+					lccBodyEditor.refresh();
+					lccBodyEditor.save();
+					lccHeadEditor.setValue("");
+					lccHeadEditor.refresh();
+					lccHeadEditor.save();
+//					resetLCCEnvironment();
+					return true;
+				}
+				else{
+					return false;
+				}
+
+			return true;
+		}
+		
 		var advanced_shown = false;
 		var lcc_body_shown = false;
 		var lcc_head_shown = false;
@@ -126,8 +155,8 @@
 			$("#edit_subscription").hide();
 			$("#lcc_head_dropdown").hide();
 			$("#xmpphttp_change_effect").hide();
-			var lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
-			var lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
+			lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
+			lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
 //			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
 			$("h3").css("background-color", "#2E9AFE");
 			$(".tabs").css("background-color", "#2E9AFE").attr("class", "ui-corner-all");
@@ -320,6 +349,11 @@
 			});
 		});
 	--></script>
+	<style type="text/css">
+		#tabs ul li {
+			width: 15%;
+		}
+	</style>
   </head>
   
   <body>
@@ -328,13 +362,13 @@
  	</div>
   	<div id="tabs">
   		<ul class="tabs">
-  			<li><a href="#tabs-0">Home</a></li>
-  			<li><a href="#tabs-1" onclick="javascript: peerLogin();">Start</a></li>
-  			<li><a href="#tabs-2">About</a></jjli>
-  			<li><a href="#tabs-4">Annotate</a></li>
-  			<li><a href="#tabs-3">Contact</a></li>
+  			<li><a href="#home">Home</a></li>
+  			<li><a href="#start" onclick="javascript: startIM();">Start</a></li>
+  			<li><a href="#xlcc-syntax">About</a></jjli>
+  			<li><a href="#annotate">Annotate</a></li>
+  			<li><a href="#contact">Contact</a></li>
   		</ul>
-  		<div id="tabs-0">
+  		<div id="home">
   			<div class="sub_content_left">
   			<p>OKeilidh is an online Web Service (WS) choreography management system, which
 			assists users in editing, publishing and testing WS choreography in the form of <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Models</a> (IMs) encoded in xLCC. 
@@ -363,7 +397,7 @@
 				</a>
 			</div>
   		</div>
-		<div id="tabs-1">
+		<div id="start">
 			<div class="main_content">			
 				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC [+]</a>
 				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
@@ -463,7 +497,7 @@ iid(interaction_id).-->
 				<p/>
 				<div class="actions">
 					<span class="button" id="triggerButton" onclick="submitOKCs();run_parser();">Run this IM!</span> &nbsp;
-					<span class="button" id="reset" onclick="reset();">Reset</span> &nbsp;
+					<span class="button" id="reset" onclick="resetIM();">Reset</span> &nbsp;
 					<span class="button" id="disconnect">Disconnect</span>
 				</div>
 				<p/>
@@ -471,7 +505,7 @@ iid(interaction_id).-->
 				</div>
 			</div>
 		</div> 
-		<div id="tabs-2">
+		<div id="xlcc-syntax">
 			<p>OKeilidh is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
 			assists users in editing, publishing and testing IMs written in xLCC. xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
 			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions. The syntax of xLCC is described as follows:  
@@ -507,7 +541,7 @@ iid(interaction_id).-->
 		   		 	<tr>	
 			 			<td><span class="lcc-bnf">Message</span></td> 
 			 			<td>:=</td> 
-			 			<td><span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇒</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">⇐</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">←</span> <span class="lcc-bnf">C</span></td>
+			 			<td><span class="lcc-bnf">M</span> <span class="lcc-keyword">&#61;&gt;</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">&#61;&gt;</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword"><-</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">&lt;&#61;</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&lt;&#45;</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">&lt;&#61;</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">&lt;&#45;</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">&lt;&#45;</span> <span class="lcc-bnf">C</span></td>
 			 		</tr>
 			 		<tr>
 		     	   		<td><span class="lcc-bnf">C</span></td> 
@@ -560,7 +594,7 @@ iid(interaction_id).-->
 				<div>displayValue(Terms)</div> 
 			</p>
 		</div>
-		<div id="tabs-4">
+		<div id="annotate">
 			<p>
 			<form name="startAnnotating" method="POST" action="http://demos.inf.ed.ac.uk:8836/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet">
 			<!-- <form name="startAnnotating" method="POST" action="http://demos.inf.ed.ac.uk:8836/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet"> -->
@@ -570,7 +604,7 @@ iid(interaction_id).-->
 			<span class="button" id="annotate" onclick="javascript: document.startAnnotating.submit();">Start annotating</span>
 			</p>
 		</div>
-		<div id="tabs-3">
+		<div id="contact">
 			<p>OKeilidh is under active development of <a href="mailto:xi.bai@ed.ac.uk"><span class="external_link">Xi Bai</span></a> at <a href="http://www.inf.ed.ac.uk"><span class="external_link">University of Edinburgh</span></a></p>
 		</div> 		
   	</div>	
@@ -579,9 +613,13 @@ iid(interaction_id).-->
 		<p>OKeilidh requires your Jabber ID before rolling</p>
 		<div>
 			<div class="loginleft">
-		   		<label class="hidden">Server:</label><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/><br/>
-		   		<label>Jid:</label><input type="text" id="jid" value=""/><br/>
-		   		<label>Password:</label><input type="password" id="password" value=""/>
+				<table border="0">
+		   			<tbody>
+		   				<tr><td><label class="hidden">Server:</label></td><td><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/></td></tr>
+		   				<tr><td><label>JID:</label></td><td><input type="text" id="jid" size="40" value=""/></td></tr>
+		   				<tr><td><label>Password:</label></td><td><input type="password" id="password" size="40" value=""/></td></tr>
+		   			</tbody>
+		   		</table>
 	   		<div>
 	   		<div class="loginright">
 	   			<a href="http://www.instantssl.com">
@@ -949,14 +987,26 @@ iid(interaction_id).-->
 		}
 	}
 	
-	function isIdenticalRole(tnode1, tnode2){ //TODO need testing
+	function isIdenticalRole(tnode1, tnode2, recursion_counter){ //TODO need testing
+//		alert(recursion_counter + " : "+ JSON.stringify(tnode1) + " " + JSON.stringify(tnode2));
 		if(typeof(tnode1) == "string" && typeof(tnode2) == "string"){
-			return true;	
+			if(recursion_counter < 4){
+				if(tnode1 == tnode2){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				return true;
+			}	
 		}
 		else if(typeof(tnode1) == "string" && typeof(tnode2) != "string" || typeof(tnode1) != "string" && typeof(tnode2) == "string"){
 			return false;
 		}
 		else{
+			recursion_counter++;
 			if((tnode1.type == 1 && tnode1.type.toString() == tnode2.type.toString() && tnode1.value.toString() == tnode2.value.toString())
 			|| (tnode1.type != 1 && tnode1.type.toString() == tnode2.type.toString())){
 				if(tnode1.children.length == 0 && tnode2.children.length == 0){
@@ -964,7 +1014,7 @@ iid(interaction_id).-->
 				}
 				else if(tnode1.children.length == tnode2.children.length){
 					for(var i = 0; i < tnode1.children.length; i++){
-						if(isIdenticalRole(tnode1.children[i], tnode2.children[i])){
+						if(isIdenticalRole(tnode1.children[i], tnode2.children[i], recursion_counter)){
 							continue;
 						}
 						else{
@@ -1006,7 +1056,7 @@ iid(interaction_id).-->
 		var role_body = null;
 		alert(role_head + " ::::: " + role_heads);
 		for(var i = 0; i < role_heads.length; i++){
-			if(isIdenticalRole(role_head, role_heads[i])){
+			if(isIdenticalRole(role_head, role_heads[i], 0)){
 				role_body = role_bodies[i];
 				break;
 			}
@@ -1026,7 +1076,7 @@ iid(interaction_id).-->
 //		alert("number of pairs of heads and bodies: " + role_heads.length);
 		for(var i = 0; i < role_heads.length; i++){
 //			alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
-			if(isIdenticalRole(role_head, role_heads[i])){
+			if(isIdenticalRole(role_head, role_heads[i], 0)){
 //				alert("find identical roles");
 				updateVariableValueInNode(role_head, role_heads[i]);
 				role_body = role_bodies[i];

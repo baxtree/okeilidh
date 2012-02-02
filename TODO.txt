@@ -13,6 +13,7 @@ Embedded brackets are not supported.
 [important]role changing does not work for niob.
 [important]irrelevant constraints should be ignored 
 Change "Start" to "Choreograph"
+reset button can not call resetLCCEnvironment
 
 Factor Structure (foo("a", B, bar(C,"d"))):
 {
