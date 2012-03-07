@@ -19,10 +19,28 @@ CodeMirror.defineMode("lcc", function() {
 			else if(ch == "-" && stream.eat(">") || ch == "<" && stream.eat("-")){
 				return "lcc-keyword";
 			}
+			else if(ch == ">" && stream.eat("=") || ch == "=" && stream.eat("<")){
+				return "lcc-operator";
+			}
+			else if(ch == "!" && stream.eat("=")){
+				return "lcc-operator";
+			}
+			else if(ch == "=" && stream.eat("=")){
+				return "lcc-operator";
+			}
 			else if(ch == "\&" && stream.eat("\&")){
 				return "lcc-keyword";
 			}
 			else if(ch == "\|" && stream.eat("\|")){
+				return "lcc-keyword";
+			}
+			else if(ch == ">"){
+				return "lcc-operator";
+			}
+			else if(ch == "<"){
+				return "lcc-operator";
+			}
+			else if(ch == "="){
 				return "lcc-keyword";
 			}
 			else if(ch == "."){

@@ -546,7 +546,7 @@ iid(interaction_id).-->
 			 		<tr>
 		     	   		<td><span class="lcc-bnf">C</span></td> 
 		     	   		<td>:=</td> 
-		     	   		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">list</span> ( <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Terms</span></td>
+		     	   		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">=</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-bnf">Operator</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">list</span> ( <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Terms</span>)</td>
 		     	   	</tr>
 		     	   	<tr>
 			   			<td><span class="lcc-bnf">Terms</span></td> 
@@ -573,6 +573,11 @@ iid(interaction_id).-->
 			    		<td>:=</td> 
 			    		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">_</span> )</td>
 			    	</tr>
+			    	<tr>
+		    			<td><span class="lcc-bnf">Operator</span></td> 
+		    			<td>:=</td> 
+		    			<td><span class="lcc-operator">==</span> | <span class="lcc-operator">!=</span> | <span class="lcc-operator">&gt;</span> | <span class="lcc-operator">&lt;</span> | <span class="lcc-operator">&gt;=</span> | <span class="lcc-operator">=&lt;</span></td>
+		    		</tr>
 			    	<tr>
 		    			<td><span class="lcc-bnf">Constant</span></td> 
 		    			<td>:=</td> 
