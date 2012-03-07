@@ -1533,6 +1533,7 @@ iid(interaction_id).-->
 						var listTail = execute(node.children[2], niob_context);
 						if(listHead != undefined && listTail != undefined && listTail.length){
 							setValue(node.children[0].value.toString(), listTail.unshift(listHead));
+							ret = true;
 						}
 						else if(list != undefined && list.length){
 							if(list.length == 0){
