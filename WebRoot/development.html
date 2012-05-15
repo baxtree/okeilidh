@@ -146,8 +146,11 @@
 //			$("#tabs-1").bind("click", peerLogin);
 			if(window.location.search){
 				var query = window.location.search.substring(1);
-				var xlccSrc = query.split("=")[1];
-				document.getElementById('lcc_body').value = xlccSrc;
+				var xlccSrc = query.split("&")[0].split("=")[1];
+				var interaction_identifier = query.split("&")[1].split("=")[1];
+				document.getElementById('lcc_body').value = decodeURIComponent((xlccSrc + '').replace(/\+/g, '%20')).replace(/^\s+|\s+$/g, "");
+				document.getElementById('jid').value = "{YOUR_JID_WITHOUT_RESOURCE}/" + interaction_identifier;
+//				$("#start").click();
 //				alert(xlccSrc);
 			}
 			$("#okc_import_effect").hide();
