@@ -832,6 +832,17 @@ iid(interaction_id).-->
 			}
 		}
 	}
+	
+	function display_okc_hook(factors, peerHelper){	//or rename it as displayValue?
+		peerHelper.displayValue(factors);
+		return true;
+	}
+	
+	function read_okc_hook(factors, peerHelper){	//or rename it as displayValue?
+		peerHelper.readValue(factors);
+		return true;
+	}
+	
 
 /*  this can not block the thread as prompt() can	
 	function submitValue(factors, msgDiv){
@@ -892,7 +903,7 @@ iid(interaction_id).-->
 	}
 	
 	function displayValue(factors){
-		alert("[" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + "]\r\n" + serialiseValue(factors, "\r\n"));
+		alert(serialiseValue(factors, "\r\n"));
 	}
 	
 	function renderValues(factors){
@@ -1707,7 +1718,7 @@ iid(interaction_id).-->
 						ret = execute(node.children[0], niob_context) <= execute(node.children[1], niob_context);
 						break;					
 					case OP_ASSIGN:
-						setValue(node.children[0].value.toString(), execute(node.children[1], niob_context));
+						setValue(node.children[0].toString(), execute(node.children[1], niob_context));
 						ret = true;
 						break;
 				}
