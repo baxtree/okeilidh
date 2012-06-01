@@ -159,8 +159,8 @@
 			$("#edit_subscription").hide();
 			$("#lcc_head_dropdown").hide();
 			$("#xmpphttp_change_effect").hide();
-			lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
-			lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, json : true});
+			lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, tabSize: 4, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
+			lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, tabSize: 4, json : true});
 //			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
 			$("h3").css("background-color", "#2E9AFE");
 			$(".tabs").css("background-color", "#2E9AFE").attr("class", "ui-corner-all");
@@ -382,6 +382,12 @@
 			<p>
 			xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
 			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions.
+			</p>
+			<p/>
+			<p>The <i>Hello World</i> example written in xLCC is shown as follows:<br/><br/>
+				<div style="margin: auto">
+					<img style="border:2px dotted #2E9AFE" src="browser-lcc/images/helloworld.png" alt="HelloWorld example"/>
+				</div>
 			</p>
   			</div>
 			 <div class="sub_content_right">
@@ -625,8 +631,8 @@ iid(interaction_id).-->
 				<table border="0">
 		   			<tbody>
 		   				<tr><td><label class="hidden">Server:</label></td><td><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/></td></tr>
-		   				<tr><td><label>JID:</label></td><td><input type="text" id="jid" size="40" value=""/></td></tr>
-		   				<tr><td><label>Password:</label></td><td><input type="password" id="password" size="40" value=""/></td></tr>
+		   				<tr><td><label>JID:</label></td><td><input type="text" id="jid" size="40" value="alice@okbook.inf.ed.ac.uk/123456"/></td></tr>
+		   				<tr><td><label>Password:</label></td><td><input type="password" id="password" size="40" value="123456"/></td></tr>
 		   			</tbody>
 		   		</table>
 	   		<div>
@@ -834,12 +840,17 @@ iid(interaction_id).-->
 		}
 	}
 	
-	function display_okc_hook(factors, peerHelper){	//or rename it as displayValue?
+	function display_okc_hook(factors, peerHelper){
 		peerHelper.displayValue(factors);
 		return true;
 	}
 	
-	function read_okc_hook(factors, peerHelper){	//or rename it as displayValue?
+	function inspect_okc_hook(factors, peerHelper){
+		peerHelper.inspectValue(factors);
+		return true;
+	}
+	
+	function read_okc_hook(factors, peerHelper){
 		peerHelper.readValue(factors);
 		return true;
 	}
@@ -909,8 +920,37 @@ iid(interaction_id).-->
 		return content;
 	}
 	
+	function serialiseValueWithoutName(factors, delimiter){
+		var content = "";
+		for(var i = 0; i < factors.length; i++){
+			if(factors[i].name && factors[i].name.charAt(0).toString() == factors[i].name.charAt(0).toString().toUpperCase()){
+				if(factors[i].value == undefined){
+//					alert("here again");
+				}
+				else{
+					content += factors[i].value + delimiter;
+					
+				}
+			}
+			if(factors[i].name == "list"){
+				content += factors[i].value.toString() + delimiter;
+			}
+			if(factors[i].name == "string"){
+				content += factors[i].value + delimiter;
+			}
+			if(factors[i].params && factors[i].params.length != 0){
+				content += serialiseValueWithoutName(factors[i].params, delimiter);
+			}
+		}
+		return content;
+	}
+	
 	function displayValue(factors){
 		alert(serialiseValue(factors, "\r\n"));
+	}
+	
+	function displayValueWithoutName(factors){
+		alert(serialiseValueWithoutName(factors, "\r\n"));
 	}
 	
 	function renderValues(factors){
@@ -922,7 +962,8 @@ iid(interaction_id).-->
 		"setValue" : setValue, 
 		"getValue" : getValue,
 		"readValue" : readValue,
-		"displayValue" : displayValue,
+		"displayValue" : displayValueWithoutName,
+		"inspectValue" : displayValue,
 //		"submitValue" : submitValue,
 		"renderValues" : renderValues
 	}
