@@ -14,6 +14,7 @@ Embedded brackets are not supported.
 [important]irrelevant constraints should be ignored 
 Change "Start" to "Choreograph"
 reset button can not call resetLCCEnvironment
+codemirror highlighting does not support Chinese.
 
 Factor Structure (foo("a", B, bar(C,"d"))):
 {

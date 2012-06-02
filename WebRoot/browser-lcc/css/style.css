@@ -72,6 +72,12 @@ html,body,td {
 	font-size: 11px;
 }
 
+label {
+	font-family: Courier New, Sans-serif;
+	font-size: 11px;
+	color: #0683FF;
+}
+
 table.debug,table.print {
 	width: 100%;
 	border: 1px solid #707070;
@@ -193,8 +199,8 @@ td.node_name span {
 }
 
 .footer {
-	float: none;
-	text-align: left;
+	float: right;
+	text-align: right;
 }
 
 #tabs-0 {
@@ -202,7 +208,7 @@ td.node_name span {
 }
 
 #home {
-	height: 100%;
+	height: 135%;
 }
 
 #tabs-1 {
