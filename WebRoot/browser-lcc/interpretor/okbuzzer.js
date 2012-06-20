@@ -71,7 +71,9 @@ $(document).ready(function (){
                 $("#loading").show();
 //              $(this).dialog("close");
             }
-        }
+        },
+        closeOnEscape: false,
+ 	open: function(event, ui) { $(".ui-dialog-titlebar-close", ui.dialog || ui).hide(); }
     });
     
     $("#login_dialog").keyup(function(e){
