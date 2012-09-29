@@ -170,21 +170,21 @@
 			$("#lcc_body_effect").hide();
 			$("#lcc_head_dropdown").click(function(){
 				if(lcc_head_shown){
-					$(this).text("Edit xLCC Head [+]");
+					$(this).text("Edit XLCC Head [+]");
 					lccHeadEditor.save();
 					$("#lcc_head_effect").hide(500);	
 					$("lcc_head_dropdown").focus();
 					lcc_head_shown = false;
 				}
 				else{
-					$(this).text("Edit xLCC Head [-]");
+					$(this).text("Edit XLCC Head [-]");
 					$("#lcc_head_effect").show(500);
 					lccHeadEditor.refresh();
 					$("#submit_head").click(function(){
 						lccHeadEditor.save();
 						$("#lcc_head_effect").hide(500);	
 						$("lcc_head_dropdown").focus();
-						$("#lcc_head_dropdown").text("Edit xLCC Head [+]");
+						$("#lcc_head_dropdown").text("Edit XLCC Head [+]");
 						return false;			
 					});
 					$("#load_head_example").click(function(){
@@ -198,14 +198,14 @@
 			});
 			$("#lcc_body_dropdown").click(function(){
 				if(lcc_body_shown){
-					$(this).text("Edit xLCC [+]");
+					$(this).text("Edit XLCC [+]");
 					lccBodyEditor.save();
 					$("#lcc_body_effect").hide(500);
 					$("#lcc_body_dropdown").focus();
 					lcc_body_shown = false;
 				}
 				else{
-					$(this).text("Edit xLCC [-]");
+					$(this).text("Edit XLCC [-]");
 					$("#lcc_body_effect").show(500);
 					lccBodyEditor.refresh();
 					$("#submit_body").click(function(){
@@ -215,7 +215,7 @@
 						lccBodyEditor.save();
 						$("#lcc_body_effect").hide(500);
 						$("#lcc_body_dropdown").focus();
-						$("#lcc_body_dropdown").text("Edit xLCC [+]");
+						$("#lcc_body_dropdown").text("Edit XLCC [+]");
 						return false;
 					});
 					$("#load_example_body").click(function(){
@@ -375,16 +375,16 @@
   		<div id="home">
   			<div class="sub_content_left">
 	  			<p>OKeilidh is an online Web Service (WS) choreography management system, which
-				assists users in editing, publishing and testing WS choreography in the form of <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Models</a> (IMs) encoded in xLCC. 
+				assists users in editing, publishing and testing WS choreography in the form of <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Models</a> (IMs) encoded in XLCC. 
 				An IM is a set of clauses defining the behaviours associated with roles within peer interactions and a <it>role</it> describes the necessary actions for
 				one of the peers taking part in the interaction. The term <it>peer</it> is used here instead of <it>agent</it> since we focus on reactive behaviours of participants within their interactions, which complies with the term <it>peer</it> in <a href="http://www.openk.org">OpenKnowledge</a>.
 				</p>
 				<p>
-				xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
-				and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions.
+				XLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
+				and fully interpretable in modern browsers. Here, "X" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by XLCC to interpret peer interactions. OKeilidh also provides a <a href="http://nodejs.org/">node.js</a> version of the <a href="https://github.com/baxtree/xlcc">XLCC interpreter</a> running in your favourite clouds.
 				</p>
 				<p/>
-				<p>The <i>Hello World</i> examples written in xLCC are as follows:
+				<p>The <i>Hello World</i> examples written in XLCC are as follows:
 				 	<p>
 						<label for="singlepart">Single Part:</label><br/>
 						<div id="singlepart" style="margin: auto">
@@ -418,7 +418,7 @@
   		</div>
 		<div id="start">
 			<div class="main_content">			
-				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC [+]</a>
+				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit XLCC [+]</a>
 				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Please input the body<a href="#" id="load_example_body">load an example</a></h3>
 					<p>
@@ -500,7 +500,7 @@ iid(interaction_id).-->
 				<div id="edit_subscription" class="ui-widget-content ui-corner-all">
 					<h3 class="ui-widget-header ui-corner-all">Edit peer subscription head</h3>
 					<div>
-						<a id="lcc_head_dropdown" class="ui-state-default ui-corner-all" href="#">Edit xLCC Head [+]</a>
+						<a id="lcc_head_dropdown" class="ui-state-default ui-corner-all" href="#">Edit XLCC Head [+]</a>
 					</div>
 				</div>
 				<div id="lcc_head_effect" class="ui-widget-content ui-corner-all">
@@ -526,8 +526,8 @@ iid(interaction_id).-->
 		</div> 
 		<div id="xlcc-syntax">
 			<p>OKeilidh is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
-			assists users in editing, publishing and testing IMs written in xLCC. xLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
-			and fully interpretable in modern browsers. Here, "x" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by xLCC to interpret peer interactions. The syntax of xLCC is described as follows:  
+			assists users in editing, publishing and testing IMs written in XLCC. XLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
+			and fully interpretable in modern browsers. Here, "X" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by XLCC to interpret peer interactions. The syntax of XLCC is described as follows:  
 			</p>
 			<pre>
 				<table border="0">
@@ -617,6 +617,7 @@ iid(interaction_id).-->
 				<div>readValue(Terms)</div>
 				<div>displayValue(Terms)</div> 
 			</p>
+			<p>The OKeilidh project provides a <a href="http://nodejs.org/">node.js</a> version running on the Google V8 engine. Please check out the code at <a href="https://github.com/baxtree/xlcc"><img src="http://homepages.inf.ed.ac.uk/s0896253/images/code1.jpg" alt="github" width="50px"></img></a> and start choreographing WSs in your favourite clouds.</p>
 		</div>
 		<div id="annotate">
 			<p>
@@ -629,7 +630,19 @@ iid(interaction_id).-->
 			</p>
 		</div>
 		<div id="contact">
-			<p>OKeilidh is under active development of <a href="mailto:xi.bai@ed.ac.uk"><span class="external_link">Xi Bai</span></a> at <a href="http://www.inf.ed.ac.uk"><span class="external_link">University of Edinburgh</span></a></p>
+			<p>OKeilidh is under active development of <a href="http://homepages.inf.ed.ac.uk/s0896253/"><span class="external_link">Xi Bai</span></a> at <a href="http://www.inf.ed.ac.uk"><span class="external_link">University of Edinburgh</span></a></p>
+			<p>
+				<address>
+				    <strong>Xi Bai</strong><br>
+				    Room 2.05, Informatics Forum<br>
+				    10 Crichton Street<br>
+				    Edinburgh EH8 8PD, UK<br>
+				    <a href="mailto:xi.bai@ed.ac.uk">Email</a>
+			    </address>
+	    	</p>
+	    	<p>
+	    		<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;aq=&amp;sll=55.944322,-3.185992&amp;sspn=0.001472,0.004823&amp;t=h&amp;ie=UTF8&amp;hq=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;ll=55.944632,-3.187505&amp;spn=0.012497,0.032015&amp;output=embed"></iframe><br /><small><a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;aq=&amp;sll=55.944322,-3.185992&amp;sspn=0.001472,0.004823&amp;t=h&amp;ie=UTF8&amp;hq=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;ll=55.944632,-3.187505&amp;spn=0.012497,0.032015" style="color:#0000FF;text-align:left">View Larger Map</a></small>
+			</p>
 		</div> 		
   	</div>	
    	<div id="popupcontent"></div>
@@ -1323,7 +1336,7 @@ iid(interaction_id).-->
 	
 	function sendMSG(message, recepientJID){
 		var success;
-		var fullJID = recepientJID + "/" + OKBuzzer.resource; //TODO: this needs to be passed from the xLCC codes
+		var fullJID = recepientJID + "/" + OKBuzzer.resource; //TODO: this needs to be passed from the XLCC codes
 		alert("Sending message " + message + " to " + fullJID);
 		OKBuzzer.connection.send($msg({ "to" : fullJID, "type" : "chat"}).c("body").t(message));
 //		sendtext();
