@@ -54,6 +54,7 @@ var OKBuzzer = {
 
 $(document).ready(function (){
 	$("#login_dialog").dialog({
+        open: function() { $(".ui-dialog-titlebar-close").hide(); },
         autoOpen: false,
         dragOKBuzzerle: false,
         modal: true,
