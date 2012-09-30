@@ -381,7 +381,7 @@
 				</p>
 				<p>
 				XLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
-				and fully interpretable in modern browsers. Here, "X" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by XLCC to interpret peer interactions. OKeilidh also provides a <a href="http://nodejs.org/">node.js</a> version of the <a href="https://github.com/baxtree/xlcc">XLCC interpreter</a> running in your favourite clouds.
+				and fully interpretable in modern browsers. Here, "X" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by XLCC to interpret peer interactions. OKeilidh also provides a <a href="http://nodejs.org/">node.js</a> version --- <a href="https://github.com/baxtree/xlcc">node-xlcc</a> running in your favourite clouds.
 				</p>
 				<p/>
 				<p>The <i>Hello World</i> examples written in XLCC are as follows:
@@ -617,7 +617,7 @@ iid(interaction_id).-->
 				<div>readValue(Terms)</div>
 				<div>displayValue(Terms)</div> 
 			</p>
-			<p>The OKeilidh project provides a <a href="http://nodejs.org/">node.js</a> version running on the Google V8 engine. Please check out the code at <a href="https://github.com/baxtree/xlcc"><img src="http://homepages.inf.ed.ac.uk/s0896253/images/code1.jpg" alt="github" width="50px"></img></a> and start choreographing WSs in your favourite clouds.</p>
+			<p>The OKeilidh project provides a <a href="http://nodejs.org/">node.js</a> version running on the Google V8 engine. Please check out node-xlcc at <a href="https://github.com/baxtree/xlcc"><img src="http://homepages.inf.ed.ac.uk/s0896253/images/code1.jpg" alt="github" width="50px"></img></a> and start choreographing WSs in your favourite clouds.</p>
 		</div>
 		<div id="annotate">
 			<p>
@@ -653,8 +653,8 @@ iid(interaction_id).-->
 				<table border="0">
 		   			<tbody>
 		   				<tr><td><label class="hidden">Server:</label></td><td><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/></td></tr>
-		   				<tr><td><label>JID:</label></td><td><input type="text" id="jid" size="40" value="alice@okbook.inf.ed.ac.uk/123456"/></td></tr>
-		   				<tr><td><label>Password:</label></td><td><input type="password" id="password" size="40" value="123456"/></td></tr>
+		   				<tr><td><label>JID:</label></td><td><input type="text" id="jid" size="40" placeholder="e.g., alice@okbook.inf.ed.ac.uk/123456"/></td></tr>
+		   				<tr><td><label>Password:</label></td><td><input type="password" id="password" size="40" value=""/></td></tr>
 		   			</tbody>
 		   		</table>
 	   		<div>
