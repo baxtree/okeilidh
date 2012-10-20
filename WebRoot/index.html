@@ -49,18 +49,22 @@
 		var url_okcs = new Array();
 		var lccBodyEditor;
 		var lccHeadEditor;
-		var lcc_exmaple = 	"a(client(PC), D)::\r\n" +
-							"\t buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).\r\n" +
+		var lcc_exmaple = 	"a(client(PC, CC), C):\r\n" +
+							"\t buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then\r\n" +
+							"\t receipt(R) <= a(shop, S).\r\n" + 
 							"\r\n"+		
-							"a(client(AA, BB), C)::\r\n" +
-							"\t buy(AA, BB) => a(shop, S) <- payby(AA) then\r\n" +
-							"\t display(R) <- receipt(R) <= a(shop, S) then\r\n" +
-							"\t null <- display(R) then\r\n" +
-							"a(client(AA), C).\r\n" +
-							"plays(alice@okbook.inf.ed.ac.uk, client).\r\n" +	
-							"plays(bob@okbook.inf.ed.ac.uk, shop).\r\n" +
-							"knows(http://okbook.inf.ed.ac.uk/im/alice.js).\r\n" +	
-							"knows(http://okbook.inf.ed.ac.uk/im/bob.js).\r\n" +
+							"a(shop, S)::\r\n" +
+							"\t buy(PC, CC) <= a(client(_),C) then\r\n" +
+							"\t receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).\r\n" +
+							"\r\n" +
+							"a(client('0123456789', '1234567887654321'), C).\r\n" +
+							"\r\n" +
+							"plays('alice@okbook.inf.ed.ac.uk', client).\r\n" +
+							"\r\n" +	
+							"plays('bob@okbook.inf.ed.ac.uk', shop).\r\n" +
+							"\r\n" +
+							"knows('http://okbook.inf.ed.ac.uk/im/alice.js').\r\n" +
+							"\r\n" +	
 							"iid(interaction_id).";
 		var head_exmaple =	"head(\r\n" +
 							"\t [\r\n" +
@@ -431,35 +435,32 @@ a(shop, S)::
 	buy(PC, CC) <= a(client(_),C) then
         receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
 
-a(client(0123456789, 1234567887654321), C). 
+a(client('0123456789', '1234567887654321'), C). 
 
-plays(alice@okbook.inf.ed.ac.uk, client). 
+plays('alice@okbook.inf.ed.ac.uk', client). 
 
-plays(bob@okbook.inf.ed.ac.uk, shop). 
+plays('bob@okbook.inf.ed.ac.uk', shop). 
 
-knows(http://okbook.inf.ed.ac.uk/im/alice.js).
+knows('http://okbook.inf.ed.ac.uk/im/alice.js').
 
 iid(interaction_id).
 						</textarea>
-<!--  a(client(PC), D)::
-	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
-	
-a(client(AA, BB), C)::
-	buy(AA, BB) => a(shop, S) <- payby(AA) then
-	display(R) <- receipt(R) <= a(shop, S) then
-	null <- display(R) then
-	a(client(AA), C).
-	
-a(shop, S)::
-	buy(PC, CC) <= a(client(_), C) then
-	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+<!-- a(client(PC, CC), C):: 
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
+        receipt(R) <= a(shop, S).
+        
+a(shop, S):: 
+	buy(PC, CC) <= a(client(_),C) then
+        receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
 
-a(client(book, card), C).					
+a(client('0123456789', '1234567887654321'), C). 
 
-plays(alice@okbook.inf.ed.ac.uk, client).
-plays(bob@okbook.inf.ed.ac.uk, shop).
-knows(http://okbook.inf.ed.ac.uk/im/alice.js).
-knows(http://okbook.inf.ed.ac.uk/im/bob.js).
+plays('alice@okbook.inf.ed.ac.uk', client). 
+
+plays('bob@okbook.inf.ed.ac.uk', shop). 
+
+knows('http://okbook.inf.ed.ac.uk/im/alice.js').
+
 iid(interaction_id).-->		
 					</p>
 					<p>

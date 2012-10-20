@@ -18,10 +18,10 @@ a(subscriber, S)::
 	{
 		submit(Result, Task) => a(publisher(_), P) <- perform(Task, Result)
 		or
-		a(subscriber, S).
-	}
+		a(subscriber, S)
+	}.
 
-a(publisher(Annotate this page, http://www.example.com/index.html using RDFa and send me the HTML file), P).
+a(publisher('Annotate this page, http://www.example.com/index.html using RDFa and send me the HTML file'), P).
 
 plays("alice@okbook.inf.ed.ac.uk", publisher).
 plays("amazon@okbook.inf.ed.ac.uk", mturk).
