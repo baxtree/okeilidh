@@ -1,0 +1,28 @@
+a(publisher(Task), P)::
+	publish(Task) => a(mturk, MT) then
+	display(Result, Task) <- submit(Result, Task) <= a(subscribe, S).
+	
+a(mturk, MT)::
+	publish(Task) <= a(publisher(_), P) then
+	a(mturk(SubList, Task, P), MT) <- query_DB(SubList).
+	
+a(mturk(SubList, Task, P), MT)::
+	null <- SubList == [] then
+	a(mturk, MT)
+	or
+	dispatch(Task, P) => a(subscriber, S) <- SubList = [S|NewSubList] then
+	a(mturk(NewSubList, Task, P), MT).
+
+a(subscriber, S)::
+	dispatch(Task, P) <= a(mturk(_, _, _), MT) then
+	{
+		submit(Result, Task) => a(publisher(_), P) <- perform(Task, Result)
+		or
+		a(subscriber, S).
+	}
+
+a(publisher(Annotate this page, http://www.example.com/index.html using RDFa and send me the HTML file), P).
+
+plays("alice@okbook.inf.ed.ac.uk", publisher).
+plays("amazon@okbook.inf.ed.ac.uk", mturk).
+knows("http://okbook.inf.ed.ac.uk/im/alice.js").
