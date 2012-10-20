@@ -1153,10 +1153,10 @@ iid(interaction_id).-->
 	function updateVariableValueInNode(src_role_head, dest_role_head){
 		if(typeof(src_role_head) == "string" && typeof(dest_role_head) == "string"){
 			if(getValue(src_role_head)){
-				setValue(dest_role_head, getValue(src_role_head));
+				setValue(dest_role_head, removeQuotes(getValue(src_role_head)));
 			}
 			else{
-				setValue(dest_role_head, src_role_head);
+				setValue(dest_role_head, removeQuotes(src_role_head));
 			}
 		}
 		else{
@@ -1535,25 +1535,40 @@ iid(interaction_id).-->
 						}
 						break;
 					case OP_ROLE:
-//						alert("hit role");
-						var roleIdNode = execute(node.children[1], niob_context);
-//						alert("role parse: " + JSON.stringify(execute(node.children[0], niob_context)));
-						var temp = eval("[(" + execute(node.children[0], niob_context) + ")]");
-						readValue(temp);
-//						submitValue(temp);		// this can not block the thread as prompt() can
-						var roleType = temp[0];
-						var roleName = roleType.name;
-						for(var i = 0; i < init.length; i++){
-//							alert(roleName.toString().toLowerCase() + " : " + init[i].role.toString().toLowerCase());
-							if(roleName.toString().toLowerCase() == init[i].role.toString().toLowerCase()){
-								setValue(roleIdNode, init[i].jid.toString());
-//								alert(roleIdNode + " " + init[i].jid.toString());
-								var jid = init[i].jid.toString();
-								ret = jid; 
+//							alert("hit role");
+							var roleID = node.children[1].value.toString();
+							if(getValue(roleID) != null && getValue(roleID) != undefined){
+								ret = getValue(roleID);
 								break;
 							}
-						}
-						;
+							else{
+//								alert("role parse: " + JSON.stringify(execute(node.children[0], niob_context)));
+								var temp = eval("[(" + execute(node.children[0], niob_context) + ")]");
+								readValue(temp);
+//								submitValue(temp);		// this can not block the thread as prompt() can
+								var roleType = temp[0];
+								var roleName = roleType.name;
+								var roleFoundInInit = true;
+								var roleJID = "";
+								for(var i = 0; i < init.length; i++){
+//									alert(roleName.toString().toLowerCase() + " : " + init[i].role.toString().toLowerCase());
+									if(roleName.toString().toLowerCase() == init[i].role.toString().toLowerCase()){
+										setValue(roleID, init[i].jid.toString());
+//										alert(roleID + " " + init[i].jid.toString());
+										roleJID = init[i].jid.toString();
+										break;
+									}
+									roleFoundInInit = false;
+								}
+								if(roleFoundInInit){
+									ret = roleJID; 
+									break;
+								}
+								else{
+//									alert(roleID + " : " + getValue(roleID));
+									throw CommunicationIDNotFoundException(roleName);
+								}
+							}	
 					case OP_KNOWS:
 //						alert("hit knows");
 						if(node.children[0])
@@ -1867,6 +1882,14 @@ iid(interaction_id).-->
 		resetLCCEnvironment();
 		if(iid) removeSnapShot(iid);
 		var message = "This usage of the constraint list is not supported or correct.";
+		alert(message);
+		return message;
+	}
+	
+	function CommunicationIDNotFoundException(roleName){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "Cannot find the communication ID (Jabber ID) of the message receiver with the role name: " + roleName;
 		alert(message);
 		return message;
 	}
