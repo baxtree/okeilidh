@@ -545,7 +545,7 @@ iid(interaction_id).-->
 					<tr>
 		   	  			<td><span class="lcc-bnf">Clause</span></td> 
 		   	  			<td>:=</td> 
-		   	  			<td><span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">Constant</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">Constant</span> ) . | <span class="lcc-keyword">iid</span> ( <span class="lcc-bnf">Constant</span> ) .</td>
+		   	  			<td><span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">String</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">String</span> ) . | <span class="lcc-keyword">iid</span> ( <span class="lcc-bnf">String</span> ) .</td>
 		   	  		</tr>
 		   	  		<tr>
 		  				<td><span class="lcc-bnf">Role</span></td> 
@@ -1094,6 +1094,13 @@ iid(interaction_id).-->
 		}
 	}
 	
+	function removeQuotes(str){
+		if(str.charAt(0) == '\'' || str.charAt(0) == '\"')
+			return str.substring(1, str.length - 1);
+		else
+			return str;
+	}
+	
 	function isIdenticalRole(tnode1, tnode2, recursion_counter){ //TODO need testing
 //		alert(recursion_counter + " : "+ JSON.stringify(tnode1) + " " + JSON.stringify(tnode2));
 		if(typeof(tnode1) == "string" && typeof(tnode2) == "string"){
@@ -1550,13 +1557,13 @@ iid(interaction_id).-->
 					case OP_KNOWS:
 //						alert("hit knows");
 						if(node.children[0])
-							okcs.push(node.children[0].toString());
+							okcs.push(removeQuotes(node.children[0].toString()));
 						break;
 					case OP_PLAYS:
 //						alert("hit plays");
 						if(node.children[0] && node.children[1]){
 							var info = {};
-							info["jid"] = node.children[0].toString();
+							info["jid"] = removeQuotes(node.children[0].toString());
 							info["role"] = node.children[1].toString();
 							init.push(info);						
 						}
@@ -1564,8 +1571,8 @@ iid(interaction_id).-->
 					case OP_IID:
 //						alert("hit iid");
 						if(node.children[0]){
-							OKBuzzer.resource = node.children[0].toString();
-							iid = node.children[0].toString();
+							OKBuzzer.resource = removeQuotes(node.children[0].toString());
+							iid = removeQuotes(node.children[0].toString());
 						}
 //						alert("in OP_IID " + OKBuzzer.resource);
 						break;
@@ -1592,7 +1599,10 @@ iid(interaction_id).-->
 								ret = '{ "name" : "list", "value" : [' + eval(node.children[0]).toString() + '], "params" : []}';
 							}
 							else if(node.children[0].toString().charAt(0) == "'" && node.children[0].toString().charAt(node.children[0].toString().length - 1) == "'"){
-								ret = '{ "name" : "string", "value" : "' + node.children[0].toString().replace(/\'/g, "") + '", "params" : []}';
+								ret = '{ "name" : "string", "value" : "' + removeQuotes(node.children[0].toString()) + '", "params" : []}';
+							}
+							else if(node.children[0].toString().charAt(0) == "\"" && node.children[0].toString().charAt(node.children[0].toString().length - 1) == "\""){
+								ret = '{ "name" : "string", "value" : "' + removeQuotes(node.children[0].toString()) + '", "params" : []}';
 							}
 							else{
 								ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : []}';
@@ -1813,7 +1823,7 @@ iid(interaction_id).-->
 				ret = eval(node.value);
 				break;
 			case NODE_STR:
-				ret = node.value.toString().replace(/\'/g, "");
+				ret = removeQuotes(node.value.toString());
 				break;
 		}
 		updateNiobContext(niob_context);
@@ -1910,10 +1920,12 @@ iid(interaction_id).-->
 	'_'
 	'\|'                             
 	'([A-Z][A-Za-z0-9_]*)'	Variable
-	'(([\'\"])?[a-z][A-Za-z0-9_@\.://]*([\'\"])?)|(([\'\"])?([0-9])+([\'\"])?)'		Constant
+/~	'(([\'\"])?[a-z][A-Za-z0-9_@\.://]*([\'\"])?)|(([\'\"])?([0-9])+([\'\"])?)'		Constant	~/
+	'([a-z][A-Za-z0-9_@\.://]*)|(([0-9])+)'											Constant
 	'\[[^\|]*\{[^\|]+\}[^\|]*\]'													JSONLIST
 	'\[[^\{\}><=!]*\]'																LIST 
-	'\'([^\']|\'\')*\'' 															String
+/~	'\'([^\']|\'\')*\'' 															String	~/
+	'(\'([^\']|\'\')*\')|(\"([^\"]|\"\")*\")'										String
 	;
 	
 	
@@ -1972,9 +1984,9 @@ BuiltIn_List: 	BuiltIn									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
 				| BuiltIn BuiltIn_List					[* %% = createNode(NODE_OP, OP_CLAUSE, %1, %2); *]
 				;
 		
-BuiltIn:	plays '(' Constant ',' Constant ')'	'.'						[* %% = createNode(NODE_OP, OP_PLAYS, %3, %5); *]
-		 	| knows '(' Constant ')' '.'								[* %% = createNode(NODE_OP, OP_KNOWS, %3); *] 
-		 	| iid '(' Constant ')' '.'									[* %% = createNode(NODE_OP, OP_IID, %3); *]
+BuiltIn:	plays '(' String ',' Constant ')'	'.'						[* %% = createNode(NODE_OP, OP_PLAYS, %3, %5); *]
+		 	| knows '(' String ')' '.'								[* %% = createNode(NODE_OP, OP_KNOWS, %3); *] 
+		 	| iid '(' String ')' '.'									[* %% = createNode(NODE_OP, OP_IID, %3); *]
 		 	;
 
 Role:	a '(' Type ',' Id ')'                           [* %% = createNode(NODE_OP, OP_ROLE, %3, %5); *]

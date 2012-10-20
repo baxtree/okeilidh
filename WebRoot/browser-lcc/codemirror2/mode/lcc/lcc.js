@@ -13,6 +13,9 @@ CodeMirror.defineMode("lcc", function() {
 			else if(ch == "'" && stream.match(/([^\'])*\'/)){
 				return "lcc-string";
 			}
+			else if(ch == "\"" && stream.match(/([^\"])*\"/)){
+				return "lcc-string";
+			}
 			else if(ch == ":" && stream.eat(":")){
 				return "lcc-keyword";
 			}
