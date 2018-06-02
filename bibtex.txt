@@ -1,0 +1,9 @@
+@inproceedings{bai2012,
+author = {Bai, Xi and Klein, Ewan and Robertson, Dave},
+year = {2012},
+month = {12},
+pages = {583-587},
+title = {Choreographing Web Services with Semantically Enhanced Scripting},
+isbn = {978-1-4673-6057-9},
+booktitle = {Proceedings - 2012 IEEE/WIC/ACM International Conference on Web Intelligence, WI 2012}
+}
