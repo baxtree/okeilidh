@@ -1,0 +1,35 @@
+K 25
+svn:wc:ra_dav:version-url
+V 39
+/svn/!svn/ver/7491/trunk/test/preparser
+END
+functions-only.js
+K 25
+svn:wc:ra_dav:version-url
+V 57
+/svn/!svn/ver/7491/trunk/test/preparser/functions-only.js
+END
+symbols-only.js
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/7491/trunk/test/preparser/symbols-only.js
+END
+testcfg.py
+K 25
+svn:wc:ra_dav:version-url
+V 50
+/svn/!svn/ver/7491/trunk/test/preparser/testcfg.py
+END
+non-alphanum.js
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/7491/trunk/test/preparser/non-alphanum.js
+END
+empty.js
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/!svn/ver/7491/trunk/test/preparser/empty.js
+END

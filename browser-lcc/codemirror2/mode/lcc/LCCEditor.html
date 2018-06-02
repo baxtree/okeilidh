@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <title>LCC mode</title>
+    <link rel="stylesheet" href="../../lib/codemirror.css">
+    <script src="../../lib/codemirror.js"></script>
+    <script src="lcc.js"></script>
+    <link rel="stylesheet" href="lcc.css">
+    <style>.CodeMirror {border-top: 1px solid #ddd; border-bottom: 1px solid #ddd;}</style>
+    <link rel="stylesheet" href="../../css/docs.css">
+  </head>
+  <body>
+    <h1>LCC mode</h1>
+    <form><textarea id="lcc_body">
+a(client(PC), D)::
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
+	
+a(client(AA, BB), C)::
+	buy(AA, BB) => a(shop, S) <- payby(AA) then
+	display(R) <- receipt(R) <= a(shop, S) then
+	null <- display(R) then
+	a(client(AA), C).
+	
+a(shop, S)::
+	buy(PC, CC) <= a(client(_), C) then
+	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+
+a(client(book, card), C).
+</textarea></form>
+    <script>
+      var editor = CodeMirror.fromTextArea(document.getElementById("lcc_body"), {mode:"text/lcc"});
+    </script>
+  </body>
+</html>

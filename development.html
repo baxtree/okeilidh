@@ -1,0 +1,2095 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>OKeilidh</title>
+	<meta http-equiv="pragma" content="no-cache">
+	<meta http-equiv="cache-control" content="no-cache">
+    <meta http-equiv="keywords" content="LCC,Interaction Model,Peer">
+    <meta http-equiv="description" content="this is a page which provides ...">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <script src="browser-lcc/codemirror2/lib/codemirror.js"></script>
+    <link rel="icon" type="image/jpeg" href="browser-lcc/images/okbuzzer_favicon.jpg">
+    <link rel="stylesheet" href="browser-lcc/codemirror2/lib/codemirror.css">
+	<script src="browser-lcc/codemirror2/mode/javascript/javascript.js"></script>
+	<link rel="stylesheet" href="browser-lcc/codemirror2/mode/javascript/javascript.css">
+    <script src="browser-lcc/codemirror2/mode/lcc/lcc.js"></script>
+    <link rel="stylesheet" href="browser-lcc/codemirror2/mode/lcc/lcc.css">
+    <link rel="stylesheet" href="browser-lcc/jquery/jquery-ui-1.7.3.custom.css" type="text/css">
+	<script type="text/javascript" src="browser-lcc/jquery/jquery-1.3.2.min.js"></script>
+	<script type="text/javascript" src="browser-lcc/jquery/jquery-ui-1.7.3.custom.min.js"></script>
+	<script type="text/javascript" src="browser-lcc/strophe/strophejs-1.0.1/strophe.js"></script>
+	<script type="text/javascript" src="browser-lcc/strophe/flXHR/flXHR.js"></script>
+	<script type="text/javascript" src="browser-lcc/strophe/strophejs-1.0.1/plugins/strophe.flxhr.js"></script>
+	<link rel="stylesheet" href="browser-lcc/css/style.css" type="text/css">
+  	<script type="text/javascript" src="browser-lcc/interpretor/event.js"></script>
+  	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzer.js"></script>
+	<script type="text/javascript" src="browser-lcc/jsccWebEnv/jscc.js"></script>
+	<script type="text/javascript" src="browser-lcc/jsccWebEnv/driver.js"></script>
+	<script type="text/javascript" src="browser-lcc/jsccWebEnv/webdriver.js"></script>
+	<script type="text/javascript" src="browser-lcc/interpretor/okbuzzerDriver.js"></script>
+	<script type="text/javascript">
+		//this is for saving and loading the snapshots.
+/*		var storage;
+		if(window["localStorage"]){
+			storage = window["localStorage"];
+		}
+*/		
+/*		window.top.onbeforeunload = function() {
+			alert("finished " + finished);
+			if(!finished){
+				saveSnapShot(iid);
+				return "Closing before finished may cause data lost! Are you sure?";
+			}
+			else
+				return "Bye!";
+		}
+*/
+	</script>
+	<script type="text/javascript"><!--
+		var url_okcs = new Array();
+		var lccBodyEditor;
+		var lccHeadEditor;
+		var lcc_exmaple = 	"a(client(PC, CC), C):\r\n" +
+							"\t buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then\r\n" +
+							"\t receipt(R) <= a(shop, S).\r\n" + 
+							"\r\n"+		
+							"a(shop, S)::\r\n" +
+							"\t buy(PC, CC) <= a(client(_),C) then\r\n" +
+							"\t receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).\r\n" +
+							"\r\n" +
+							"a(client('0123456789', '1234567887654321'), C).\r\n" +
+							"\r\n" +
+							"plays('alice@okbook.inf.ed.ac.uk', client).\r\n" +
+							"\r\n" +	
+							"plays('bob@okbook.inf.ed.ac.uk', shop).\r\n" +
+							"\r\n" +
+							"knows('http://okbook.inf.ed.ac.uk/im/alice.js').\r\n" +
+							"\r\n" +	
+							"iid(interaction_id).";
+		var head_exmaple =	"head(\r\n" +
+							"\t [\r\n" +
+							"\t\t {	jid : \"admin@okbook.inf.ed.ac.uk\",\r\n" +
+							"\t\t\t role: \"\",\r\n" +
+							"\t\t\t roleType : \"trigger\",\r\n" +
+							"\t\t\t okcs : \[\],\r\n" +
+							"\t\t\t iid : \"timestamp_and_random_factor_and_sha1_of_IMURI_and_community_domain\"\r\n" +
+							"\t\t}\r\n" +
+							"\t\t," +
+							"\t\t {\r\n" +
+							"\t\t\t jid : \"alice@okbook.inf.ed.ac.uk\",\r\n" +
+							"\t\t\t role : \"client\",\r\n" +
+							"\t\t\t roleType : \"initial\",\r\n" +
+							"\t\t\t okcs : \[\"http://okbook.inf.ed.ac.uk/im/alice.js\"\]\r\n" +
+							"\t\t}\r\n" +
+							"\t\t,\r\n" +
+							"\t\t {\r\n" +
+							"\t\t\t jid : \"bob@okbook.inf.ed.ac.uk\",\r\n" +
+							"\t\t\t role : \"shop\",\r\n" +
+							"\t\t\t roleType : \"\",\r\n" +
+							"\t\t\t okcs : \[\"http://okbook.inf.ed.ac.uk/im/bob.js\"\]\r\n" +
+							"\t\t}\r\n" +
+							"\t ]\r\n" +
+							").";
+										
+		function submitOKCs(){
+			triggered = true;
+			var url_inputs = document.getElementsByName("okc_url");
+			for(var i = 0; i < url_inputs.length; i++){
+				url_okcs.push(url_inputs[i].value);
+			}
+			var src_inputs = document.getElementsByName("okc_function");
+			for(var i = 0; i < src_inputs.length; i++){
+//				alert(src_inputs[i].value.replace(/\'/g, "\\\\\'").replace(/\"/g, "\\\\\""));
+				if(window.execScript){//eval okcs to the global scope.
+					window.execScript(src_inputs[i].value);
+				}
+				if(window.eval){
+					window.eval(src_inputs[i].value);
+				}
+			}
+		}
+		
+		function gleanLCCFromHTMLSnippet(html){
+			var temp = document.createElement("div");
+			temp.innerHTML = html;
+			var text = temp.textContent || temp.innerText;
+			return text; 
+		}
+		
+		function startIM(){
+			lccBodyEditor.save();
+			lccBodyEditor.refresh();
+			peerLogin();
+		}
+		
+		function resetIM()
+		{
+			if( lccBodyEditor )
+				if( confirm( "Delete current LCC?" ) )
+				{
+					lccBodyEditor.setValue("");
+					lccBodyEditor.refresh();
+					lccBodyEditor.save();
+					lccHeadEditor.setValue("");
+					lccHeadEditor.refresh();
+					lccHeadEditor.save();
+//					resetLCCEnvironment();
+					return true;
+				}
+				else{
+					return false;
+				}
+
+			return true;
+		}
+		
+		var advanced_shown = false;
+		var lcc_body_shown = false;
+		var lcc_head_shown = false;
+		$(document).ready(function(){
+//			$("#tabs-1").bind("click", peerLogin);
+			if(window.location.search){
+				var query = window.location.search.substring(1);
+				var xlccSrc = query.split("&")[0].split("=")[1];
+				var hostJID = query.split("&")[1].split("=")[1];
+				var interaction_identifier = query.split("&")[2].split("=")[1];
+				document.getElementById('lcc_body').value = decodeURIComponent((xlccSrc + '').replace(/\+/g, '%20')).replace(/^\s+|\s+$/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+				document.getElementById('jid').value = hostJID + "/" + interaction_identifier;
+//				$("#start").click();
+//				alert(xlccSrc);
+			}
+			$("#okc_import_effect").hide();
+			$("#okc_edit_effect").hide();
+			$("#edit_subscription").hide();
+			$("#lcc_head_dropdown").hide();
+			$("#xmpphttp_change_effect").hide();
+			lccBodyEditor = CodeMirror.fromTextArea(document.getElementById('lcc_body'), {mode : 'text/lcc', lineNumbers : true, tabSize: 4, onLoad : function(){alert(JSON.stringify(lccBodyEditor));}}); 
+			lccHeadEditor = CodeMirror.fromTextArea(document.getElementById('lcc_head'), {mode : 'text/javascript', lineNumbers : true, tabSize: 4, json : true});
+//			CodeMirror.fromTextArea($('#okc_function_0')[0], {mode : 'text/javascript', lineNumbers : true});
+			$("h3").css("background-color", "#2E9AFE");
+			$(".tabs").css("background-color", "#2E9AFE").attr("class", "ui-corner-all");
+			$("textarea[name='okc_function']").parent().hide();
+			$("textarea[name='okc_function']").parent().next().hide();
+			$("#lcc_head_effect").hide();
+			$("#lcc_body_effect").hide();
+			$("#lcc_head_dropdown").click(function(){
+				if(lcc_head_shown){
+					$(this).text("Edit XLCC Head [+]");
+					lccHeadEditor.save();
+					$("#lcc_head_effect").hide(500);	
+					$("lcc_head_dropdown").focus();
+					lcc_head_shown = false;
+				}
+				else{
+					$(this).text("Edit XLCC Head [-]");
+					$("#lcc_head_effect").show(500);
+					lccHeadEditor.refresh();
+					$("#submit_head").click(function(){
+						lccHeadEditor.save();
+						$("#lcc_head_effect").hide(500);	
+						$("lcc_head_dropdown").focus();
+						$("#lcc_head_dropdown").text("Edit XLCC Head [+]");
+						return false;			
+					});
+					$("#load_head_example").click(function(){
+						lccHeadEditor.setValue(head_exmaple);
+						lccHeadEditor.refresh();
+						return false;
+					});
+					lcc_head_shown = true;
+				}
+				return false;
+			});
+			$("#lcc_body_dropdown").click(function(){
+				if(lcc_body_shown){
+					$(this).text("Edit XLCC [+]");
+					lccBodyEditor.save();
+					$("#lcc_body_effect").hide(500);
+					$("#lcc_body_dropdown").focus();
+					lcc_body_shown = false;
+				}
+				else{
+					$(this).text("Edit XLCC [-]");
+					$("#lcc_body_effect").show(500);
+					lccBodyEditor.refresh();
+					$("#submit_body").click(function(){
+						lccBodyEditor.save();
+						lccBodyEditor.setValue(gleanLCCFromHTMLSnippet($("#lcc_body").val()));
+						lccBodyEditor.refresh();
+						lccBodyEditor.save();
+						$("#lcc_body_effect").hide(500);
+						$("#lcc_body_dropdown").focus();
+						$("#lcc_body_dropdown").text("Edit XLCC [+]");
+						return false;
+					});
+					$("#load_example_body").click(function(){
+						lccBodyEditor.setValue(lcc_exmaple);
+						lccBodyEditor.refresh();
+						return false;
+					});
+					lcc_body_shown = true;
+				}	
+				return false;			
+			});
+			$("#advanced").click(function(){
+				if(advanced_shown){
+					$(this).text("Advanced buzz options [+]");
+					$("#xmpphttp_change_effect").hide(500);
+					$("#okc_import_effect").hide(500);
+					$("#okc_edit_effect").hide(500);
+					$("#edit_subscription").hide(500);
+					$("#lcc_head_dropdown").hide(500);
+					$("#lcc_head_effect").hide(500);
+					advanced_shown = false;
+					return false;
+				}
+				else{
+					$(this).text("Advanced buzz options [-]");
+					$("#xmpphttp_url").val($("#server").val());
+					$("#xmpphttp_change_effect").show(500);
+					$("#okc_import_effect").show(500);
+					$("#okc_edit_effect").show(500);
+					$("#edit_subscription").show(500);
+					$("#lcc_head_dropdown").show(500);
+					$("#lcc_head_effect").hide(500);
+					advanced_shown = true;
+					$("#change_xmpphttp_url").click(function(){
+						if($("#xmpphttp_url").val().trim() == ""){
+							return false;
+						}
+						else{
+							$("#server").val($("#xmpphttp_url").val());
+							$('#login_dialog').dialog('open');
+							return false;
+						}
+					});
+					return false;
+			    }
+			});
+/*			$(window).bind('beforeunload', function() { 
+	            if(!finished)
+					return confirm("Closing before finished may cause data lost! Are you sure?");
+				else
+					return "Please select 'Stay on Page' and keep rolling!";
+    	    });
+*/
+			
+			
+			$("#lcc_body_dropdown").click();
+			lccBodyEditor.focus();
+			lccBodyEditor.save();
+			lccBodyEditor.refresh();	
+		});
+		
+		$(function() {
+			$("#tabs").tabs({
+				select: function(event, ui){
+					$("#xlcc").val($("#lcc_body").val());
+				}
+			});
+			$("#lcc_head_dropdown").click(function(){
+				
+				$("lcc_head_effect").toggle("blind",{ to: { width: 200, height: 60 } }, 500);
+			});
+			var okcNum = 0; 
+			$("#add_okc_url").click(function(){
+				okcNum++;
+				var currentRow = $(this).parent();
+				if($("input", currentRow).val().trim() == ""){
+					alert("Please type in a URL of the OKC your want to use.");
+					return false;
+				}
+				var newRow = currentRow.clone();
+				$("input", currentRow).val("");
+				$("a", newRow).remove();
+				$("input", newRow).after($("<a href='#' class='remove ui-state-default ui-corner-all'>Remove</a>"));
+				$("input", currentRow).attr("id", "okc_url_" + okcNum);
+				currentRow.before(newRow);
+				$("a.remove", newRow).click(function(){
+					$(this).parent().remove();
+					return false;
+				});
+				return false;
+			});
+			var okcSrcNum = 0;
+			var okcTemplate = 	"function [[constraint_name]]_okc_hook(params, peerHelper){\r\n" +
+								"\tpeerHelper.readValue(params);\r\n" +
+								"\t//peerHelper.setValue(name, value);\r\n" +
+								"\t//peerHelper.getValue(name);\r\n" +
+								"\treturn true; // revise this as needed\r\n" +
+								"}";
+			$(".add_okc_src").click(function(){
+				okcSrcNum++;
+				var currentSrc = $(this).parent().parent();
+				if($("input", currentSrc).val().trim() == ""){
+					alert("Please type in the name of the contraint used in your LCC code.");
+					return false;
+				}
+				var newSrc = currentSrc.clone();
+				var currentOKC = okcTemplate.replace("[[constraint\_name]]", $("input", currentSrc).val().trim().replace(/ /g, "_"));
+				$("textarea", newSrc).val(currentOKC);
+				$("textarea", newSrc).attr("name", "okc_function");
+				$(".add_okc_src", newSrc).remove();
+				$("input", newSrc).after($("<a href='#' class='remove ui-state-default ui-corner-all'>Remove</a>")).after($("<a href='#' class='edit ui-state-default ui-corner-all'>Edit</a>"));
+				$("textarea", newSrc).parent().show();
+				$("textarea", newSrc).parent().next().show();
+				var okcEditor = CodeMirror.fromTextArea($("textarea", newSrc)[0], {mode : 'text/javascript', lineNumbers : true});
+				$("input", currentSrc).attr("id", "constraint_" + okcSrcNum).val("");
+				$("textarea", currentSrc).attr("id", "okc_function_" + okcSrcNum).val("");
+				currentSrc.before(newSrc);
+				$("a.remove", newSrc).click(function(){
+					$(this).parent().parent().remove();
+					return false;
+				});				
+				$("a.edit", newSrc).click(function(){
+					$(this).parent().next().show(250);
+					$(this).parent().next().next().show(250);
+					return false;
+				});
+				$("a.submit_okc_src", newSrc).click(function(){
+					okcEditor.save();
+					$(this).parent().prev().hide(250);
+					$(this).parent().hide(250);
+					newSrc.focus();
+					return false;
+				});
+				return false;
+			});
+		});
+	--></script>
+	<style type="text/css">
+		#tabs ul li {
+			width: 15%;
+		}
+	</style>
+  </head>
+  
+  <body>
+  	<div class="banner">	
+  		<img src="browser-lcc/images/okeilidh_banner.jpg"/>
+ 	</div>
+  	<div id="tabs">
+  		<ul class="tabs">
+  			<li><a href="#home">Home</a></li>
+  			<li><a href="#start" onclick="javascript: startIM();">Start</a></li>
+  			<li><a href="#xlcc-syntax">About</a></jjli>
+  			<li><a href="#annotate">Annotate</a></li>
+  			<li><a href="#contact">Contact</a></li>
+  		</ul>
+  		<div id="home">
+  			<div class="sub_content_left">
+	  			<p>OKeilidh is an online Web Service (WS) choreography management system, which
+				assists users in editing, publishing and testing WS choreography in the form of <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Models</a> (IMs) encoded in XLCC. 
+				An IM is a set of clauses defining the behaviours associated with roles within peer interactions and a <it>role</it> describes the necessary actions for
+				one of the peers taking part in the interaction. The term <it>peer</it> is used here instead of <it>agent</it> since we focus on reactive behaviours of participants within their interactions, which complies with the term <it>peer</it> in <a href="http://www.openk.org">OpenKnowledge</a>.
+				</p>
+				<p>
+				XLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
+				and fully interpretable in modern browsers. Here, "X" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by XLCC to interpret peer interactions. OKeilidh also provides a <a href="http://nodejs.org/">node.js</a> version --- <a href="https://github.com/baxtree/xlcc">node-xlcc</a> running in your favourite clouds.
+				</p>
+				<p/>
+				<p>The <i>Hello World</i> examples written in XLCC are as follows:
+				 	<p>
+						<label for="singlepart">Single Part:</label><br/>
+						<div id="singlepart" style="margin: auto">
+							<img style="border:2px dotted #2E9AFE" src="browser-lcc/images/helloworld.png" alt="HelloWorld example 1"/>
+						</div>
+					</p>
+					<p>
+						<label for="twoparts">Two Parts:</label><br/>
+						<div id="twoparts" style="margin: auto">
+							<img style="border:2px dotted #2E9AFE" src="browser-lcc/images/helloworldtwoparts.png" alt="HelloWorld example 2"/>
+						</div>
+					</p>
+				</p>
+  			 </div>
+			 <div class="sub_content_right">
+			 	<object width="420" height="245"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=32549779&amp;server=vimeo.com&amp;show_title=0&amp;show_byline=0&amp;show_portrait=0&amp;color=00adef&amp;fullscreen=1&amp;autoplay=0&amp;loop=0" /><embed src="http://vimeo.com/moogaloop.swf?clip_id=32549779&amp;server=vimeo.com&amp;show_title=0&amp;show_byline=0&amp;show_portrait=0&amp;color=00adef&amp;fullscreen=1&amp;autoplay=0&amp;loop=0" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="420" height="245"></embed></object>
+				<!--  <object width="420" height="245"><param name="movie" value="http://www.youtube.com/v/GLGed7-1BqY?version=3&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/GLGed7-1BqY?version=3&amp;hl=en_US" type="application/x-shockwave-flash" width="420" height="245" allowscriptaccess="always" allowfullscreen="true"></embed></object> -->
+				<div style="height: 26px;"></div>
+				<object width="420" height="245"><param name="allowfullscreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="movie" value="http://vimeo.com/moogaloop.swf?clip_id=32549906&amp;server=vimeo.com&amp;show_title=0&amp;show_byline=0&amp;show_portrait=0&amp;color=00adef&amp;fullscreen=1&amp;autoplay=0&amp;loop=0" /><embed src="http://vimeo.com/moogaloop.swf?clip_id=32549906&amp;server=vimeo.com&amp;show_title=0&amp;show_byline=0&amp;show_portrait=0&amp;color=00adef&amp;fullscreen=1&amp;autoplay=0&amp;loop=0" type="application/x-shockwave-flash" allowfullscreen="true" allowscriptaccess="always" width="420" height="245"></embed></object>
+				<!--  <object width="420" height="245"><param name="movie" value="http://www.youtube.com/v/Ixcxsq7O16M?version=3&amp;hl=en_US"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/Ixcxsq7O16M?version=3&amp;hl=en_US" type="application/x-shockwave-flash" width="420" height="245" allowscriptaccess="always" allowfullscreen="true"></embed></object> -->
+			</div>
+			<p/><p/>
+			<div class="footer">
+				<a href="http://www.instantssl.com">
+					<img src="browser-lcc/images/cot_white.gif" alt="Instant SSL Certificate Secure Site" width="100" height="85" style="border: 0px;">
+				</a>
+				<a href="http://www.inf.ed.ac.uk">
+					<img src="browser-lcc/images/InformaticsUni_RGB.gif" width="316" height="85">
+				</a>
+			</div>
+  		</div>
+		<div id="start">
+			<div class="main_content">			
+				<a id="lcc_body_dropdown" class="ui-state-default ui-corner-all" href="#">Edit XLCC [+]</a>
+				<div id="lcc_body_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Please input the body<a href="#" id="load_example_body">load an example</a></h3>
+					<p>
+						<textarea id="lcc_body" name="lcc_body" rows="30" cols="80" style="width: 100%;">
+a(client(PC, CC), C):: 
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
+        receipt(R) <= a(shop, S).
+        
+a(shop, S):: 
+	buy(PC, CC) <= a(client(_),C) then
+        receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+
+a(client('0123456789', '1234567887654321'), C). 
+
+plays('alice@okbook.inf.ed.ac.uk', client). 
+
+plays('bob@okbook.inf.ed.ac.uk', shop). 
+
+knows('http://okbook.inf.ed.ac.uk/im/alice.js').
+
+iid(interaction_id).
+						</textarea>
+<!-- a(client(PC, CC), C):: 
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
+        receipt(R) <= a(shop, S).
+        
+a(shop, S):: 
+	buy(PC, CC) <= a(client(_),C) then
+        receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+
+a(client('0123456789', '1234567887654321'), C). 
+
+plays('alice@okbook.inf.ed.ac.uk', client). 
+
+plays('bob@okbook.inf.ed.ac.uk', shop). 
+
+knows('http://okbook.inf.ed.ac.uk/im/alice.js').
+
+iid(interaction_id).-->		
+					</p>
+					<p>
+						<a href="#" class="ui-state-default ui-corner-all" id="submit_body">Submit this body</a>
+					</p>
+				</div>
+				<div id="advanced_selection" class="ui-widget-content ui-corner-all">
+					<a id="advanced" href='#' class='advanced ui-state-default ui-corner-all'>Advanced buzz options [+]</a>
+				</div>
+				<div id="xmpphttp_change_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Configure the XMPP-HTTP endpoint:</h3>
+					<p>
+						<label for="xmpphttp_url">URL: </label><input type="text" name="xmpphttp_url" id="xmpphttp_url" value="" size="80"/><a id="change_xmpphttp_url" class="ui-state-default ui-corner-all" href="#">change</a><br/>
+						(this might cause some lost so please back up everything you have changed before clicking the "change" button.)
+					</p>
+				</div>
+				<div id="okc_import_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Import external OKCs</h3>
+					<p>
+						<label for="okc_url">URL: </label><input type="text" name="okc_url" id="okc_url_0" size="80"/><a id="add_okc_url" class="ui-state-default ui-corner-all" href="#">add</a>
+					</p>
+				</div>
+				<div id="okc_edit_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Create OKCs on the fly</h3>
+					<div>
+						<p>						
+							Constraint Name: <input type="text" name="constraint" id="constraint_0"><a class="add_okc_src ui-state-default ui-corner-all" href="#">Add</a> 
+						</p>
+						<p>
+							<textarea id="okc_function_0" name="okc_function" rows="10" cols="80" style="width: 100%;">
+							</textarea>
+						</p>
+						<p>
+							<a href="#" class="submit_okc_src ui-state-default ui-corner-all">Submit this function</a>
+						</p>
+					</div>
+				</div>
+				<div id="edit_subscription" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Edit peer subscription head</h3>
+					<div>
+						<a id="lcc_head_dropdown" class="ui-state-default ui-corner-all" href="#">Edit XLCC Head [+]</a>
+					</div>
+				</div>
+				<div id="lcc_head_effect" class="ui-widget-content ui-corner-all">
+					<h3 class="ui-widget-header ui-corner-all">Please input the head<a href="#" id="load_head_example">load an example</a></h3>
+					<p>
+						<textarea id="lcc_head" name="lcc_head" rows="30" cols="80" style="width: 100%;">				
+						</textarea>
+					</p>
+					<p>
+						<a href="#" class="ui-state-default ui-corner-all" id="submit_head">Submit this head</a>
+					</p>
+				</div>
+				<p/>
+				<div class="actions">
+					<span class="button" id="triggerButton" onclick="submitOKCs();run_parser();">Run this IM!</span> &nbsp;
+					<span class="button" id="reset" onclick="resetIM();">Reset</span> &nbsp;
+					<span class="button" id="disconnect">Disconnect</span>
+				</div>
+				<p/>
+				<div id="messages">
+				</div>
+			</div>
+		</div> 
+		<div id="xlcc-syntax">
+			<p>OKeilidh is an online <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/im">Interaction Model</a> (IM) management system, which
+			assists users in editing, publishing and testing IMs written in XLCC. XLCC is an extension of the <a href="http://www.springerlink.com/content/ux5dy5ggryu0mxna/fulltext.pdf">Lightweight Coordination Calculous</a> (LCC)
+			and fully interpretable in modern browsers. Here, "X" means not only "eXtension" but also "XMPP" which is the messaging protocol employed by XLCC to interpret peer interactions. The syntax of XLCC is described as follows:  
+			</p>
+			<pre>
+				<table border="0">
+					<tbody>
+					<tr>
+		    	  		<td><span class="lcc-bnf">IM</span></td> 
+		    	  		<td>:=</td> 
+		    	  		<td><span class="lcc-bnf">Clause_List</span></td>
+		    	  	</tr>
+		    	  	<tr>
+						<td><span class="lcc-bnf">Clauses_List</span></td> 
+						<td>:=</td>
+						<td><span class="lcc-bnf">Clause</span> | <span class="lcc-bnf">Clause_List</span></td>
+					</tr>
+					<tr>
+		   	  			<td><span class="lcc-bnf">Clause</span></td> 
+		   	  			<td>:=</td> 
+		   	  			<td><span class="lcc-bnf">Role</span> <span class="lcc-keyword">::</span> <span class="lcc-bnf">Def</span> . | <span class="lcc-bnf">Role</span> . | <span class="lcc-keyword">plays</span> ( <span class="lcc-bnf">String</span> , <span class="lcc-bnf">Constant</span>) . | <span class="lcc-keyword">knows</span> ( <span class="lcc-bnf">String</span> ) . | <span class="lcc-keyword">iid</span> ( <span class="lcc-bnf">String</span> ) .</td>
+		   	  		</tr>
+		   	  		<tr>
+		  				<td><span class="lcc-bnf">Role</span></td> 
+		  				<td>:=</td> 
+		  				<td><span class="lcc-keyword">a</span> ( <span class="lcc-bnf">Type</span> , <span class="lcc-bnf">Id</span> )</td>
+		  			</tr>
+		  			<tr>
+		   		 		<td><span class="lcc-bnf">Def</span></td> 
+		   		 		<td>:=</td> 
+		   		 		<td><span class="lcc-bnf">Message</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">then</span> <span class="lcc-bnf">Def</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">or</span> <span class="lcc-bnf">Def</span> | <span class="lcc-bnf">Def</span> <span class="lcc-keyword">niob</span> <span class="lcc-bnf">Def</span> </td>
+		   		 	</tr>
+		   		 	<tr>	
+			 			<td><span class="lcc-bnf">Message</span></td> 
+			 			<td>:=</td> 
+			 			<td><span class="lcc-bnf">M</span> <span class="lcc-keyword">&#61;&gt;</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">&#61;&gt;</span> <span class="lcc-bnf">Role</span> <span class="lcc-keyword"><-</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">M</span> <span class="lcc-keyword">&lt;&#61;</span> <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&lt;&#45;</span> <span class="lcc-bnf">M</span> <span class="lcc-keyword">&lt;&#61;</span> <span class="lcc-bnf">Role</span> | <span class="lcc-keyword">null</span> <span class="lcc-keyword">&lt;&#45;</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">Role</span> | <span class="lcc-bnf">Role</span> <span class="lcc-keyword">&lt;&#45;</span> <span class="lcc-bnf">C</span></td>
+			 		</tr>
+			 		<tr>
+		     	   		<td><span class="lcc-bnf">C</span></td> 
+		     	   		<td>:=</td> 
+		     	   		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">not</span> ( <span class="lcc-bnf">C</span> ) | <span class="lcc-bnf">C</span> <span class="lcc-keyword">&&</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">||</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-keyword">=</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">C</span> <span class="lcc-bnf">Operator</span> <span class="lcc-bnf">C</span> | <span class="lcc-bnf">list</span> ( <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Variable</span>, <span class="lcc-bnf">Terms</span>)</td>
+		     	   	</tr>
+		     	   	<tr>
+			   			<td><span class="lcc-bnf">Terms</span></td> 
+			   			<td>:=</td> 
+			   			<td><span class="lcc-bnf">Term</span> , <span class="lcc-bnf">Terms</span> | <span class="lcc-bnf">Term</span></td>
+					</tr>		   			
+			    	<tr>
+			    		<td><span class="lcc-bnf">Type</span></td> 
+			    		<td>:=</td> 
+			    		<td><span class="lcc-bnf">Term</span></td>
+			    	</tr>
+			    	<tr>
+				  		<td><span class="lcc-bnf">Id</span></td> 
+				  		<td>:=</td> 
+				  		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span></td>
+				  	</tr>
+				  	<tr>
+			       		<td><span class="lcc-bnf">M</span></td> 
+			       		<td>:=</td> 
+			       		<td><span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Term</span> )</td>
+			       	</tr>
+			    	<tr>
+			    		<td><span class="lcc-bnf">Term</span></td> 
+			    		<td>:=</td> 
+			    		<td><span class="lcc-bnf">Constant</span> | <span class="lcc-bnf">Variable</span> | <span class="lcc-bnf">Constant</span> ( <span class="lcc-bnf">Terms</span> ) | <span class="lcc-keyword">_</span> )</td>
+			    	</tr>
+			    	<tr>
+		    			<td><span class="lcc-bnf">Operator</span></td> 
+		    			<td>:=</td> 
+		    			<td><span class="lcc-operator">==</span> | <span class="lcc-operator">!=</span> | <span class="lcc-operator">&gt;</span> | <span class="lcc-operator">&lt;</span> | <span class="lcc-operator">&gt;=</span> | <span class="lcc-operator">=&lt;</span></td>
+		    		</tr>
+			    	<tr>
+		    			<td><span class="lcc-bnf">Constant</span></td> 
+		    			<td>:=</td> 
+		    			<td>lower case character, sequence or number</td>
+		    		</tr>
+		    		<tr>
+		    			<td><span class="lcc-bnf">Variable</span></td> 
+		    			<td>:=</td> 
+		    			<td>upper case character, sequence or number</td>
+					</tr>
+					</tbody>
+				</table>
+			</pre>
+			<p>OKeilidh supports on-the-fly creation of the <a href="http://www.cisa.informatics.ed.ac.uk/OK/drupal/howOKworks/okc">OpenKnowledge Component</a> (OKC). Several methods which help users in
+			creating OKCs are already wrapped in the <i>PeerHelper</i> by default when the OKC template is automatically generated, which are:
+				<div>setValue(Variable, Constant)</div>
+				<div>getValue(Variable)</div>
+				<div>readValue(Terms)</div>
+				<div>displayValue(Terms)</div> 
+			</p>
+			<p>The OKeilidh project provides a <a href="http://nodejs.org/">node.js</a> version running on the Google V8 engine. Please check out node-xlcc at <a href="https://github.com/baxtree/xlcc"><img src="http://homepages.inf.ed.ac.uk/s0896253/images/code1.jpg" alt="github" width="50px"></img></a> and start choreographing WSs in your favourite clouds.</p>
+			
+			<p>Having spare &pound;25? Start using lightweight OKeilidh on your <a href="http://www.raspberrypi.org/">Raspberry Pi</a>!<br/><br/>
+			<img src="img/okeilidh_on_pi.jpg" width="450px" alt="OKeilidh running on Raspberry Pi"></img>
+			</p>
+		</div>
+		<div id="annotate">
+			<p>
+			<form name="startAnnotating" method="POST" action="http://demos.inf.ed.ac.uk:8836/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet">
+			<!-- <form name="startAnnotating" method="POST" action="http://demos.inf.ed.ac.uk:8836/IMAnnotator/org/openk/annotator/servlet/ForOKeilidhServlet"> -->
+				<textarea id="xlcc" name="xlcc" rows="18" cols="80" style="width: 100%;">
+				</textarea>
+			</form>
+			<span class="button" id="annotate" onclick="javascript: document.startAnnotating.submit();">Start annotating</span>
+			</p>
+		</div>
+		<div id="contact">
+			<p>OKeilidh is under active development of <a href="http://homepages.inf.ed.ac.uk/s0896253/"><span class="external_link">Xi Bai</span></a> at <a href="http://www.inf.ed.ac.uk"><span class="external_link">University of Edinburgh</span></a></p>
+			<p>
+				<address>
+				    <strong>Xi Bai</strong><br>
+				    Room 2.05, Informatics Forum<br>
+				    10 Crichton Street<br>
+				    Edinburgh EH8 8PD, UK<br>
+				    <a href="mailto:xi.bai@ed.ac.uk">Email</a>
+			    </address>
+	    	</p>
+	    	<p>
+	    		<iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://maps.google.com/maps?f=q&amp;source=s_q&amp;hl=en&amp;geocode=&amp;q=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;aq=&amp;sll=55.944322,-3.185992&amp;sspn=0.001472,0.004823&amp;t=h&amp;ie=UTF8&amp;hq=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;ll=55.944632,-3.187505&amp;spn=0.012497,0.032015&amp;output=embed"></iframe><br /><small><a href="https://maps.google.com/maps?f=q&amp;source=embed&amp;hl=en&amp;geocode=&amp;q=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;aq=&amp;sll=55.944322,-3.185992&amp;sspn=0.001472,0.004823&amp;t=h&amp;ie=UTF8&amp;hq=School+of+Informatics,+The+University+of+Edinburgh,+Edinburgh,+United+Kingdom&amp;ll=55.944632,-3.187505&amp;spn=0.012497,0.032015" style="color:#0000FF;text-align:left">View Larger Map</a></small>
+			</p>
+		</div> 		
+  	</div>	
+   	<div id="popupcontent"></div>
+	<div id="login_dialog" class="hidden">
+		<p>OKeilidh requires your Jabber ID before rolling</p>
+		<div>
+			<div class="loginleft">
+				<table border="0">
+		   			<tbody>
+		   				<tr><td><label class="hidden">Server:</label></td><td><input class="hidden" type="text" id="server" value="http://bosh.metajack.im:5280/xmpp-httpbind"/></td></tr>
+		   				<tr><td><label>JID:</label></td><td><input type="text" id="jid" size="40" placeholder="e.g., alice@okbook.inf.ed.ac.uk/123456"/></td></tr>
+		   				<tr><td><label>Password:</label></td><td><input type="password" id="password" size="40" value=""/></td></tr>
+		   			</tbody>
+		   		</table>
+	   		<div>
+	   		<div class="loginright">
+	   			<a href="http://www.instantssl.com">
+					<img src="browser-lcc/images/secure_white.gif" alt="Instant SSL Certificate Secure Site" width="76" height="26" style="border: 0px;">
+				</a>
+	   		</div>
+	   	</div>
+   		<p><p><a class="ui-state-default ui-corner-all" href="https://register.jabber.org/" target="_blank"><span class="external_link">Get a Jabber ID here</span></a></p>
+   		<div id="loading" style="display:none"><img src="browser-lcc/images/ajax-loader.gif">connecting ...</div>
+   	</div>
+    <textarea id="lcc_interpretor" class="hidden">
+/~eXtended Lightweight Coordination Calculus (XLCC) Interpreter ~/
+
+[*
+/*
+* WebLCC: Browser-based LCC debugging environment
+* Copyright (C) 2009-2012 by Xi Bai
+* 
+* Author: Xi Bai
+* Usage:  General variables, constants and defines
+*
+* THE PACKAGE IS PROVIDED BY THE COPYRIGHT HOLDER AND CONTRIBUTORS "AS IS' AND WITHOUT ANY EXPRESS OR IMPLIED WARRANTIES. 
+* THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT ARE DISCLAIMED TO THE 
+* EXTENT PERMITTED BY YOUR LOCAL LAW. UNLESS REQUIRED BY LAW, NO COPYRIGHT HOLDER OR CONTRIBUTOR WILL BE LIABLE FOR ANY 
+* DIRECT, INDIRECT, INCIDENTAL, OR CONSEQUENTIAL DAMAGES ARISING IN ANY WAY OUT OF THE USE OF THE PACKAGE, EVEN IF ADVISED 
+* OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+	var constraints = {};
+	emitter.removeAllListeners("okcs loaded");
+	emitter.removeAllListeners("gotMessageFromXMPPServer");
+	emitter.on("gotMessageFromXMPPServer", onMessageArrival);
+	emitter.on("msgReceived", receiveMSG);
+	var v_names = new Array();
+	var v_values = new Array();
+	var okcs = new Array();
+//	var clauses = new Array();
+	var role_heads = new Array();
+	var role_bodies = new Array();
+	var init = undefined;
+	
+	var currentBackTrack = undefined;
+	var currentBracketBackTrack = undefined;
+	var currentMessageNode = undefined;
+	var currentRoleNode = undefined;
+	var currentConstraintsNode = undefined;
+	var currentNextThenNode = undefined;
+	var currentNextOrNode = undefined;
+	var currentNextBracketNode = undefined;
+	var currentNextBracketOrNode = undefined;
+	var peerID = undefined;
+	var iid = undefined;
+	var webStorageSupported = window["localStorage"]? true : false;
+	if(!webStorageSupported){
+		alert("Your browser does not support local storage. Click 'OK' and keep going ...");
+	}
+	var niob_counter = 0;
+	var niob_contexts = new Array();	
+	function NiobContext() {
+		this.id = undefined;
+		this.msgs = [];
+		this.currentMessageNode = undefined;
+		this.currentRoleNode = undefined;
+		this.currentConstraintsNode = undefined;
+		this.currentNextThenNode = undefined;
+		this.currentNextOrNode = undefined;
+		this.currentNextBracketNode = undefined;
+		this.currentNextBracketOrNode = undefined;
+		this.currentBackTrack = undefined;
+		this.currentBracketBackTrack = undefined;
+	}
+	var niob_default_context = new NiobContext();
+	niob_default_context.id = 0;
+	niob_contexts.push(niob_default_context);
+	
+	function getNiobContextByMsgName(msgName) {
+		for(var i = 0; i < niob_contexts.length; i++){
+			for(var j = 0; j < niob_contexts[i].msgs.length; j++){
+//				alert(niob_contexts[i].msgs[j] + ":" + msgName);
+				if(niob_contexts[i].msgs[j] == msgName){
+					return niob_contexts[i]; 
+				}
+			}
+		}
+		return undefined;
+	}
+	
+	function updateNiobContext(niob_context){
+		var index = undefined;
+		for(var i = 0; i < niob_contexts.length; i++){
+			if(niob_context.id == niob_contexts[i].id){
+				index = i;
+				break;
+			}
+		}
+		if(index != undefined)
+			niob_contexts.slice(index, 1, niob_context);
+		else
+			niob_contexts.push(niob_context);
+	}
+	
+	
+	var NODE_OP			= 1;
+	var NODE_VAR 		= 2;
+	var NODE_CONST		= 3;
+	var NODE_ARR		= 4;
+	var NODE_STR		= 5;
+	
+	var OP_ENTRY		= -2;
+	var OP_NONE 		= -1;
+	var OP_SEND 		= 0;
+	var OP_RECEIVE		= 1;
+	var OP_THEN			= 2;
+	var OP_OR			= 3;
+	var OP_LIST 		= 4;
+	var OP_ROLE			= 5;
+	var OP_ROLE_DEF		= 6;
+	var OP_SEND 		= 7;
+	var OP_RECEIVE		= 8;
+	var OP_ROLE_TYPE    = 9;
+	var OP_SET_VAR      = 10;
+	var OP_CONSTRAINT	= 11;
+	var OP_NEGATE		= 12;
+	var OP_LOGAND		= 13;
+	var OP_LOGOR		= 14;
+	var OP_NO_MSG		= 15;
+	var OP_TERMS		= 16;
+	var OP_FACTOR		= 17;
+	var OP_MESSAGE		= 18;
+	var OP_HEADBODY		= 19;
+	var OP_ROLE_CHANGE  = 20;
+	var OP_PAR			= 21;
+	var OP_KNOWS		= 22;
+	var OP_PLAYS		= 23;
+	var OP_IID			= 24;
+	var OP_CLAUSE		= 25;
+	var OP_NIOB			= 26;
+	var OP_BRACKET		= 27;
+	var OP_BRACKET_OR	= 28;
+	var OP_EQU			= 29;
+	var OP_NEQ			= 30;
+	var OP_GRT			= 31;
+	var OP_LOT			= 32;
+	var OP_GRE			= 33;
+	var OP_LOE			= 34;
+	var OP_ASSIGN		= 35;
+	
+	function Node(){
+		var type;
+		var value;
+		var children;
+	} 
+		
+	function createNode(type, value, childs){
+		var n = new Node();
+		n.type = type;
+		n.value = value;
+		n.children = new Array();
+		
+		for(var i = 2; i < arguments.length; i++){
+			n.children.push(arguments[i]);
+		}
+		return n;
+	}
+	
+	function setValue(vname, vvalue){
+		var found = false;
+		for(var i = 0; i < v_names.length; i++){
+			if(v_names[i].toString() == vname.toString()){
+				v_values[i] = (arguments.length == 1)? undefined : vvalue.toString(); //The type is now checked here.
+				found = true;
+				break;
+			}
+		}
+		if(!found){
+			v_names.push(vname);
+			v_values.push((arguments.length == 1)? undefined : vvalue.toString());
+		}
+	}
+	
+	function getValue(vname){
+		for(var i = 0; i < v_names.length; i++){
+			if(v_names[i].toString() == vname.toString()){
+				return v_values[i];
+			}
+		}
+		return undefined;
+	}
+	
+	function readValue(factors){
+		if(factors.length != 0){
+			for(var i = 0; i < factors.length; i++){
+				if(factors[i].name && factors[i].name.charAt(0) === factors[i].name.charAt(0).toUpperCase()){
+					if(!factors[i].value || factors[i].value == undefined || factors[i].value == "undefined" ){
+						var fvalue = prompt("Please assign a new value to variable '" + factors[i].name + "':", factors[i].value);
+						factors[i].value = fvalue;
+						setValue(factors[i].name, fvalue);
+					}
+				}
+				if(factors[i].params && factors[i].params.length != 0){
+					readValue(factors[i].params);
+				}
+			}
+		}
+	}
+	
+	function display_okc_hook(factors, peerHelper){
+		peerHelper.displayValue(factors);
+		return true;
+	}
+	
+	function inspect_okc_hook(factors, peerHelper){
+		peerHelper.inspectValue(factors);
+		return true;
+	}
+	
+	function read_okc_hook(factors, peerHelper){
+		peerHelper.readValue(factors);
+		return true;
+	}
+	
+
+/*  this can not block the thread as prompt() can	
+	function submitValue(factors, msgDiv){
+		alert("submit");
+		var temp;
+		if(arguments.length == 1){
+			temp = $("<div></div>");
+		}
+		else{
+			temp = arguments[1];
+		}
+		if(factors.length != 0){
+			for(var i = 0; i < factors.length; i++){
+				if(factors[i].name && factors[i].name.charAt(0) === factors[i].name.charAt(0).toUpperCase()){
+					if(!factors[i].value || factors[i].value == undefined || factors[i].value == "undefined" ){
+						var inputTemp =  $("<input></input>").attr({"name": factors[i].name, "size": "5"});
+						inputTemp.type = "text";
+						temp.append($("<span></span>").text("Please give values to the variable(s):").append($("<label></label>").attr("for", factors[i].name).text(factors[i].name + ":")).append(inputTemp));						
+					}
+				}
+				if(factors[i].params && factors[i].params.length != 0){
+					submitValue(factors[i].params, temp);
+				}
+			}
+			temp.append($("<button></button>").attr({"name": "submit", "value": "submit"}).click(function() {
+				temp.find("input").each(function() {
+					setValue($(this).attr("name"), $(this).val());
+					$(this).attr("disabled", "disabled");
+				});
+				temp.find("button").remove();
+				return false;
+			}));
+			$("#messages").append(temp);
+		}			
+	}
+*/
+	
+	function serialiseValue(factors, delimiter){
+		var content = "";
+		for(var i = 0; i < factors.length; i++){
+//			alert(factors[i].name.charAt(0).toString() + " : " + factors[i].name.charAt(0).toString().toUpperCase());
+			if(factors[i].name && factors[i].name.charAt(0).toString() == factors[i].name.charAt(0).toString().toUpperCase()){
+				if(factors[i].value == undefined){
+//					alert("here again");
+				}
+				else{
+//					alert(JSON.stringify(factors[i]));
+//					alert("detect factors " + factors[i].name + " " + factors[i].value);
+					content += factors[i].name + " : " + factors[i].value + delimiter;
+					
+				}
+			}
+			if(factors[i].name == "list"){
+				content += factors[i].name + " : " + factors[i].value.toString() + delimiter;
+			}
+			if(factors[i].name == "string"){
+				content += factors[i].name + " : " + factors[i].value + delimiter;
+			}
+			if(factors[i].params && factors[i].params.length != 0){
+				content += serialiseValue(factors[i].params, delimiter);
+			}
+		}
+		return content;
+	}
+	
+	function serialiseValueWithoutName(factors, delimiter){
+		var content = "";
+		for(var i = 0; i < factors.length; i++){
+			if(factors[i].name && factors[i].name.charAt(0).toString() == factors[i].name.charAt(0).toString().toUpperCase()){
+				if(factors[i].value == undefined){
+//					alert("here again");
+				}
+				else{
+					content += factors[i].value + delimiter;
+					
+				}
+			}
+			if(factors[i].name == "list"){
+				content += factors[i].value.toString() + delimiter;
+			}
+			if(factors[i].name == "string"){
+				content += factors[i].value + delimiter;
+			}
+			if(factors[i].params && factors[i].params.length != 0){
+				content += serialiseValueWithoutName(factors[i].params, delimiter);
+			}
+		}
+		return content;
+	}
+	
+	function displayValue(factors){
+		alert(serialiseValue(factors, "\r\n"));
+	}
+	
+	function displayValueWithoutName(factors){
+		alert(serialiseValueWithoutName(factors, "\r\n"));
+	}
+	
+	function renderValues(factors){
+		var time = new Date();
+		$("#messages").append($("<div></div>").html("[" + time.getHours() + ":" + time.getMinutes() + ":" + time.getSeconds() + "]<br/>" + serialiseValue(factors, "<br/>")));
+	}
+	
+	var peerHelper = { 
+		"setValue" : setValue, 
+		"getValue" : getValue,
+		"readValue" : readValue,
+		"displayValue" : displayValueWithoutName,
+		"inspectValue" : displayValue,
+//		"submitValue" : submitValue,
+		"renderValues" : renderValues
+	}
+	
+	function resetLCCEnvironment(){
+		v_names = new Array();
+		v_values = new Array();
+		currentBackTrack = undefined;
+		currentBracketBackTrack = undefined;
+		okcs = new Array();
+//		clauses = new Array();
+		role_heads = new Array();
+		role_bodies = new Array();
+		init = undefined;
+		currentMessageNode = undefined;
+		currentRoleNode = undefined;
+		currentConstraintsNode = undefined;
+		currentNextThenNode = undefined;
+		currentNextOrNode = undefined;
+		currentNextBracketNode = undefined;
+		currentNextBracketOrNode = undefined;
+		peerID = undefined;
+		finished = undefined;
+		niob_counter = 0;
+		niob_contexts = new Array();
+		niob_contexts.push(niob_default_context);
+		offline_msg = undefined;
+		triggered = false;
+		xmpp_resource = undefined;
+		emitter.removeAllListeners("okcs loaded");
+		emitter.removeAllListeners("gotMessageFromXMPPServer");
+		emitter.on("gotMessageFromXMPPServer", onMessageArrival);
+		emitter.on("msgReceived", receiveMSG);
+	}
+	
+	function saveSnapShot(iid){
+		var funcStrs = new Array();
+		for(var func in window){
+			if(window.hasOwnProperty(func) && typeof window[func] === "function" && window[func].toString().indexOf("\[native code\]") == -1){
+				funcStrs.push(func.toString());
+			}
+		}
+		var snapShot = {
+			"v_names" : v_names,
+			"v_values" : v_values, 
+			"currentBackTrack" : currentBackTrack,
+			"currentBracketBackTrack" : currentBracketBackTrack,
+			"okcs" : okcs,
+//			"clauses" : clauses,
+			"role_heads" : role_heads,
+			"role_bodies" : role_bodies,
+			"init" : init,
+			"currentMessageNode" : currentMessageNode,
+			"currentRoleNode" : currentRoleNode,
+			"currentConstraintsNode" : currentConstraintsNode,
+			"currentNextThenNode" : currentNextThenNode,
+			"currentNextOrNode" : currentNextOrNode,
+			"currentNextBracketNode" : currentNextBracketNode,
+			"currentNextBracketOrNode" : currentNextBracketOrNode,
+			"peerID" : peerID,
+			"finished" : finished,
+			"emitter" : emitter,
+			"offline_msg" : offline_msg,
+			"triggered" : triggered,
+			"xmpp_resource" : xmpp_resource,
+			"functions" : funcStrs,
+			"niob_counter" : niob_counter,
+			"niob_contexts" : niob_contexts
+		};
+		if(window["localStorage"]){
+			window["localStorage"].setItem(iid, JSON.stringify(snapShot));
+		}
+		else{
+//			throw webStorageNotSupportedException();
+		}
+		return snapShot;
+	}
+	
+	function loadSnapShot(iid){
+		var snapshot;
+		if(window["localStorage"]){
+			snapshot = JSON.parse(window["localStorage"].getItem(iid));
+			for(var variable in snapshot){
+				if(variable.toString() != "functions"){
+					window[variable] = snapshot[variable];
+				}
+				else{
+					for(var funcStr in snapshot[variable]){
+						eval.call(null, funcStr);
+					}
+				}
+			}
+		}
+		else{
+//			throw webStorageNotSupportedException();
+		}
+	}
+	
+	function removeSnapShot(iid){
+		if(window["localStorage"] && window["localStorage"].getItem(iid)){
+			window["localStorage"].removeItem(iid);
+		}
+	}
+	
+	function removeQuotes(str){
+		if(str.charAt(0) == '\'' || str.charAt(0) == '\"')
+			return str.substring(1, str.length - 1);
+		else
+			return str;
+	}
+	
+	function isIdenticalRole(tnode1, tnode2, recursion_counter){ //TODO need testing
+//		alert(recursion_counter + " : "+ JSON.stringify(tnode1) + " " + JSON.stringify(tnode2));
+		if(typeof(tnode1) == "string" && typeof(tnode2) == "string"){
+			if(recursion_counter < 4){
+				if(tnode1 == tnode2){
+					return true;
+				}
+				else{
+					return false;
+				}
+			}
+			else{
+				return true;
+			}	
+		}
+		else if(typeof(tnode1) == "string" && typeof(tnode2) != "string" || typeof(tnode1) != "string" && typeof(tnode2) == "string"){
+			return false;
+		}
+		else{
+			recursion_counter++;
+			if((tnode1.type == 1 && tnode1.type.toString() == tnode2.type.toString() && tnode1.value.toString() == tnode2.value.toString())
+			|| (tnode1.type != 1 && tnode1.type.toString() == tnode2.type.toString())){
+				if(tnode1.children.length == 0 && tnode2.children.length == 0){
+					return true;
+				}
+				else if(tnode1.children.length == tnode2.children.length){
+					for(var i = 0; i < tnode1.children.length; i++){
+						if(isIdenticalRole(tnode1.children[i], tnode2.children[i], recursion_counter)){
+							continue;
+						}
+						else{
+//							alert("detect false here");
+							return false;
+						}
+					}
+					return true;
+				}
+				else{
+//					alert("different children lengths");
+					return false;
+				}
+			}
+			else{
+//				alert("different types or values");
+				return false;
+			}
+		}
+	}
+	
+	function updateVariableValueInNode(src_role_head, dest_role_head){
+		if(typeof(src_role_head) == "string" && typeof(dest_role_head) == "string"){
+			if(getValue(src_role_head)){
+				setValue(dest_role_head, removeQuotes(getValue(src_role_head)));
+			}
+			else{
+				setValue(dest_role_head, removeQuotes(src_role_head));
+			}
+		}
+		else{
+			for(var i = 0; i < src_role_head.children.length; i++){
+				updateVariableValueInNode(src_role_head.children[i], dest_role_head.children[i]);
+			}
+		}
+	}
+	
+	function getRoleBodyByRoleHead(role_head){
+		var role_body = null;
+		alert(role_head + " ::::: " + role_heads);
+		for(var i = 0; i < role_heads.length; i++){
+			if(isIdenticalRole(role_head, role_heads[i], 0)){
+				role_body = role_bodies[i];
+				break;
+			}
+		}
+		if(role_body == null){
+			throw roleDefinitionNotFoundException(JSON.stringify(role_head));
+		}
+		else{
+//			alert("find the role definition!");
+		}
+		return role_body;
+	}
+	
+	function getRoleBodyByRoleHeadAfterRoleChanging(role_head){
+		var role_body = null;
+//		alert(JSON.stringify(role_head) + " ::::: " + JSON.stringify(role_heads));
+//		alert("number of pairs of heads and bodies: " + role_heads.length);
+		for(var i = 0; i < role_heads.length; i++){
+//			alert(JSON.stringify(role_head) + "================" + JSON.stringify(role_heads[i]));
+			if(isIdenticalRole(role_head, role_heads[i], 0)){
+//				alert("find identical roles");
+				updateVariableValueInNode(role_head, role_heads[i]);
+				role_body = role_bodies[i];
+				break;
+			}
+		}
+		if(role_body == null){
+			throw roleDefinitionNotFoundException(JSON.stringify(role_head));
+		}
+		else{
+//			alert("find the role definition!");
+		}
+		return role_body;
+	}
+	
+	function getRoleNameByRoleHeadNode(role_head){
+		return role_head.children[0].children[0].toString();
+	}
+	
+	function retrieveOKCs(okcs, headElem, count, length, node){
+		if(okcs.length == 0){
+			emitter.emit("okcs loaded", node, niob_contexts[0]);
+		}
+		else{
+			var okcElem = document.createElement("script");
+			headElem.appendChild(okcElem);
+			okcElem.type = "text/javascript";
+			okcElem.src =  okcs[count];
+			okcElem.onload = function () {
+				alert("OKC [" + okcs[count] + "] loaded!");
+				count++;
+				if(count == length){
+					alert("OKCs loading finished!");
+	//				alert(JSON.stringify(node));
+					emitter.emit("okcs loaded", node, niob_contexts[0]);
+				}
+				else{
+					retrieveOKCs(okcs, headElem, count, length, node);
+				}
+			};
+		}
+	}
+	
+	function initialize(clauses, builtIns){
+		window.top.onbeforeunload = function() {
+//			alert("finished " + finished);
+			if(!finished){
+				saveSnapShot(iid);
+				return confirm("Closing before finished may cause data lost! Are you sure?");
+			}
+			else
+				return "Bye!";
+		}
+		init = new Array();
+		okcs = new Array();
+		niob_counter = 0;
+		execute(builtIns, niob_contexts[0]);
+		finished = false;
+		peerID = document.getElementById("jid").value;		//based on user's inputs
+//		alert("Start interpreting the codes");
+		emitter.on("okcs loaded", execute);
+//		alert(init[0].jid.toString());
+		for(var i = 0; i < init.length; i++){
+			if(init[i].iid){
+				OKBuzzer.resource = init[i].iid.toString();
+				iid = init[i].iid.toString();
+				alert("Interaction ID is " + OKBuzzer.resource);
+			}
+			if(init[i].okcs){
+				for(var j = 0; j < init[i].okcs.length; j++){
+					okcs.push(init[i].okcs[j]);
+	//				alert(init[i].okcs[j]);
+				}
+			}
+		}
+		var count = 0;
+		var length = okcs.length;
+		var headElem = document.getElementsByTagName("head")[0];
+/* Web storage		
+		if(webStorageSupported && window["localStorage"].getItem(iid) != undefined){
+			if(confirm("You have an unfinished interaction. Do you want to rusume it?")){
+				alert("about to resume the unfinished interaction ...");
+//				loadSnapShot(iid);
+				retrieveOKCs(okcs, headElem, count, length, clauses); //for debug only
+			}
+			else{
+				retrieveOKCs(okcs, headElem, count, length, clauses);
+			}
+		}
+		else{
+			retrieveOKCs(okcs, headElem, count, length, clauses);
+		}
+*/
+		retrieveOKCs(okcs, headElem, count, length, clauses);	/* delete this when uncomment Web storage */
+	}
+	
+	function initializeByHeader(jsonStr, clauses, builtIns){
+		niob_counter = 0;
+		window.top.onbeforeunload = function() {
+//			alert("finished " + finished);
+			if(!finished){
+				saveSnapShot(iid);
+				return confirm("Closing before finished may cause data lost! Are you sure?");
+			}
+			else
+				return "Bye!";
+		}
+		peerID = document.getElementById("jid").value;		//based on user's inputs
+//		alert("Start interpreting the codes");
+		emitter.on("okcs loaded", execute);
+		finished = false;
+//		alert("node " + JSON.stringify(clauses, null, "\t"));
+		init = eval('(' + jsonStr + ')');
+//		alert(init[0].jid.toString());
+		for(var i = 0; i < init.length; i++){
+			if(init[i].iid){
+				OKBuzzer.resource = init[i].iid.toString();
+				iid = init[i].iid.toString();
+				alert("Interaction ID is " + OKBuzzer.resource);
+			}
+			for(var j = 0; j < init[i].okcs.length; j++){
+				okcs.push(init[i].okcs[j]);
+//				alert(init[i].okcs[j]);
+			}
+		}
+		if(arguments.length == 3){
+			execute(builtIns, niob_contexts[0]);
+		}
+		var count = 0;
+		var length = okcs.length;
+		var headElem = document.getElementsByTagName("head")[0];
+/* Web storage
+		if(webStorageSupported && window["localStorage"].getItem(iid) != undefined){
+			if(confirm("You have an unfinished interaction. Do you want to rusume it?")){
+				alert("about to resume the unfinished interaction ...");
+				loadSnapShot(iid);
+			}
+			else{
+				retrieveOKCs(okcs, headElem, count, length, clauses);
+			}
+		}
+		else{
+			retrieveOKCs(okcs, headElem, count, length, clauses);
+		}
+*/
+		retrieveOKCs(okcs, headElem, count, length, clauses); /* delete this when uncomment Web storage */
+	}
+	
+//	function sendtext(){
+//		var fullJID = 
+//		OKBuzzer.connection.send($msg({ "to" : "bob@okbook.inf.ed.ac.uk", "type" : "chat"}).c("body").t("send"));
+//		setTimeout('sendtext();', 3000);
+//	}
+	
+	function sendMSG(message, recepientJID){
+		var success;
+		var fullJID = recepientJID + "/" + OKBuzzer.resource; //TODO: this needs to be passed from the XLCC codes
+		alert("Sending message " + message + " to " + fullJID);
+		OKBuzzer.connection.send($msg({ "to" : fullJID, "type" : "chat"}).c("body").t(message));
+//		sendtext();
+		success = true;
+		return success;
+	}
+	
+	function updateVariableValueInJSON(src_msg, dest_msg){
+		dest_msg.value = src_msg.value;
+		setValue(dest_msg.name, dest_msg.value);
+		if(dest_msg.params.length != 0 && dest_msg.params.length != 0){
+			for(var i = 0; i < src_msg.params.length; i++){
+				updateVariableValueInJSON(src_msg.params[i], dest_msg.params[i]);
+			}
+		}
+	}
+	
+	function executeNextThenOrOrBranch(solved, niob_context){
+//		alert("niob counter: " + niob_counter);
+		if(solved){
+			if(emitter.listeners("nextThenDEF_" + niob_context.id) != undefined && emitter.listeners("nextThenDEF_" + niob_context.id).length != 0){
+//				alert("nextThenDEF is not empty! --- " + emitter.listeners("nextThenDEF_" + niob_context.id).length);
+				emitter.emit("nextThenDEF_" + niob_context.id, niob_context.currentNextThenNode, niob_context, "nextThenDEF");
+			}
+			else if(emitter.listeners("nextBracketDEF_" + niob_context.id) != undefined && emitter.listeners("nextBracketDEF_" + niob_context.id).length != 0){
+				emitter.emit("nextBracketDEF_" + niob_context.id, niob_context.currentNextBracketNode, niob_context, "nextBracketDEF");
+			}
+			else{
+				if(niob_counter == -1){
+					alert("Interaction finished successfully!");
+					triggered = false;
+					finished = true;
+					removeSnapShot(iid);	
+				}
+				else{
+					niob_counter--;
+					if(niob_counter == -1){
+						alert("Interaction finished successfully!");
+						triggered = false;
+						finished = true;
+						removeSnapShot(iid);
+					}
+					else{
+						alert("Start waiting for another niob context!");
+					}
+				}
+			}
+		}
+		else{
+			if(emitter.listeners("nextOrDEF_" + niob_context.id) != undefined && emitter.listeners("nextOrDEF_" + niob_context.id).length != 0){
+				v_names = niob_context.currentBackTrack.v_names;
+				v_values = niob_context.currentBackTrack.v_values;
+//				alert("track back after OR");
+				emitter.emit("nextOrDEF_" + niob_context.id, niob_context.currentNextOrNode, niob_context, "nextOrDEF");
+			}
+			else if(emitter.listeners("nextBracketOrDEF_" + niob_context.id) != undefined && emitter.listeners("nextBracketOrDEF_" + niob_context.id).length != 0){
+				v_names = niob_context.currentBracketBackTrack.v_names;
+				v_values = niob_context.currentBracketBackTrack.v_values;
+//				alert("track back after next OR");
+				emitter.emit("nextBracketOrDEF_" + niob_context.id, niob_context.currentNextBracketOrNode, niob_context, "nextBracketOrDEF");
+			} 
+			else{
+				throw constraitsSolvingFailedException();
+			}
+		}
+	}
+	
+	function onMessageArrival(msg) {
+//		alert("A new message came : " + msg.body); 
+		var senderJID = msg.from.toString();
+		var receiverJID = msg.to.toString();
+		offline_msg = undefined;
+		if(receiverJID.indexOf("/") != -1 && receiverJID.split("/")[1] == OKBuzzer.resource){
+			//TODO the sender id and the resource need to be checked here.
+			var msgBody = JSON.parse(msg.body);
+	//		alert("body : " + JSON.stringify(msgBody));
+			var niob_context = getNiobContextByMsgName(msgBody.name);
+//			alert("context after receiving msg: " + JSON.stringify(niob_context));
+//			alert("msg name: " + msgBody.name);
+	//update variables here
+			//when receive message
+			
+			if(niob_context.currentConstraintsNode != undefined){
+				emitter.emit("msgReceived", msgBody, execute(niob_context.currentMessageNode, niob_context), execute(niob_context.currentRoleNode, niob_context), niob_context, niob_context.currentConstraintsNode);
+			}
+			else{
+				emitter.emit("msgReceived", msgBody, execute(niob_context.currentMessageNode, niob_context), execute(niob_context.currentRoleNode, niob_context), niob_context);
+			}
+		}
+	}
+	
+	function receiveMSG(msgBody, msgJSONStr, roleNode, niob_context){
+		msgJSON = eval("(" + msgJSONStr + ")");
+		updateVariableValueInJSON(msgBody, msgJSON);
+//		alert("after update: " + JSON.stringify(msgBody) + "============" + JSON.stringify(msgJSON));
+		if(arguments[4]){
+			var solved = execute(niob_context.currentConstraintsNode, niob_context);
+			niob_context.currentConstraintsNode = undefined;
+			updateNiobContext(niob_context);
+			executeNextThenOrOrBranch(solved, niob_context);
+		}
+		else{
+			executeNextThenOrOrBranch(true, niob_context);
+		}
+	}
+	
+	function execute(node, niob_context, removeListeners){
+//		alert(niob_context.id);
+//		alert("execute: " + JSON.stringify(niob_context));
+		if(arguments.length == 3){
+			if(removeListeners == "nextThenDEF"){
+				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
+//				alert("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));	
+			}
+			else if(removeListeners == "nextOrDEF"){
+				emitter.removeAllListeners("nextOrDEF_" + niob_context.id);
+//				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);	//problematic
+				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
+//				alert("after remove we got : " + emitter.listeners("nextOrDEF_" + niob_context.id));	
+			}
+			else if(removeListeners == "nextBracketDEF"){
+				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
+			}
+			else if(removeListeners == "nextBracketOrDEF"){
+				emitter.removeAllListeners("nextBracketOrDEF_" + niob_context.id);
+//				emitter.removeAllListeners("nextThenDEF_" + niob_context.id);	//problematic
+				emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
+			}
+		}
+//		alert("executing " + JSON.stringify(node));
+		var ret = 0;
+		if(!node)
+			return 0;
+		switch(node.type){
+			case NODE_OP: 
+				switch(node.value){
+					case OP_ENTRY:
+//						alert("hit entry");
+						if(node.children[0]){
+//							alert(JSON.stringify(clauses));
+							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);
+						}
+						break;
+					case OP_NONE:
+//						alert("hit none");
+						if(node.children[0]){
+							execute(node.children[0], niob_context);
+						}
+						break;
+					case OP_CLAUSE:
+//						alert("hit clause");
+						if(node.children[0]){
+//							clauses.push(node.children[0]);
+							execute(node.children[0], niob_context);
+						}
+						if(node.children[1]){
+							execute(node.children[1], niob_context);
+						}
+						break;
+					case OP_HEADBODY:
+//						alert("hit headbody");
+						if(node.children[0]){
+							role_heads.push(node.children[0]);
+//							execute(node.children[0], niob_context);
+						}
+						if(node.children[1]){
+							role_bodies.push(node.children[1]);
+//							execute(node.children[1], niob_context);
+						}
+						break;
+					case OP_ROLE_CHANGE:
+//						alert("hit role_change");
+						if(node.children[1]){
+							if(execute(node.children[1], niob_context) && node.children[1]){
+								alert("Role change now!");
+								execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);
+							}
+							else{
+								throw constraitsSolvingFailedException();
+							}
+						}
+						else if(node.children[0]){
+							alert("Role change now!");
+							execute(getRoleBodyByRoleHeadAfterRoleChanging(node.children[0]), niob_context);						
+						}
+						break;
+					case OP_ROLE:
+//							alert("hit role");
+							var roleID = node.children[1].value.toString();
+							if(getValue(roleID) != null && getValue(roleID) != undefined){
+								ret = getValue(roleID);
+								break;
+							}
+							else{
+//								alert("role parse: " + JSON.stringify(execute(node.children[0], niob_context)));
+								var temp = eval("[(" + execute(node.children[0], niob_context) + ")]");
+								readValue(temp);
+//								submitValue(temp);		// this can not block the thread as prompt() can
+								var roleType = temp[0];
+								var roleName = roleType.name;
+								var roleFoundInInit = true;
+								var roleJID = "";
+								for(var i = 0; i < init.length; i++){
+//									alert(roleName.toString().toLowerCase() + " : " + init[i].role.toString().toLowerCase());
+									if(roleName.toString().toLowerCase() == init[i].role.toString().toLowerCase()){
+										setValue(roleID, init[i].jid.toString());
+//										alert(roleID + " " + init[i].jid.toString());
+										roleJID = init[i].jid.toString();
+										roleFoundInInit = true;
+										break;
+									}
+									roleFoundInInit = false;
+								}
+								if(roleFoundInInit){
+									ret = roleJID; 
+									break;
+								}
+								else{
+//									alert(roleID + " : " + getValue(roleID));
+									throw CommunicationIDNotFoundException(roleName);
+								}
+							}	
+					case OP_KNOWS:
+//						alert("hit knows");
+						if(node.children[0])
+							okcs.push(removeQuotes(node.children[0].toString()));
+						break;
+					case OP_PLAYS:
+//						alert("hit plays");
+						if(node.children[0] && node.children[1]){
+							var info = {};
+							info["jid"] = removeQuotes(node.children[0].toString());
+							info["role"] = node.children[1].toString();
+							init.push(info);						
+						}
+						break;
+					case OP_IID:
+//						alert("hit iid");
+						if(node.children[0]){
+							OKBuzzer.resource = removeQuotes(node.children[0].toString());
+							iid = removeQuotes(node.children[0].toString());
+						}
+//						alert("in OP_IID " + OKBuzzer.resource);
+						break;
+					case OP_ROLE_TYPE:
+//						alert("hit role_type");
+						var ret = execute(node.children[0], niob_context);
+						break;
+					case OP_TERMS:
+//						alert("hit terms");
+						if(node.children[1]){
+							ret = execute(node.children[0], niob_context) + ", " + execute(node.children[1], niob_context);
+						}
+						else{
+							ret = execute(node.children[0], niob_context);
+						}
+						break;
+					case OP_FACTOR:
+//						alert("hit factor");
+						if(node.children[1])
+							ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : [' + execute(node.children[1], niob_context) + ']}';
+						else{
+//							alert(node.children[0].toString());
+							if(node.children[0].toString().charAt(0) == "[" && node.children[0].toString().charAt(node.children[0].toString().length - 1) == "]"){
+								ret = '{ "name" : "list", "value" : [' + eval(node.children[0]).toString() + '], "params" : []}';
+							}
+							else if(node.children[0].toString().charAt(0) == "'" && node.children[0].toString().charAt(node.children[0].toString().length - 1) == "'"){
+								ret = '{ "name" : "string", "value" : "' + removeQuotes(node.children[0].toString()) + '", "params" : []}';
+							}
+							else if(node.children[0].toString().charAt(0) == "\"" && node.children[0].toString().charAt(node.children[0].toString().length - 1) == "\""){
+								ret = '{ "name" : "string", "value" : "' + removeQuotes(node.children[0].toString()) + '", "params" : []}';
+							}
+							else{
+								ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : []}';
+							}
+						}
+						break;
+					case OP_CONSTRAINT://TODO need check the Variables and which of them are inputs and wich of them are outputs (callback?).
+//						alert("hit constraint");
+						var constraintName = node.children[0];
+						if(node.children[1]){
+//							alert(execute(node.children[1], niob_context));
+				//			alert(eval("JSON.parse(\"" + execute(node.children[1], niob_context) + "\");"));
+							ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'" + execute(node.children[1], niob_context) + "\' + \'])\'), peerHelper);"); //according to "Conventions over configurations"
+						}
+						else{
+							ret = eval(constraintName + "_okc_hook" + "(eval(\'([\' + \'])\'), peerHelper);");
+						}
+						if(ret == null || ret == undefined)
+							throw invalidOKCException(funcName);
+						break;
+					case OP_NEGATE:
+//						alert("hit negate");
+						ret = !execute(node.children[0], niob_context);	
+						break;
+					case OP_LOGAND:
+//						alert("hit logand");
+						ret = execute(node.children[0], niob_context) && execute(node.children[1], niob_context);
+						break;
+					case OP_LOGOR:
+//						alert("hit logor");
+						niob_context.currentBackTrack = {};
+						niob_context.currentBackTrack.v_names = v_names;
+						niob_context.currentBackTrack.v_values = v_values;
+						if(execute(node.children[0], niob_context)){
+							ret = ture;
+						}
+						else{
+//							alert("trackback after ||");
+							v_names = niob_context.currentBackTrack.v_names;
+							v_values = niob_context.currentBackTrack.v_values;
+							ret = execute(node.children[1], niob_context);
+						}
+						break;
+					case OP_LIST:
+//						alert("hit list");
+						var list = execute(node.children[0], niob_context);
+						var listHead = execute(node.children[1], niob_context);
+						var listTail = execute(node.children[2], niob_context);
+						if(listHead != undefined && listTail != undefined && listTail.length){
+							setValue(node.children[0].value.toString(), listTail.unshift(listHead));
+							ret = true;
+						}
+						else if(list != undefined && list.length){
+							if(list.length == 0){
+								setValue(node.children[1].value.toString(), new Array());
+								setValue(node.children[2].value.toString(), new Array());
+							}
+							else{
+								setValue(node.children[1].value.toString(), list[0]);
+								list.shift();
+								setValue(node.children[2].value.toString(), list);
+							}
+							ret = true;
+						}	
+						else{
+							throw listDefinitionNotSupportedException();
+						}					
+						break;
+					case OP_THEN:
+//						alert("hit 'then'");
+						emitter.removeAllListeners("nextThenDEF_" + niob_context.id);
+//						alert("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));
+						niob_context.currentNextThenNode = node.children[1];
+//						thens.unshift(niob_context.currentNextThenNode);
+						emitter.on("nextThenDEF_" + niob_context.id, execute);
+//						alert("the next then will be: " +JSON.stringify(niob_context.currentNextThenNode) + "  : nextThenDefLength: " + emitter.listeners("nextThenDEF_" + niob_context.id).length);
+						execute(node.children[0], niob_context);
+						break;
+					case OP_OR:
+						alert("hit 'or'");
+						emitter.removeAllListeners("nextOrDEF_" + niob_context.id);
+//						alert("after remove we got : " + emitter.listeners("nextThenDEF_" + niob_context.id));
+						niob_context.currentNextOrNode = node.children[1];
+						niob_context.currentBackTrack = {};
+						niob_context.currentBackTrack.v_names = v_names;
+						niob_context.currentBackTrack.v_values = v_values;
+						emitter.on("nextOrDEF_" + niob_context.id, execute);
+						execute(node.children[0], niob_context);
+						break;
+					case OP_NIOB:
+						alert("hit 'niob'");
+						execute(node.children[0], niob_context);
+						niob_counter++;
+						alert("niob counter: " + niob_counter);
+						var nextNiobContext = new NiobContext();
+						nextNiobContext.id = niob_counter;
+						execute(node.children[1], nextNiobContext);// need to change
+						break;
+					case OP_BRACKET:
+						alert("hit 'bracket then'");
+						emitter.removeAllListeners("nextBracketDEF_" + niob_context.id);
+						niob_context.currentNextBracketNode = node.children[1];
+						emitter.on("nextBracketDEF_" + niob_context.id, execute);
+						execute(node.children[0], niob_context);
+						break;
+					case OP_BRACKET_OR:
+						alert("hit 'bracket or'");
+						emitter.removeAllListeners("nextBracketOrDEF_" + niob_context.id);
+						niob_context.currentNextBracketOrNode = node.children[1];
+						niob_context.currentBracketBackTrack = {};
+						niob_context.currentBracketBackTrack.v_names = v_names;
+						niob_context.currentBracketBackTrack.v_values = v_values;
+						emitter.on("nextBracketOrDEF_" + niob_context.id, execute);
+						execute(node.children[0], niob_context);
+						breakl
+/*					case OP_PAR:
+						alert("hit par");
+						break;
+*/						
+					case OP_SEND:
+//						alert("hit send");
+//						alert("message : " + JSON.stringify(node.children[0]));
+//						alert("receipient : " + execute(node.children[1], niob_context));
+						var msgNode = node.children[0];
+						var roleNode = node.children[1];
+						var solved = true;
+						var message = undefined;
+						var recepientJID = undefined;
+						if(node.children[2]){
+							solved = execute(node.children[2], niob_context);
+//							alert("solved : " + solved);
+							if(solved){
+								message = execute(msgNode, niob_context);
+								recepientJID = execute(roleNode, niob_context);
+								sendMSG(message, recepientJID);
+								alert("Message sent!");
+							}
+							executeNextThenOrOrBranch(solved, niob_context);
+						}
+						else{
+							message = execute(msgNode, niob_context);
+							recepientJID = execute(roleNode, niob_context);
+							sendMSG(message, recepientJID);
+							alert("Message sent!");
+							alert("Message sent!");
+//							alert("next then DEF: " + emitter.listeners("nextThenDEF_" + niob_context.id));
+							executeNextThenOrOrBranch(true, niob_context);
+						}
+						break;
+					case OP_RECEIVE: 
+//						alert("hit receive");
+//						emitter.removeAllListeners("receive");
+						niob_context.currentMessageNode = node.children[0];
+						niob_context.currentRoleNode = node.children[1];
+//						alert("message name: " + JSON.parse(execute(node.children[0], niob_context)).name);
+						niob_context.msgs.push(JSON.parse(execute(node.children[0], niob_context)).name);
+//						alert("current niob context: " + JSON.stringify(niob_context));
+						if(node.children[2]){
+							niob_context.currentConstraintsNode = node.children[2];
+						}
+						else{
+							niob_context.currentConstriantsNode = null;
+						}
+//						alert("offline_msg " + offline_msg);
+//						emitter.on("msgReceived", receiveMSG);
+						if(offline_msg != undefined){
+//							alert("got offline msg");
+							emitter.emit("gotMessageFromXMPPServer", offline_msg);
+						}
+						else{
+							alert("Start waiting for a new message");
+						}
+						break;
+					case OP_MESSAGE:
+//						alert("hit message");
+						ret = '{ "name" : "' + node.children[0] + '", "value" : "' + getValue(node.children[0]) + '", "params" : [' + execute(node.children[1], niob_context) + ']}';
+//						alert("return message : " + ret);
+						break;
+					case OP_NO_MSG:
+//						alert("hit no_msg");
+						ret = execute(node.children[0], niob_context);
+						executeNextThenOrOrBranch(ret, niob_context);
+						break;
+					case OP_EQU:
+						ret = execute(node.children[0], niob_context) == execute(node.children[1], niob_context);
+						break;
+					case OP_NEQ:
+						ret = execute(node.children[0], niob_context) != execute(node.children[1], niob_context);
+						break;
+					case OP_GRT:
+						ret = execute(node.children[0], niob_context) > execute(node.children[1], niob_context);
+						break;
+					case OP_LOT:
+						ret = execute(node.children[0], niob_context) < execute(node.children[1], niob_context);
+						break;
+					case OP_GRE:
+						ret = execute(node.children[0], niob_context) >= execute(node.children[1], niob_context);
+						break;
+					case OP_LOE:
+						ret = execute(node.children[0], niob_context) <= execute(node.children[1], niob_context);
+						break;					
+					case OP_ASSIGN:
+						setValue(node.children[0].toString(), execute(node.children[1], niob_context));
+						ret = true;
+						break;
+				}
+				break;
+			case NODE_VAR:
+				if(getValue(node.value))
+					ret = getValue(node.value);
+				else
+					ret = node.value;
+				break;
+			case NODE_CONST:
+				ret = node.value;
+				break;
+			case NODE_ARR:
+				ret = eval(node.value);
+				break;
+			case NODE_STR:
+				ret = removeQuotes(node.value.toString());
+				break;
+		}
+		updateNiobContext(niob_context);
+//		alert("after update the contexts:" + JSON.stringify(niob_contexts));
+		return ret;
+	}
+	
+	function invalidOKCException(okcName){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "OKC " + "'" + okcName + "()' has not been loaded.";
+		alert(message);
+		return message; 
+	}
+	
+	function roleDefinitionNotFoundException(roleName){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "Role " + "'" + roleName + "' has not been defined in this interaction model.";
+		alert(message);
+		return message;
+	}
+	
+	function constraitsSolvingFailedException(){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "Constraints can not be solved. Interaction terminated without completion!";
+		alert(message);
+		return message;
+	}
+	
+	function webStorageNotSupportedException(){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "Web storage is not supported by this browser and your states may be lost after you close the current window.";
+		alert(message);
+		return message;
+	}
+
+	function listDefinitionNotSupportedException(){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "This usage of the constraint list is not supported or correct.";
+		alert(message);
+		return message;
+	}
+	
+	function CommunicationIDNotFoundException(roleName){
+		resetLCCEnvironment();
+		if(iid) removeSnapShot(iid);
+		var message = "Cannot find the communication ID (Jabber ID) of the message receiver with the role name: " + roleName;
+		alert(message);
+		return message;
+	}
+	
+*]
+
+/~ Lightweight Coordination Calculus (LCC) Interpreter ~/
+
+/~ Tokens to be ignored ~/
+!	' |\r|\n|\t|//[^\n]*\n '
+        ;						
+
+/~ Grammar tokens ~/
+	'head'
+	'a'
+/~	'okc' ~/
+	'or'
+	'then'
+	'niob'
+/~  'par' ~/
+	'knows'
+	'plays'
+	'iid'
+	'list'
+	'null'
+	'not'									/~ logical "NOT" ~/
+/~	'msg' ~/
+/~	'text' ~/
+/~	'input' ~/
+/~	'initiakl' ~/
+	'::'
+	','
+	'\.'
+	'\('
+	'\)'
+	'\['
+	'\]'
+	'\{'
+	'\}'
+	'=='
+	'!='
+	'>'
+	'<'
+	'>='
+	'=<'
+	'=>'
+	'<='
+	'->'
+	'<-'
+	'='
+	'_'
+	'\|'                             
+	'([A-Z][A-Za-z0-9_]*)'	Variable
+/~	'(([\'\"])?[a-z][A-Za-z0-9_@\.:-//]*([\'\"])?)|(([\'\"])?([0-9])+([\'\"])?)'		Constant	~/
+	'([a-z][A-Za-z0-9_@\.:-//]*)|(([0-9\.])+)'											Constant
+	'\[[^\|]*\{[^\|]+\}[^\|]*\]'													JSONLIST
+	'\[[^\{\}><=!]*\]'																LIST 
+/~	'\'([^\']|\'\')*\'' 															String	~/
+	'(\'([^\']|\'\')*\')|(\"([^\"]|\"\")*\")'										String
+	;
+	
+	
+/~ associativity ~/
+> 	"niob"
+	;
+	
+>	"or"							
+	;
+
+>	"then"
+	;
+
+>       '<='
+        '=>'
+        ;
+
+>       '<-'
+        '->'
+        ;
+
+>	'\|\|'									/~ logical "OR" ~/
+	;
+	
+>	'&&'									/~ logical "AND" ~/
+	;	
+	
+> 	'=='
+	'!='
+	'>'
+	'<'
+	'>='
+	'=<'
+	'='
+	;
+
+##
+
+IM:		Clause_List	BuiltIn_List						[* initialize(%1, %2); *]
+		| BuiltIn_List Clause_List						[* initialize(%2, %1); *]
+		| head '(' JSONLIST ')' '.' Clause_List 			[* initializeByHeader(%3, %6); *]
+		| Clause_List head '(' JSONLIST ')' '.'				[* initializeByHeader(%4, %1); *]
+		| head '(' JSONLIST ')' '.' Clause_List BuiltIn_List			[* initializeByHeader(%3, %6, %7); *]
+		| head '(' JSONLIST ')' '.' BuiltIn_List Clause_List 			[* initializeByHeader(%3, %7, %6); *]
+		;
+
+Clause_List:	Clause									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
+                | Clause Clause_List					[* %% = createNode(NODE_OP, OP_CLAUSE, %1, %2); *]
+	        ;
+
+Clause:	Role '::' Def '.'								[* %% = createNode(NODE_OP, OP_HEADBODY, %1, %3); *]		
+		| Role '.'										[* %% = createNode(NODE_OP, OP_ENTRY, %1); *]
+		;	
+		
+BuiltIn_List: 	BuiltIn									[* %% = createNode(NODE_OP, OP_CLAUSE, %1); *]
+				| BuiltIn BuiltIn_List					[* %% = createNode(NODE_OP, OP_CLAUSE, %1, %2); *]
+				;
+		
+BuiltIn:	plays '(' String ',' Constant ')'	'.'						[* %% = createNode(NODE_OP, OP_PLAYS, %3, %5); *]
+		 	| knows '(' String ')' '.'								[* %% = createNode(NODE_OP, OP_KNOWS, %3); *] 
+		 	| iid '(' String ')' '.'									[* %% = createNode(NODE_OP, OP_IID, %3); *]
+		 	;
+
+Role:	a '(' Type ',' Id ')'                           [* %% = createNode(NODE_OP, OP_ROLE, %3, %5); *]
+		;
+
+Type:	Term                                                [* %% = createNode(NODE_OP, OP_ROLE_TYPE, %1); *]
+		;
+	
+Def:	Interaction												  /~ [* %% = %1; *] ~/
+		| Def then Def                                            [* %% = createNode(NODE_OP, OP_THEN, %1, %3); *]
+		| Def or Def                                              [* %% = createNode(NODE_OP, OP_OR, %1, %3); *]
+		| Def niob Def											  [* %% = createNode(NODE_OP, OP_NIOB, %1, %3); *]
+		| '{' Def '}'											  [* %% = %2; *]
+/~		| Def par Def                                             [* %% = createNode(NODE_OP, OP_PAR, %1, %3); *] ~/
+		;
+
+Interaction:	Message '=>' Role                                 [* %% = createNode(NODE_OP, OP_SEND, %1, %3); *]
+				| Message '=>' Role '<-' Constraint               [* %% = createNode(NODE_OP, OP_SEND, %1, %3, %5); *]
+				| Message '<=' Role                               [* %% = createNode(NODE_OP, OP_RECEIVE, %1, %3); *]
+				| Constraint '<-' Message '<=' Role               [* %% = createNode(NODE_OP, OP_RECEIVE, %3, %5, %1); *]
+				| null '<-' Constraint                            [* %% = createNode(NODE_OP, OP_NO_MSG, %3); *]   /~ not in the original BNF declaration on the openk website ~/
+				| Role											  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1 );*]
+	      		| Role '<-' Constraint							  [* %% = createNode(NODE_OP, OP_ROLE_CHANGE, %1, %3) *]			
+				;
+
+Constraint:	Constant  											[* %% = true; *]
+			| Constant '(' ')'                            		[* %% = createNode(NODE_OP, OP_CONSTRAINT, %1); *]
+			| Constant '(' Terms ')'                            [* %% = createNode(NODE_OP, OP_CONSTRAINT, %1, %3); *]
+			| not '(' Constraint ')'                            [* %% = createNode(NODE_OP, OP_NEGATE, %3); *]
+			| Id '==' Id										[* %% = createNode(NODE_OP, OP_EQU, %1, %3); *]
+			| Id '!=' Id										[* %% = createNode(NODE_OP, OP_NEQ, %1, %3); *]
+			| Id '>' Id											[* %% = createNode(NODE_OP, OP_GRT, %1, %3); *]
+			| Id '<' Id											[* %% = createNode(NODE_OP, OP_LOT, %1, %3); *]
+			| Id '>=' Id										[* %% = createNode(NODE_OP, OP_GRE, %1, %3); *]
+			| Id '=<' Id										[* %% = createNode(NODE_OP, OP_LOE, %1, %3); *]
+			| Variable '=' Id									[* %% = createNode(NODE_OP, OP_ASSIGN, %1, %3); *]
+			| Constraint '&&' Constraint                        [* %% = createNode(NODE_OP, OP_LOGAND, %1, %3); *]
+			| Constraint '\|\|' Constraint                      [* %% = createNode(NODE_OP, OP_LOGOR, %1, %3); *] 
+			| list '(' Id ',' Id ',' Id ')' 					[* %% = createNode(NODE_OP, OP_LIST, %3, %5, %7); *]
+			;
+	
+Terms:	Terms ',' Term                                          [* %% = createNode(NODE_OP, OP_TERMS, %1, %3); *] 
+		| Term                                                  [* %% = createNode(NODE_OP, OP_TERMS, %1); *] 
+		;
+		
+Term:	Constant                                              	[* %% = createNode(NODE_OP, OP_FACTOR, %1); *] 
+		| Variable                                              [* %% = createNode(NODE_OP, OP_FACTOR, %1); *]  
+		| LIST					 								[* %% = createNode(NODE_OP, OP_FACTOR, %1); *] 
+		| Constant '(' Terms ')'                                [* %% = createNode(NODE_OP, OP_FACTOR, %1, %3); *]
+		| String												[* %% = createNode(NODE_OP, OP_FACTOR, %1); *]
+		| '_'
+		;
+
+Id:	Constant                                                    [* %% = createNode(NODE_CONST, %1); *] 
+	| Variable                                                  [* %% = createNode(NODE_VAR, %1); *]  
+	| LIST														[* %% = createNode(NODE_ARR, %1); *] 
+	| String													[* %% = createNode(NODE_STR, %1); *]
+	;
+
+Message:	Constant '(' Terms ')'                              [* %% = createNode(NODE_OP, OP_MESSAGE, %1, %3); *]
+			;
+
+
+[*
+	var str = document.getElementById("lcc_head").value + document.getElementById("lcc_body").value;
+	var error_cnt 	= 0;
+	var error_off	= new Array();
+	var error_la	= new Array();
+	
+	if( ( error_cnt = __parse( str, error_off, error_la ) ) > 0 )
+	{
+		for( i = 0; i < error_cnt; i++ )
+			alert( "Parse error near >" 
+				+ str.substr( error_off[i], 30 ) + "<, expecting \"" + error_la[i].join() + "\"" );
+	}
+*]					
+	    </textarea>
+	    <div id="parsetree" class="hidden"></div>
+	    <div id="output" class="hidden"></div>
+    </body>
+</html>

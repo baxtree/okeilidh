@@ -1,0 +1,40 @@
+head(
+	[
+		{	jid : "admin@okbook.inf.ed.ac.uk",
+			role: "",
+			roleType : "trigger",
+			okcs : [],
+			iid : "timestamp_and_random_factor_and_sha1_of_IMURI_and_community_domain"
+		}
+		,
+		{
+			jid : "alice@okbook.inf.ed.ac.uk",
+			role : "client",
+			roleType : "initial",
+			okcs : ["http://okbook.inf.ed.ac.uk:8188/okbook/im/alice.js"]
+		}
+		,
+		{
+			jid : "bob@okbook.inf.ed.ac.uk",
+			role : "shop",
+			roleType : "",
+			okcs : ["http://okbook.inf.ed.ac.uk:8188/okbook/im/bob.js"]	// this need to be hidden to alice
+		}
+	]
+).
+
+
+a(client(PC), D)::
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S).
+	
+a(client(AA, BB), C)::
+	buy(AA, BB) => a(shop, S) <- payby(AA) then
+	display(R) <- receipt(R) <= a(shop, S) then
+	null <- display(R) then
+	a(client(AA), C).
+	
+a(shop, S)::
+	buy(PC, CC) <= a(client(_), C) then
+	receipt(R) => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).
+
+a(client(book, card), C).

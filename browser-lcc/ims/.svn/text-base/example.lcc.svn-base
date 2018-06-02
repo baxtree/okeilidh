@@ -1,0 +1,30 @@
+header(
+	[
+		{	jid : "admin@okbook.inf.ed.ac.uk",
+			role: "",
+			roleType : "trigger",
+			okcs : []
+		}
+		{
+			jid : "alice@okbook.inf.ed.ac.uk",
+			role : "client",
+			roleType : "initial",
+			okcs : ["http://alice@okbook.inf.ed.ac.uk:8818/im/okc.js"]
+		}
+		,
+		{
+			jid : "bob@okbook.inf.ed.ac.uk",
+			role : "shop",
+			reoleType : "";
+			okcs : ["http://bob@okbook.inf.ed.ac.uk:8818/im/okc.js"]
+		}
+	]
+).
+
+a(client(PC), C)::
+	buy(PC, CC) => a(shop, S) <- payby(CC) && lookup(S) then
+	receipt <= a(shop, S).
+	
+a(shop, S)::
+	buy(PC, CC) <= a(client(_), C) then
+	receipt => a(client(_), C) <- enough_credit(CC, PC) && complete_order(PC, CC, R).

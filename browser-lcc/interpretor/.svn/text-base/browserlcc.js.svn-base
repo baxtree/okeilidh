@@ -1,0 +1,360 @@
+	var constraints = {};
+	var emitter = new EventEmitter;
+	emitter.removeAllListeners("okcs loaded");
+	emitter.on("okcs loaded", execute);
+	emitter.removeAllListeners("msgReceived");
+	emitter.on("msgReceived", receiveMSG);
+//	emitter.removeAllListeners("sendMSG");
+//	emitter.on("sendMSG", execute);
+	function OKBuzzer () {
+    this.connection = null;
+}
+
+	OKBuzzer.prototype.jid_to_id = function (jid) {
+	    return Strophe.getBareJidFromJid(jid).replace(/@/g, "-").replace(/\./g, "-");
+	};
+	
+	OKBuzzer.prototype.on_message = function (message) {
+	    var full_jid = $(message).attr('from');
+	    var body = $(message).find("html > body");
+	    return true;
+	};
+	var okbuzzer = new OKBuzzer();
+	
+	$(document).ready(function () {
+	    $('#login_dialog').dialog({
+	        autoOpen: true,
+	        dragOKBuzzerle: false,
+	        modal: true,
+	        title: 'Connect to XMPP',
+	        buttons: {
+	            "Connect": function () {
+	                $(document).trigger('connect', {
+	                	server: $("#server").val(),
+	                    jid: $('#jid').val(),
+	                    password: $('#password').val()
+	                });
+	                
+	                $('#password').val('');
+	                $(this).dialog('close');
+	            }
+	        }
+	    });
+	    
+	    $("disconnect").click(function(){
+			okbuzzer.connection.disconnect();
+			okbuzzer.connection = null;
+		});
+	});
+	    
+	$(document).bind('connect', function (ev, data) {
+	    var conn = new Strophe.Connection(data.server);
+	
+	    conn.connect(data.jid, data.password, function (status) {
+	        if (status === Strophe.Status.CONNECTED) {
+	            $(document).trigger('connected');
+	        } else if (status === Strophe.Status.DISCONNECTED) {
+	            $(document).trigger('disconnected');
+	        }
+	    });
+		
+	    okbuzzer.connection = conn;
+	});
+		
+	$(document).bind('connected', function () {
+	    okbuzzer.connection.addHandler(OKBuzzer.on_message, null, "message", "chat");
+	});
+		
+	$(document).bind('disconnected', function () {
+	    okbuzzer.connection = null;
+	    $('#login_dialog').dialog('open');
+	});
+	
+	var v_names = new Array();
+	var v_values = new Array();
+	var okcs = new Array();
+	var init;
+	
+	var NODE_OP			= 1;
+	var NODE_VAR 		= 2;
+	var NODE_CONST		= 3;
+	
+	
+	var OP_NONE 		= -1;
+	var OP_INIT			= 5;
+	var OP_SEND 		= 0;
+	var OP_RECEIVE		= 1;
+	var OP_THEN			= 2;
+	var OP_OR			= 3;
+	var OP_LIST 		= 4;
+	var OP_ROLE_DEF		= 6;
+	var OP_SEND 		= 7;
+	var OP_RECEIVE		= 8;
+	var OP_ROLE_TYPE    = 9;
+	var OP_SET_VAR      = 10;
+	var OP_CONSTRAINT	= 11;
+	var OP_NEGATE		= 12;
+	var OP_LOGAND		= 13;
+	var OP_LOGOR		= 14;
+	var OP_NO_MSG		= 15;
+	var OP_TERMS		= 16;
+	var OP_FACTOR		= 17;
+	var OP_MESSAGE		= 18;
+//	var state = {
+//		currentDef : []	
+//	};
+	
+	function Node(){
+		var type;
+		var value;
+		var children;
+	} 
+	
+	function FACTOR(){
+		var name;
+		var params;
+	}
+		
+	function createNode(type, value, childs){
+		var n = new Node();
+		n.type = type;
+		n.value = value;
+		n.child = new Array();
+		
+		for(var i = 2; i < arguments.length; i++){
+			n.child.push(arguments[i]);
+		}
+		return n;
+	}
+	
+	function createFactors(name, params){
+		var f = new FACTOR();
+		f.name = name;
+		f.params = params;
+		return f;
+	}	
+	
+	function setValue(vname, vvalue){
+		var found = false;
+		for(var i = 0; i < v_names.length; i++){
+			if(v_names[i].toString() == vname.toString()){
+				v_values[i] = (arguments.length == 1)? undefined : vvalue; //The type is now checked here.
+				found = true;
+				break;
+			}
+			
+		}
+		if(!found){
+			v_names.push(vname);
+			v_values.push((arguments.length == 1)? undefined : vvalue);
+		}
+	}
+	
+	function getValue(vname){
+		for(var i = 0; i < v_names.length; i++){
+			if(v_names[i].toString() == vname.toString()){
+				return v_values[i];
+			}
+		}
+		return undefined;
+	}
+	
+	function retrieveOKCs(okcs, headElem, count, length, node){
+		var okcElem = document.createElement("script");
+		okcElem.type = "text/javascript";
+		okcElem.src =  okcs[count++];
+		okcElem.onload = loadCounting(okcs.length, count, node);
+		headElem.appendChild("okcElem");
+		if(count == length){
+			emitter.emit("okcs loaded", node);
+		}
+		else{
+			retrieveOKCs(okcs, headElem, count, length, node);
+		}
+	}
+	
+	function initialize(jsonStr, node){
+		init = eval('(' + jsonStr + ')');
+		for(var i = 0; i < init.length; i++){
+			for(var j = 0; j < init[i].okcs.length; j++){
+				okcs.push(init[i].okcs[j]);
+			}
+		}
+		var count = 0;
+		var length = okcs.length;
+		var headElem = document.getElementsByTagName("head")[0];
+		retrieveOKCs(okcs, headElem, count, length, node);
+	}
+	
+	function sendMSG(msgJSONStr, receiverJID){
+		var success;
+		//TODO XMPP sending message.
+		
+		//when receive message
+		emitter.emit("receive");
+		return success;
+	}
+	
+	function receiveMSG(msgJSONStr, roleNode, constraintNode){
+		//TODO XMPP receiving message.
+		if(arguments[2]){
+			if(arguments[2] == true){
+				if(emitter.listeners("nextThenDEF") || emitter.listeners("nextThenDEF").length == 0){
+					emitter.emit("nextThenDEF");
+				}
+			}
+			else{
+				if(emitter.listeners("nextOrDEF") || emitter.listeners("nextOrDEF").length == 0){
+					emitter.emit("nextOrDEF")
+				}
+			}
+		}
+		else{
+			if(emitter.listeners("nextThenDEF") || emitter.listeners("nextThenDEF").length == 0){
+				emitter.emit("nextThenDEF");
+			}
+			else if(emitter.listeners("nextOrDEF") || emitter.listeners("nextOrDEF").length == 0){
+				emitter.emit("nextOrDEF");
+			}
+		}
+	}
+	
+	function execute(node){
+		var ret = 0;
+		if(!node)
+			return 0;
+		switch(node.type){
+			case NODE_OP: 
+				switch(node.value){
+					case OP_NONE:
+						if(node.children[0]){
+							execute(node.children[0]);
+						}
+						if(node.children[1]){
+							ret = execute(node.children[1]);
+						}
+						break;
+					case OP_ROLE:
+						var roleIdNode = node.children[1];
+						var roleType = eval("(" + execute(node.children[0]) + ")");
+						var reoleName = roleType.name;
+						for(var i = 0; i < init.length; i++){
+							if(roleName.toString().toLowerCase == init[i].role.toString().toLowerCase){
+								ret = init[i].jid.toString();
+							}
+						}
+						break;
+					case OP_ROLE_TYPE:
+						var ret = execute(node.children[0]);
+						break;
+					case OP_TERMS:
+						if(node.children[1]){
+							ret = execute(node.children[0]) + ", " + execute(node.children[1]);
+						}
+						else{
+							ret = execute(node.children[0]);
+						}
+						break;
+					case OP_FACTOR:
+						if(node.children[1])
+							ret = "{ name : '" + execute(node.children[0]) + "', params: [" + execute(node.children[1]) + "]}";
+						else
+							ret = "{ name : '" + execute(node.children[0]) + "', params:[]}";
+						break;
+					case OP_CONSTRAINT://TODO need check the Variables and which of them are inputs and wich of them are outputs (callback?).
+						var constraintName = execute(node.children[0]);
+						ret = eval("okc" + funcName + "(" + "[" + execute(node.children[1]) + "]" + ")"); //according to "Conventions over configurations"
+						if(ret == null || ret == undefined)
+							throw invalidOKCException(funcName);
+						break;
+					case OP_NEGATE:
+						ret = !execute(node.children[0]);	
+						break;
+					case LOGAND:
+						ret = execute(node.children[0]) && execute(node.children[1]);
+						break;
+					case LOGOR:
+						ret = execute(node.children[0]) || execute(node.children[1]);
+						break;
+					case OP_LIST:
+						if(execute(node.children[0]) != undefined){
+							if(execute(node.children[0]).length == 0){
+								setValue(node.children[1].value.toString(), []);
+								setValue(node.children[2].value.toString(), []);
+							}
+							else if(execute(node.children[0]).length = 1){
+								setValue(node.children[1].value.toString(), execute(node.children[0])[0]);
+								setValue(node.children[2].value.toString(), []);
+							}
+							else if(execute(node.children[0]).length > 1){
+								setValue(node.children[1].value.toString(), execute(node.children[0])[0]);
+								setValue(node.children[2].value.toString(), execute(node.children[0]).slice(1));
+							}
+						}
+						else if(execute(node.children[1]) != undefined && execute(node.children[2]) != undefined){
+							setValue(node.children[0].value.toString(), execute(node.children[1]).concat(execute(node.children[2])));
+						}
+						if(execute(node.children[1]) != undefined && execute(node.children[2]) != undefined){
+							setValue(node.children[0].value.toString(), []);
+						}
+						break;
+					case OP_THEN:
+						emitter.removeAllListeners("nextThenDEF");
+						emitter.on("nextThenDEF", execute(node.children[1]));
+						execute(node.children[0]);
+						break;
+					case OP_OR:
+						emitter.removeAllListeners("nextOrDEF");
+						emitter.on("nextOrDEF", execute(node.children[1]));
+						execute(node.children[0]);
+						break;
+					case OP_SEND:
+						var msgNode = node.children[0];
+						var roleNode = node.children[1];
+						var solved = true;
+						if(node.children[2]){
+							solved = execute(node.children[2]);
+						}
+						if(solved){
+							if(sendMSG(execute(msgNode), execute(roleNode))){
+								if(emitter.listeners("nextThenDEF") || emitter.listeners("nextThenDEF").length == 0)
+									emitter.emit("nextThenDEF");
+							}
+							else{
+								if(emitter.listeners("nextOrDEF") || emitter.listeners("nextOrDEF").length == 0)
+									emitter.emit("nextOrDEF");
+							}
+						}
+						break;
+					case OP_RECEIVE: 
+						emitter.removeAllListers("receive");
+						var msgNode = node.children[0];
+						var roleNode = node.children[1];
+						if(node.children[2]){
+							emitter.on("msgReceived", receiveMSG(execute(msgNode), execute(roleNode), execute(node.children[2])));
+						}
+						else{
+							emitter.on("msgReceived", receiveMSG(execute(msgNode), execute(roleNode)));
+						}
+						break;
+					case OP_MESSAGE:
+						ret = "{ name: '" + execute(node.children[0]) + "', params: [" + execute(node.children[1]) + "]}";
+						break;
+					case OP_NO_MSG:
+						ret = execute(node.children[0]);
+						break;
+				}
+				break;
+			case NODE_VAR:
+				ret = getValue(node.value);
+				break;
+			case NODE_CONST:
+				ret = node.value;
+				break;
+		}
+		return ret;
+	}
+	
+	function invalidOKCException(okcName){
+		return "OKC" + "'" + okcName + "()' has not been loaded."; 
+	}
